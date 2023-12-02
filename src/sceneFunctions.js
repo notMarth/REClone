@@ -1,3 +1,9 @@
+function switchCamera(state, cameraPos, cameraUp, cameraFront) {
+    state.camera.position = cameraPos;
+    state.camera.up = cameraUp;
+    state.camera.front = cameraFront;
+}
+
 function getObject(state, name) {
     let objectToFind = null;
 

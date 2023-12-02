@@ -3,7 +3,9 @@ class Game {
         this.state = state;
         this.spawnedObjects = [];
         this.collidableObjects = [];
+        this.check = true;
     }
+
 
     // example - we can add our own custom method to our game and call it using 'this.customMethod()'
     customMethod() {
@@ -35,6 +37,7 @@ class Game {
 
     // runs once on startup after the scene loads the objects
     async onStart() {
+
         console.log("On start");
 
         // this just prevents the context menu from popping up when you right click
@@ -76,6 +79,7 @@ class Game {
 
                 case "s":
                     this.player.movePlayerBackward()
+                    console.log(this.player.model.position);
                     break;
 
                 default:
@@ -83,8 +87,9 @@ class Game {
             }
         });
 
-        this.customMethod(); // calling our custom method! (we could put spawning logic, collision logic etc in there ;) )
 
+        this.customMethod(); // calling our custom method! (we could put spawning logic, collision logic etc in there ;) )
+        
         // example: spawn some stuff before the scene starts
         // for (let i = 0; i < 10; i++) {
         //     for (let j = 0; j < 10; j++) {
@@ -126,6 +131,12 @@ class Game {
 
     // Runs once every frame non stop after the scene loads
     onUpdate(deltaTime) {
+        if (this.player.model.position[0] < -2.8 && this.player.model.position[2] < -2.8 && this.check) {
+            console.log("working")
+            var newCam = vec3.fromValues(this.state.camera.front[0]*-1, this.state.camera.front[1], this.state.camera.front[2]*-1);
+            switchCamera(this.state, this.state.camera.position, this.state.camera.up, newCam);
+            this.check = false;
+        }
         // TODO - Here we can add game logic, like moving game objects, detecting collisions, you name it. Examples of functions can be found in sceneFunctions
 
         // example: Rotate a single object we defined in our start method
