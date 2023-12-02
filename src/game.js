@@ -43,7 +43,8 @@ class Game {
         }, false);
 
         // example - set an object in onStart before starting our render loop!
-        this.cube = getObject(this.state, "cube1");
+        this.player = getObject(this.state, "Player");
+        console.log(this.player)
         const otherCube = getObject(this.state, "cube2"); // we wont save this as instance var since we dont plan on using it in update
 
         // example - create sphere colliders on our two objects as an example, we give 2 objects colliders otherwise
@@ -58,12 +59,23 @@ class Game {
             e.preventDefault();
 
             switch (e.key) {
-                case "a":
-                    this.cube.translate(vec3.fromValues(0.5, 0, 0));
+                case "w":
+
+                    this.player.movePlayerForward();
+                    vec3.add(this.player.atPoint, this.player.atPoint, this.player.at);
+                    console.log(this.player.model.position);
                     break;
 
-                case "d":
-                    this.cube.translate(vec3.fromValues(-0.5, 0, 0));
+                case 'd':
+                    this.player.rotatePlayer('y', -0.05);
+                    break;
+
+                case 'a':
+                    this.player.rotatePlayer('y', 0.05)
+                    break;
+
+                case "s":
+                    this.player.movePlayerBackward()
                     break;
 
                 default:

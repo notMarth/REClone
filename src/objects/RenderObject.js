@@ -5,6 +5,13 @@ class RenderObject {
     this.name = object.name;
     this.parent = object.parent;
 
+    //UP AT AND RIGHT VECTORS FOR MOVEMENT//
+    this.up = vec3.fromValues(0.0, 1.0, 0.0);
+    this.right = vec3.fromValues(-1.0, 0.0, 0.0);
+    this.at = vec3.fromValues(0.0, 0.0, 1.0);
+    this.atPoint = vec3.fromValues(0.0, 0.0, 1.0);
+
+
     this.initialTransform = {
       position: object.position ? object.position : vec3.create(),
       scale: object.scale ? object.scale : vec3.fromValues(1, 1, 1),
@@ -38,7 +45,23 @@ class RenderObject {
     if (axis === 'x') {
       mat4.rotateX(this.model.rotation, this.model.rotation, angle)
     } else if (axis == 'y') {
-      mat4.rotateY(this.model.rotation, this.model.rotation, angle)
+      mat4.rotateY(this.model.rotation, this.model.rotation, angle);
+    } else if (axis == 'z') {
+      mat4.rotateZ(this.model.rotation, this.model.rotation, angle)
+    }
+  }
+
+  //Custom method used only to rotate player
+  //aligns the player's at vector with the new rotated orientation
+  rotatePlayer(axis, angle) {
+    if (axis === 'x') {
+      mat4.rotateX(this.model.rotation, this.model.rotation, angle)
+    } else if (axis == 'y') {
+      mat4.rotate(this.model.rotation, this.model.rotation, angle, this.up);
+      vec3.rotateY(this.at, this.at, this.up, angle);
+      vec3.cross(this.right, this.at, this.up);
+      vec3.normalize(this.at, this.at);
+      vec3.normalize(this.right, this.right);
     } else if (axis == 'z') {
       mat4.rotateZ(this.model.rotation, this.model.rotation, angle)
     }
@@ -46,6 +69,14 @@ class RenderObject {
 
   translate(translateVec) {
     vec3.add(this.model.position, this.model.position, vec3.fromValues(translateVec[0], translateVec[1], translateVec[2]));
+  }
+
+  movePlayerForward(){
+    vec3.add(this.model.position, this.model.position, vec3.fromValues(this.at[0]*0.1, this.at[1]*0.1, this.at[2]*0.1));
+  }
+
+  movePlayerBackward(){
+    vec3.add(this.model.position, this.model.position, vec3.fromValues(this.at[0]*-0.1, this.at[1]*-0.1, this.at[2]*-0.1));
   }
 
   scale(scaleVec) {

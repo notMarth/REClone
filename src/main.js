@@ -163,6 +163,7 @@ async function main() {
  */
 function addObjectToScene(state, object) {
     object.name = object.name;
+    console.log(object.name);
     state.objects.push(object);
 }
 
