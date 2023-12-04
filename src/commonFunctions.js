@@ -401,6 +401,12 @@ function parseSceneFile(file, state) {
                 state.pointLights = jData[0].pointLights;
                 state.settings = jData[0].settings;
                 state.camera = state.settings.camera;
+                state.camera.at = vec3.fromValues();
+                state.camera.right = vec3.fromValues();
+                vec3.subtract(state.camera.at, state.camera.atPoint, state.camera.position);
+                vec3.normalize(state.camera.at, state.camera.at);
+                vec3.cross(state.camera.right, state.camera.at, state.camera.up);
+                vec3.normalize(state.camera.right, state.camera.right);
                 state.numberOfObjectsToLoad = jData[0].objects.length;
                 resolve();
             })

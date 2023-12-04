@@ -6,13 +6,12 @@ class CustomObject {
         this.parent = object.parent;
         this.type = object.type;
         this.loaded = false;
-        this.initialTransform = { position: object.position, scale: object.scale, rotation: object.rotation };
         this.material = { ...object.material };
         this.model = {
-            vertices: object.model.vertices,
-            triangles: object.model.triangles,
-            uvs: object.model.uvs,
-            normals: object.model.normals,
+            vertices: object.vertices.flat(),
+            triangles: object.triangles.flat(),
+            //uvs: object.model.uvs.flat(),
+            normals: object.normals,
             bitangents: [],
             diffuseTexture: object.diffuseTexture ? object.diffuseTexture : "default.png",
             normalTexture: object.normalTexture ? object.normalTexture : "defaultNorm.png",
@@ -27,6 +26,8 @@ class CustomObject {
             fragShader: "",
             vertShader: ""
         };
+        this.initialTransform = { position: this.model.position, scale: this.model.scale, rotation: this.model.rotation };
+        this.modelMatrix = this.model.modelMatrix;
     }
 
     rotate(axis, angle) {

@@ -133,6 +133,7 @@ async function main() {
     const now = new Date();
     for (let i = 0; i < state.loadObjects.length; i++) {
         const object = state.loadObjects[i];
+        console.log(object);
 
         if (object.type === "mesh") {
             await addMesh(object);
@@ -141,6 +142,7 @@ async function main() {
         } else if (object.type === "plane") {
             addPlane(object, state);
         } else if (object.type.includes("Custom")) {
+            console.log(object.model);
             addCustom(object, state);
         }
     }
@@ -240,12 +242,10 @@ function drawScene(gl, deltaTime, state) {
 
             // View Matrix & Camera ....
             let viewMatrix = mat4.create();
-            let camFront = vec3.fromValues(0, 0, 0);
-            vec3.add(camFront, state.camera.position, state.camera.front);
             mat4.lookAt(
                 viewMatrix,
                 state.camera.position,
-                camFront,
+                state.camera.atPoint,
                 state.camera.up,
             );
             gl.uniformMatrix4fv(object.programInfo.uniformLocations.view, false, viewMatrix);

@@ -74,12 +74,98 @@ class Game {
                     break;
 
                 case 'a':
-                    this.player.rotatePlayer('y', 0.05)
+                    this.player.rotatePlayer('y', 0.05);
                     break;
 
                 case "s":
                     this.player.movePlayerBackward()
                     console.log(this.player.model.position);
+                    break;
+
+                case "A":
+                    var right = vec3.clone(state.camera.right);
+                    //find at vector/recalculate it and normalize
+                    vec3.subtract(state.camera.at, state.camera.atPoint, state.camera.position);
+                    vec3.normalize(state.camera.at, state.camera.at);
+                    //find right vector/recalculate it and normalize
+                    vec3.cross(state.camera.right, state.camera.at, state.camera.up);
+                    vec3.normalize(state.camera.right, state.camera.right);
+
+                    //get ready to subract right by scaling by some small negative value
+                    vec3.scale(right, state.camera.right, -0.1);
+                    //find new atPoint
+                    vec3.add(state.camera.atPoint, state.camera.atPoint, right);
+                    //recalculate new at from new atPoint and store it
+                    vec3.subtract(state.camera.at, state.camera.atPoint, state.camera.position);
+                    vec3.normalize(state.camera.at, state.camera.at);
+                    //find new right vector and update
+                    vec3.cross(state.camera.right, state.camera.at, state.camera.up);
+                    vec3.normalize(state.camera.right, state.camera.right);
+                    break;
+
+                case "D":
+                    var right = vec3.clone(state.camera.right);
+                    // recalculate at vector
+                    vec3.subtract(state.camera.at, state.camera.atPoint, state.camera.position);
+                    vec3.normalize(state.camera.at, state.camera.at);
+                    //find right vector and update
+                    vec3.cross(state.camera.right, state.camera.at, state.camera.up);
+                    vec3.normalize(state.camera.right, state.camera.right);
+                    // scale right vector by some small positive constant that we will rotate by
+                    vec3.scale(right, state.camera.right, 0.1);
+                    //find new atPoint 
+                    vec3.add(state.camera.atPoint, state.camera.atPoint, right);
+
+                    //recalculate new at vector
+                    vec3.subtract(state.camera.at, state.camera.atPoint, state.camera.position);
+                    vec3.normalize(state.camera.at, state.camera.at);
+                    //recalculate new right vector
+                    vec3.cross(state.camera.right, state.camera.at, state.camera.up);
+                    vec3.normalize(state.camera.right, state.camera.right);
+                    break;
+
+                case "W":
+                    vec3.add(state.camera.position, state.camera.position, vec3.fromValues(state.camera.at[0], state.camera.at[1], state.camera.at[2]));
+                    vec3.add(state.camera.atPoint, state.camera.atPoint, vec3.fromValues(state.camera.at[0], state.camera.at[1], state.camera.at[2]));
+                    break;
+
+                case "S":
+                    vec3.subtract(state.camera.position, state.camera.position, vec3.fromValues(state.camera.at[0], state.camera.at[1], state.camera.at[2]));
+                    vec3.subtract(state.camera.atPoint, state.camera.atPoint, vec3.fromValues(state.camera.at[0], state.camera.at[1], state.camera.at[2]));
+                    break;
+
+                case "Z":
+                    // TODO: Rotate camera about X axis (pitch)
+                    var up = vec3.clone(state.camera.up);
+
+                    //scale up vector by some small amount
+                    vec3.scale(up, up, 0.1);
+
+                    vec3.add(state.camera.atPoint, state.camera.atPoint, up);
+                    //calculate at vector
+                    vec3.subtract(state.camera.at, state.camera.atPoint, state.camera.position);
+                    vec3.normalize(state.camera.at, state.camera.at);
+                    //find new up vector
+                    vec3.cross(state.camera.up, state.camera.right, state.camera.at);
+                    vec3.normalize(state.camera.up, state.camera.up);
+
+                    break;
+
+                case "X":
+                    // TODO: Rotate camera about X axis (pitch)
+                    var up = vec3.clone(state.camera.up);
+
+                    //scale up vector by some small amount
+                    vec3.scale(up, up, -0.1);
+
+                    vec3.add(state.camera.atPoint, state.camera.atPoint, up);
+                    //calculate at vector
+                    vec3.subtract(state.camera.at, state.camera.atPoint, state.camera.position);
+                    vec3.normalize(state.camera.at, state.camera.at);
+                    //find new up vector
+                    vec3.cross(state.camera.up, state.camera.right, state.camera.at);
+                    vec3.normalize(state.camera.up, state.camera.up);
+
                     break;
 
                 default:
