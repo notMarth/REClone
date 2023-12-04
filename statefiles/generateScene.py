@@ -1,4 +1,3 @@
-import numpy as np
 
 #x gives the x length of the room
 #z gives the z length of the room
@@ -555,4 +554,4 @@ if __name__ == "__main__":
         f.write('},')
 
 ################################################### PLAYER, CAMERA, AND SETTINGS
-        f.write('{"name": "Player","material": {"diffuse": [0.5882,0.5882,0.5882],"ambient": [0.3,0.3,0.3],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type": "cube","position": [2.5,0,2.5],"scale": [1,2.5,1],"diffuseTexture": "default.jpg","normalTexture": "defaultNorm.jpg","rotation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent": null,"model": null}],"pointLights": [{"name": "pointLight1","colour": [1,1,1],"position": [0,5,0],"strength": 2,"quadratic": 0.035,"linear": 0.09,"constant": 1,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}],"settings": {"camera": {"name": "mainCamera","position": [4.9,4.9,4.9],"atPoint": [2.5,0,2.5],"up": [0,1,0]},"backgroundColor": [0,0,0]}}]')
+        f.write('{"name": "Player","material": {"diffuse": [0.5882,0.5882,0.5882],"ambient": [0.3,0.3,0.3],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type": "cube","position": [2.5,0,2.5],"scale": [1,2.5,1],"diffuseTexture": "default.jpg","normalTexture": "defaultNorm.jpg","rotation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent": null,"model": null}],"pointLights": [{"name": "pointLight1","colour": [1,1,1],"position": [0,5,0],"strength": 2,"quadratic": 0.035,"linear": 0.09,"constant": 1,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}],"settings": {"camera": {"name": "mainCamera","position": [4,4,4],"atPoint": [2.5,0,2.5],"up": [0,1,0]},"backgroundColor": [0,0,0]}}]')

@@ -73,10 +73,12 @@ class RenderObject {
 
   movePlayerForward(){
     vec3.add(this.model.position, this.model.position, vec3.fromValues(this.at[0]*0.1, this.at[1]*0.1, this.at[2]*0.1));
+    vec3.add(this.atPoint, this.atPoint, this.at);
   }
 
   movePlayerBackward(){
     vec3.add(this.model.position, this.model.position, vec3.fromValues(this.at[0]*-0.1, this.at[1]*-0.1, this.at[2]*-0.1));
+    vec3.add(this.atPoint, this.atPoint, this.at);
   }
 
   scale(scaleVec) {

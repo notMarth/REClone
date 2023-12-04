@@ -126,7 +126,32 @@ async function main() {
         meshCache: {},
         samplerExists: 0,
         samplerNormExists: 0,
+        ////////////////////////CAMERAS DEFINED HERE////////////////////////////////
+        //Cameras are defined the following way: [cameraPos, cameraUp, cameraAtPoint]
+        //where cameraPos is the position of the camera, cameraUp is the up vector,
+        //at cameraAtPoint is the lookat point for the camera
+        cameras: [
+            [   //camera1 is the default camera
+                state.camera.position, state.camera.up, state.camera.atPoint,
+            ],
+            [
+                //camera2 (hallway)
+                vec3.fromValues(-9.0, 4.5, 2.5), vec3.fromValues(0, 1, 0), vec3.fromValues(-2.5, 0, -2.5)
+            ]
+
+        ],
+        ///////////////////////CAMERA BOUNDARIES DEFINED HERE///////////////////////
+        //Camera boundaries are defined the following way: [LL, UR] where LL is the
+        //lower left point of the camera boundary plane and UR is the upper right
+        cameraBounds: [
+            [
+                vec3.fromValues(-0.5, 0, 3.0), vec3.fromValues(0, 5.0, 2.0)
+            ]
+        ]
+
     };
+
+    
 
     state.numLights = state.pointLights.length;
 
