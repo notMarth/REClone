@@ -5,6 +5,9 @@ class Game {
         this.collidableObjects = [];
         this.check = true;
         this.DEBUG = true;
+        this.KNIFE = false;
+        this.CHANDELIER = false;
+        this.zombies = [];
     }
 
 
@@ -50,8 +53,19 @@ class Game {
 
         // example - set an object in onStart before starting our render loop!
         this.player = getObject(this.state, "Player");
-        console.log(this.player)
-        const otherCube = getObject(this.state, "cube2"); // we wont save this as instance var since we dont plan on using it in update
+        this.crateR = getObject(this.state, "RedCrate");
+        this.crateB = getObject(this.state, "BlueCrate");
+        this.crateG = getObject(this.state, "GreenCrate");
+
+        this.panelR = getObject(this.state, "RedPanel");
+        this.panelB = getObject(this.state, "BluePanel");
+        this.panelG = getObject(this.state, "GreenPanel");
+
+        this.state.pickupItems.push(this.crateR, this.crateB, this.crateG);
+        
+        this.rope = getObject(this.state, "Rope");
+        this.chandelier = getObject(this.state, "Chandelier");
+        this.glass = getObject(this.state, "GlassPanel");
 
         // example - create sphere colliders on our two objects as an example, we give 2 objects colliders otherwise
         // no collision can happen
@@ -67,7 +81,11 @@ class Game {
             switch (e.key) {
                 case "w":
                     this.player.movePlayerForward();
-                    vec3.add(this.player.atPoint, this.player.atPoint, this.player.at);
+                    // if(this.state.holdItem) {
+                    //     var temp = vec3.fromValues();
+                    //     vec3.scale(temp, this.player.at, 0.1);
+                    //     this.state.holdItem.translate(temp);
+                    // }
                     console.log(this.player.model.position);
                     checkCamera(this.state, this.player.model.position);
                     break;
@@ -82,8 +100,23 @@ class Game {
 
                 case "s":
                     this.player.movePlayerBackward()
+                    // if(this.state.holdItem) {
+                    //     var temp = vec3.fromValues();
+                    //     vec3.scale(temp, this.player.at, -0.1);
+                    //     this.state.holdItem.translate(temp);
+                    // }
                     console.log(this.player.model.position);
                     checkCamera(this.state, this.player.model.position);
+                    break;
+
+                case " ":
+                    checkPickup(this.state, this.player);
+
+                    if (vec3.dist(this.player.model.position, vec3.fromValues(0.0, 0, -6)) <= 1.0) {
+                        this.rope.translate(vec3.fromValues(0.0, -50.0, 0.0));
+                        this.CHANDELIER = true;
+                    }
+
                     break;
 
                 case "A":
@@ -180,6 +213,13 @@ class Game {
                     }
                     break;
 
+                case "Q":
+                    if (this.DEBUG) {
+                        console.log(this.state.camera.position);
+                        console.log(this.state.camera.atPoint);
+                        console.log(this.state.camera.up);
+                    }
+                    break;
                 default:
                     break;
             }
@@ -229,6 +269,29 @@ class Game {
 
     // Runs once every frame non stop after the scene loads
     onUpdate(deltaTime) {
+        if(vec3.dist(this.crateR.model.position, this.panelR.centroid) <= 0.5 && vec3.dist(this.crateB.model.position, this.panelB.centroid) <= 0.5 && vec3.dist(this.crateG.model.position, this.panelG.centroid) <=0.5 && !this.KNIFE) {
+            this.KNIFE = true;
+        }
+
+        if(this.CHANDELIER) {
+            var temp = vec3.fromValues();
+            vec3.transformMat4(temp,this.chandelier.model.position, this.chandelier.model.modelMatrix);
+            if(temp[1] > 4) {
+                
+                this.chandelier.translate(vec3.fromValues(0.0, -6*deltaTime, 0.0));
+            }
+            else {
+                this.chandelier.translate(vec3.fromValues(0.0, -50, 0.0));
+                this.glass.translate(vec3.fromValues(0.0, -50, 0.0));
+                this.CHANDELIER = false;
+            }
+        }
+
+        if(this.player.model.position[0] <=-0.5) {
+            // this.player.model.position = vec3.fromValues(0, -50, 5);
+            // this.state.camera.position = vec3.fromValues(20, -45, 5);
+            // this.state.camera.atPoint = vec3.fromValues(0, -50, 5);
+        }
         // TODO - Here we can add game logic, like moving game objects, detecting collisions, you name it. Examples of functions can be found in sceneFunctions
 
         // example: Rotate a single object we defined in our start method

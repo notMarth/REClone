@@ -1,4 +1,4 @@
-
+import numpy as np
 #x gives the x length of the room
 #z gives the z length of the room
 #y gives the height of the room
@@ -283,23 +283,6 @@ def generateMainRoom(x, z, y, origin, door1, door2, vertInd):
     flist.append([28, 29, 30])
     flist.append([28, 30, 31])
 
-    vlist.append([origin[0], origin[1], origin[2]])
-    vlist.append([origin[0], origin[1], origin[2] + z])
-    vlist.append([origin[0]+x, origin[1], origin[2] + z])
-    vlist.append([origin[0]+x, origin[1], origin[2]])
-
-    nlist.append([origin[0], origin[1], origin[2]])
-    nlist.append([origin[0], origin[1], origin[2] + z])
-    nlist.append([origin[0]+x, origin[1], origin[2] + z])
-    nlist.append([origin[0]+x, origin[1], origin[2]])
-
-    uvlist.append([0, 0])
-    uvlist.append([1, 0])
-    uvlist.append([1, 1])
-    uvlist.append([0, 1])
-
-    flist.append([32, 33, 34])
-    flist.append([32, 34, 35])
 
     vlist.append([origin[0], origin[1]+y, origin[2]])
     vlist.append([origin[0], origin[1]+y, origin[2] + z])
@@ -316,8 +299,63 @@ def generateMainRoom(x, z, y, origin, door1, door2, vertInd):
     uvlist.append([1, 1])
     uvlist.append([0, 1])
 
-    flist.append([36, 38, 37])
-    flist.append([36, 39, 38])
+    flist.append([32, 34, 33])
+    flist.append([32, 35, 34])
+
+    vlist.append([origin[0], origin[1], origin[2]])
+    vlist.append([origin[0], origin[1], origin[2] + z])
+    vlist.append([origin[0]+x - 10, origin[1], origin[2] + z])
+    vlist.append([origin[0]+x - 10, origin[1], origin[2]])
+
+    nlist.append([origin[0], origin[1], origin[2]])
+    nlist.append([origin[0], origin[1], origin[2] + z])
+    nlist.append([origin[0]+x - 10, origin[1], origin[2] + z])
+    nlist.append([origin[0]+x - 10, origin[1], origin[2]])
+
+    uvlist.append([0, 0])
+    uvlist.append([1, 0])
+    uvlist.append([1, 1])
+    uvlist.append([0, 1])
+
+    flist.append([36, 37, 38])
+    flist.append([36, 38, 39])
+
+    vlist.append([origin[0]+x-10, origin[1], origin[2]+z])
+    vlist.append([origin[0]+x, origin[1], origin[2] + z])
+    vlist.append([origin[0]+x, origin[1], origin[2] + z-6])
+    vlist.append([origin[0]+x-10, origin[1], origin[2]+z-6])
+
+    nlist.append([origin[0]+x-10, origin[1], origin[2]+z])
+    nlist.append([origin[0]+x, origin[1], origin[2] + z])
+    nlist.append([origin[0]+x, origin[1], origin[2] + z-6])
+    nlist.append([origin[0]+x - 10, origin[1], origin[2]+z-6])
+
+    uvlist.append([0, 0])
+    uvlist.append([1, 0])
+    uvlist.append([1, 1])
+    uvlist.append([0, 1])
+
+    flist.append([40, 41, 42])
+    flist.append([40, 42, 43])
+
+    vlist.append([origin[0]+x-10, origin[1], origin[2]])
+    vlist.append([origin[0]+x, origin[1], origin[2]])
+    vlist.append([origin[0]+x, origin[1], origin[2] + 6])
+    vlist.append([origin[0]+x - 10, origin[1], origin[2]+6])
+
+    nlist.append([origin[0]+x-10, origin[1], origin[2]])
+    nlist.append([origin[0]+x, origin[1], origin[2]])
+    nlist.append([origin[0]+x, origin[1], origin[2] + 6])
+    nlist.append([origin[0]+x - 10, origin[1], origin[2]+6])
+
+    uvlist.append([0, 0])
+    uvlist.append([1, 0])
+    uvlist.append([1, 1])
+    uvlist.append([0, 1])
+
+    flist.append([44, 46, 45])
+    flist.append([44, 47, 46])
+
 
     for i in range(len(flist)):
         for j in flist[i]:
@@ -527,6 +565,100 @@ def generateHallwayCorner(origin, wall1, wall2, vertInd):
     for i in range(len(flist)):
             for j in flist[i]:
                 j+=vertInd
+
+    return vlist, nlist, flist, (vertInd + len(vlist))
+
+def generateGlassPanel(origin, corner, thickness, vertInd):
+    vlist = []
+    nlist = []
+    flist = []
+
+    vlist.append([origin[0], origin[1], origin[2]])
+    vlist.append([origin[0], origin[1], corner[1]])
+    vlist.append([corner[0], origin[1], corner[1]])
+    vlist.append([corner[0], origin[1], origin[2]])
+
+    nlist.append([origin[0], origin[1], origin[2]])
+    nlist.append([origin[0], origin[1], corner[1]])
+    nlist.append([corner[0], origin[1], corner[1]])
+    nlist.append([corner[0], origin[1], origin[2]])
+
+    flist.append([0,2,1])
+    flist.append([0,3,2])
+
+    for i in range(len(flist)):
+            for j in flist[i]:
+                j+=vertInd
+
+    return vlist, nlist, flist, (vertInd + len(vlist))
+
+def generateStaircase(origin, corner, vertInd):
+    vlist = []
+    nlist = []
+    flist = []
+
+    vlist.append([origin[0], origin[1], origin[2]])
+    vlist.append([origin[0], origin[1], corner[2]])
+    vlist.append([corner[0], corner[1], corner[2]])
+    vlist.append([corner[0], corner[1], origin[2]])
+
+    nlist.append([origin[0], origin[1], origin[2]])
+    nlist.append([origin[0], origin[1], corner[2]])
+    nlist.append([corner[0], corner[1], corner[2]])
+    nlist.append([corner[0], corner[1], origin[2]])
+
+
+    flist.append([0,2,1])
+    flist.append([0,3,2])
+
+    for i in range(len(flist)):
+            for j in flist[i]:
+                j+=vertInd
+
+    return vlist, nlist, flist, (vertInd + len(vlist))
+
+def generateRope(origin, endPoint, width, n, vertInd):
+    vlist = []
+    nlist = []
+    flist = []
+
+    rad = np.linspace(0, 2*np.pi, n)
+
+    h = np.abs(origin[1] - endPoint[1])
+
+    vlist.append([endPoint[0], endPoint[1], endPoint[2]])
+    vlist.append([origin[0], origin[1], origin[2]])
+
+    for i in range(n-1):
+        p1 = [width*np.cos(rad[i]) + endPoint[0], endPoint[1] , width*np.sin(rad[i]) + endPoint[2]]
+        p2 = [width*np.cos(rad[i]) + origin[0], origin[1], width*np.sin(rad[i]) + origin[2]]
+        p3 = [width*np.cos(rad[i+1]) + endPoint[0], endPoint[1], width*np.sin(rad[i+1]) + endPoint[2]]
+        p4 = [width*np.cos(rad[i+1]) + origin[0], origin[1], width*np.sin(rad[i+1]) + origin[2]]
+
+        vlist.append(p1)
+        vlist.append(p2)
+        vlist.append(p3)
+        vlist.append(p4)
+        nlist.append(p1)
+        nlist.append(p2)
+        nlist.append(p3)
+        nlist.append(p4)
+
+        ftop = [(i*4)+1+1, (i*4)+3+1, 0]
+        fbottom = [(i*4)+2+1, (i*4)+4+1, 1]
+        f1 = [(i*4)+3+1, (i*4)+1+1, (i*4)+2+1]
+        f2 = [(i*4)+2+1, (i*4)+4+1, (i*4)+3+1]
+
+        flist.append(ftop)
+        flist.append(fbottom)
+        flist.append(f1)
+        flist.append(f2)
+
+        i += 1
+
+    for i in range(len(flist)):
+        for j in flist[i]:
+            j+=vertInd
 
     return vlist, nlist, flist, (vertInd + len(vlist))
 
@@ -784,11 +916,188 @@ if __name__ == "__main__":
         f.write(f'{uvlist[-1]}]')
         f.write('},')
 
+########################################################### GENERATE GLASS PANEL
+        vlist, nlist, flist, vInd = generateGlassPanel((-1, 0, -24), (9, -12), 1, vInd)
+
+        #OBJECT MATERIAL INFO
+        f.write('{"name": "GlassPanel", "material": {"diffuse": [0.1,0.1,0.3],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 0.3},"type":"CustomPanel", "diffuseTexture": "default.jpg", ')
+        
+        #START VERTICES
+        f.write('"vertices": [')
+        for i in range(len(vlist)-1):
+            f.write(f'{vlist[i]}, ')
+
+        #START NORMALS
+        f.write(f'{vlist[-1]}], "normals": [')
+        for i in range(len(nlist)-1):
+            f.write(f'{nlist[i]}, ')
+
+        #START TRIANGLES
+        f.write(f'{nlist[-1]}], "triangles": [')
+        for i in range(len(flist)-1):
+            f.write(f'{flist[i]}, ')
+        f.write(f'{flist[-1]}]')
+
+        
+        f.write('},')
+
+############################################################# GENERATE STAIRCASE
+        vlist, nlist, flist, vInd = generateStaircase((-1, 0, -24), (20, -5, -12), vInd)
+
+        #OBJECT MATERIAL INFO
+        f.write('{"name": "StairCase", "material": {"diffuse": [0,1,0],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1.0},"type":"CustomStair", "diffuseTexture": "default.jpg", ')
+        
+        #START VERTICES
+        f.write('"vertices": [')
+        for i in range(len(vlist)-1):
+            f.write(f'{vlist[i]}, ')
+
+        #START NORMALS
+        f.write(f'{vlist[-1]}], "normals": [')
+        for i in range(len(nlist)-1):
+            f.write(f'{nlist[i]}, ')
+
+        #START TRIANGLES
+        f.write(f'{nlist[-1]}], "triangles": [')
+        for i in range(len(flist)-1):
+            f.write(f'{flist[i]}, ')
+        f.write(f'{flist[-1]}]')
+
+        
+        f.write('},')
+
+
+############################################################# GENERATE STAIRCASE
+        vlist, nlist, flist, vInd = generateRope((0, 0, -6), (4, 10, -18), 0.1, 1000, vInd)
+
+        #OBJECT MATERIAL INFO
+        f.write('{"name": "Rope", "material": {"diffuse": [0.6,0.3,0],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1.0},"type":"CustomRope", "diffuseTexture": "default.jpg", ')
+        
+        #START VERTICES
+        f.write('"vertices": [')
+        for i in range(len(vlist)-1):
+            f.write(f'{vlist[i]}, ')
+
+        #START NORMALS
+        f.write(f'{vlist[-1]}], "normals": [')
+        for i in range(len(nlist)-1):
+            f.write(f'{nlist[i]}, ')
+
+        #START TRIANGLES
+        f.write(f'{nlist[-1]}], "triangles": [')
+        for i in range(len(flist)-1):
+            f.write(f'{flist[i]}, ')
+        f.write(f'{flist[-1]}]')
+
+        
+        f.write('},')
+
 ########################################################## GENERATE PUZZLE ROOM
         vlist, nlist, flist, vInd = generateRoom1(-10, 24, 5, (-21.01, 0, -30), (10,11,3), vInd)
 
         #OBJECT MATERIAL INFO
-        f.write('{"name": "PuzzleRoom", "material": {"diffuse": [1,0,0],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type":"CustomRoom",')
+        f.write('{"name": "PuzzleRoom", "material": {"diffuse": [0.3,0.3,0],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type":"CustomRoom",')
+        
+        #START VERTICES
+        f.write('"vertices": [')
+        for i in range(len(vlist)-1):
+            f.write(f'{vlist[i]}, ')
+
+        #START NORMALS
+        f.write(f'{vlist[-1]}], "normals": [')
+        for i in range(len(nlist)-1):
+            f.write(f'{nlist[i]}, ')
+
+        #START TRIANGLES
+        f.write(f'{nlist[-1]}], "triangles": [')
+        for i in range(len(flist)-1):
+            f.write(f'{flist[i]}, ')
+        f.write(f'{flist[-1]}]')
+
+        #OBJECT TEXTURE INFO
+        f.write('},')
+
+######################################################### GENERATE PUZZLE PANELS
+#RED
+        vlist, nlist, flist, vInd = generateGlassPanel((-26, 0.01, -9), (-25, -8), 1, vInd)
+
+        #OBJECT MATERIAL INFO
+        f.write('{"name": "RedPanel", "material": {"diffuse": [1,0,0],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type":"CustomPanel", "diffuseTexture": "default.jpg", ')
+        
+        #START VERTICES
+        f.write('"vertices": [')
+        for i in range(len(vlist)-1):
+            f.write(f'{vlist[i]}, ')
+
+        #START NORMALS
+        f.write(f'{vlist[-1]}], "normals": [')
+        for i in range(len(nlist)-1):
+            f.write(f'{nlist[i]}, ')
+
+        #START TRIANGLES
+        f.write(f'{nlist[-1]}], "triangles": [')
+        for i in range(len(flist)-1):
+            f.write(f'{flist[i]}, ')
+        f.write(f'{flist[-1]}]')
+
+        
+        f.write('},')
+
+#GREEN
+        vlist, nlist, flist, vInd = generateGlassPanel((-28, 0.01, -8), (-27, -7), 1, vInd)
+
+        #OBJECT MATERIAL INFO
+        f.write('{"name": "GreenPanel", "material": {"diffuse": [0,1,0],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type":"CustomPanel", "diffuseTexture": "default.jpg", ')
+        
+        #START VERTICES
+        f.write('"vertices": [')
+        for i in range(len(vlist)-1):
+            f.write(f'{vlist[i]}, ')
+
+        #START NORMALS
+        f.write(f'{vlist[-1]}], "normals": [')
+        for i in range(len(nlist)-1):
+            f.write(f'{nlist[i]}, ')
+
+        #START TRIANGLES
+        f.write(f'{nlist[-1]}], "triangles": [')
+        for i in range(len(flist)-1):
+            f.write(f'{flist[i]}, ')
+        f.write(f'{flist[-1]}]')
+
+        
+        f.write('},')
+
+#BLUE
+        vlist, nlist, flist, vInd = generateGlassPanel((-30, 0.01, -9), (-29, -8), 1, vInd)
+
+        #OBJECT MATERIAL INFO
+        f.write('{"name": "BluePanel", "material": {"diffuse": [0,0,1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type":"CustomPanel", "diffuseTexture": "default.jpg", ')
+        
+        #START VERTICES
+        f.write('"vertices": [')
+        for i in range(len(vlist)-1):
+            f.write(f'{vlist[i]}, ')
+
+        #START NORMALS
+        f.write(f'{vlist[-1]}], "normals": [')
+        for i in range(len(nlist)-1):
+            f.write(f'{nlist[i]}, ')
+
+        #START TRIANGLES
+        f.write(f'{nlist[-1]}], "triangles": [')
+        for i in range(len(flist)-1):
+            f.write(f'{flist[i]}, ')
+        f.write(f'{flist[-1]}]')
+
+        
+        f.write('},')
+
+########################################################### GENERATE END HALLWAY
+        vlist, nlist, flist, vInd = generateHallway1(80, 8, 10, (0, -50, 0), vInd)
+
+        #OBJECT MATERIAL INFO
+        f.write('{"name": "HallEnd", "material": {"diffuse": [1,0,1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type":"CustomHall",')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -810,4 +1119,4 @@ if __name__ == "__main__":
         f.write('},')
 
 ####################################### PLAYER, CHANDELIER, CAMERA, AND SETTINGS
-        f.write('{"name":"chandelier","material":{"diffuse":[0.5882,0.5882,0.5882],"ambient":[0.3,0.3,0.3],"specular":[0.5,0.5,0.5],"n":10.000002,"shaderType":1,"alpha":1},"type":"mesh","position":[-3052,63,1410.5],"scale":[0.001953125,0.00390625,0.00390625],"diffuseTexture":"default.jpg","normalTexture":"defaultNorm.jpg","rotation":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent":null,"model":"chandelier.obj"},{"name": "Player","material": {"diffuse": [0.8,0.8,0.8],"ambient": [1,1,1],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type": "cube","position": [2.5,0,2.5],"scale": [1,2.5,1],"diffuseTexture": "playerBump.jpg","normalTexture": "playerNorm.jpg","rotation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent": null,"model": null}],"pointLights": [{"name": "pointLight1","colour": [1,1,1],"position": [0,5,0],"strength": 2,"quadratic": 0.035,"linear": 0.09,"constant": 1,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}],"settings": {"camera": {"name": "mainCamera","position": [4,4,4],"atPoint": [2.5,0,2.5],"up": [0,1,0]},"backgroundColor": [0,0,0]}}]')
+        f.write('{"name":"Chandelier","material":{"diffuse":[0.5,0.25,0.0],"ambient":[0.3,0.3,0.3],"specular":[0.5,0.5,0.5],"n":10.000002,"shaderType":1,"alpha":1},"type":"mesh","position":[-3048,51.8,1393],"scale":[0.0390625,0.0390625,0.0390625],"diffuseTexture":"default.jpg","normalTexture":"defaultNorm.jpg","rotation":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent":null,"model":"chandelier.obj"},{"name": "Player","material": {"diffuse": [0.8,0.8,0.8],"ambient": [1,1,1],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type": "cube","position": [2.5,0,2.5],"scale": [1,2.5,1],"diffuseTexture": "playerBump.jpg","normalTexture": "playerNorm.jpg","rotation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent": null,"model": null}, {"name": "RedCrate","material": {"diffuse": [1,0,0],"ambient": [0.3,0.3,0.3],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type": "cube","position": [-30,0,-8],"scale": [1,1,1],"diffuseTexture": "default.jpg","normalTexture": "defaultNorm.jpg","parent": null,"model": null},{"name": "BlueCrate","material": {"diffuse": [0,0,1],"ambient": [0.3,0.3,0.3],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type": "cube","position": [-27,0,-24],"scale": [1,1,1],"diffuseTexture": "default.jpg","normalTexture": "defaultNorm.jpg","parent": null,"model": null},{"name": "GreenCrate","material": {"diffuse": [0,1,0],"ambient": [0.3,0.3,0.3],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type": "cube","position": [-25,0,-29],"scale": [1,1,1],"diffuseTexture": "default.jpg","normalTexture": "defaultNorm.jpg","parent": null,"model": null}],"pointLights": [{"name": "pointLight1","colour": [1,1,1],"position": [0,5,0],"strength": 2,"quadratic": 0.035,"linear": 0.09,"constant": 1,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}],"settings": {"camera": {"name": "mainCamera","position": [4,4,4],"atPoint": [2.5,0,2.5],"up": [0,1,0]},"backgroundColor": [0,0,0]}}]')

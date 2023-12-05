@@ -32,6 +32,43 @@ function inside(playerPos, currentCameraBound) {
     return xCheck && yCheck && zCheck;
 }
 
+function checkPickup(state, player) {
+    if(state.holdItem != null) {
+        putDown(state, player, state.holdItem);
+    }
+    else {
+        for(let i = 0; i < state.pickupItems.length; i++) {
+            console.log(vec3.distance(player.model.position, state.pickupItems[i].model.position));
+            if(vec3.distance(player.model.position, state.pickupItems[i].model.position) <= 1.0) {
+                pickUp(state, player, state.pickupItems[i]);
+                return;
+            }
+        }
+        console.log("Couldn't find anything!");
+    }
+}
+
+function pickUp(state, parent, object) {
+    object.parent = parent.name;
+    state.holdItem = object;
+    //object.model.modelMatrix = parent.model.modelMatrix;
+    }
+
+function putDown(state, parent, object) {
+    object.model.position = vec3.clone(parent.atPoint);
+    object.parent = null;
+    state.holdItem = null;
+}
+
+function chandelierCutscene(state) {
+    let glass = getObject(state, "GlassPanel");
+    let chandelier = getObject(state, "Chandelier");
+    rope.translate(vec3.fromValues(0.0, -50.0, 0.0));
+
+    
+
+}
+
 function getObject(state, name) {
     let objectToFind = null;
 

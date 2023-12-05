@@ -93,7 +93,7 @@ async function main() {
 
         uniform PointLight mainLight;
         uniform vec3 diffuseVal;
-        
+        uniform float alpha;
 
         uniform int samplerExists;
         uniform sampler2D uTexture;
@@ -103,10 +103,10 @@ async function main() {
 
             if (samplerExists == 1) {
                 vec3 textureColour = texture(uTexture, oUV).rgb;
-                fragColor = vec4(diffuseVal * textureColour, 1.0);
+                fragColor = vec4(diffuseVal * textureColour, alpha);
             }
             else {
-                fragColor = vec4(diffuseVal, 1.0);
+                fragColor = vec4(diffuseVal, alpha);
             }
         }
         `;
@@ -147,14 +147,23 @@ async function main() {
                 vec3.fromValues(-10.5, 4, -4), vec3.fromValues(0, 1, 0), vec3.fromValues(-11.5, 0, -0.5)
             ],
             [
-                vec3.fromValues(-14, 7, -9), vec3.fromValues(0, 1, 0), vec3.fromValues(-11, 2, -7)
-            ]
+                vec3.fromValues(-14, 7, -10), vec3.fromValues(0, 1, 0), vec3.fromValues(-11, 2, -7)
+            ],
+            [
+                vec3.fromValues(-10, 7, -14), vec3.fromValues(0, 1, 0), vec3.fromValues(-18, 3, -12)
+            ],
+            [
+                vec3.fromValues(-26, 4.5, -30), vec3.fromValues(0, 1, 0), vec3.fromValues(-26, 2, -9)
+            ],
+            [
+                vec3.fromValues(-25, 4.9, -12), vec3.fromValues(0, 0, 1), vec3.fromValues(-25, 0, -12)
+            ],
 
         ],
 
         ///////////////////////CAMERA BOUNDARIES DEFINED HERE///////////////////////
-        //Camera boundaries are defined the following way: [LL, UR] where LL is the
-        //lower left corner of the camera boundary box and UR is the upper right corner
+        //Camera boundaries are defined the following way: [min, max] where min is the
+        //vec3 defining the minimum values of the box, and max the vec3 determining the maximum values
         cameraBounds: [
             [
                 vec3.fromValues(0.0, 0, 0), vec3.fromValues(5, 5.0, 5.0)
@@ -169,11 +178,24 @@ async function main() {
                 vec3.fromValues(-12, 0, -5), vec3.fromValues(-10, 5, -1)
             ],
             [
-                vec3.fromValues(-14,0,-9), vec3.fromValues(-8, 24, -6)
-            ]
+                vec3.fromValues(-14,0,-7), vec3.fromValues(-8, 24, -6)
+            ],
+            [
+                vec3.fromValues(-21,0,-22), vec3.fromValues(-14, 24, -6)
+            ],
+            [
+                vec3.fromValues(-31,0,-30), vec3.fromValues(-21, 5, -18)
+            ],
+            [
+                vec3.fromValues(-31,0,-18), vec3.fromValues(-21, 5, -6)
+            ],
         ],
 
-        currentCameraBound: 0
+        currentCameraBound: 0,
+
+        pickupItems: [],
+
+        holdItem: null,
 
     };    
 
@@ -190,7 +212,6 @@ async function main() {
         } else if (object.type === "plane") {
             addPlane(object, state);
         } else if (object.type.includes("Custom")) {
-            console.log(object.uvs);
             addCustom(object, state);
         }
         else if (object.type === "Room") {
@@ -285,6 +306,24 @@ function drawScene(gl, deltaTime, state) {
     sorted.map((object) => {
         gl.useProgram(object.programInfo.program);
         {
+
+            if (object.material.alpha < 1.0) {
+                // TODO turn off depth masking
+                // enable blending and specify blending function 
+                gl.depthMask(false);
+                gl.enable(gl.BLEND);
+                gl.blendFunc(gl.ONE_MINUS_CONSTANT_ALPHA,gl.ONE_MINUS_SRC_ALPHA);                
+            }
+            else {
+                // TODO disable blending 
+                // enable depth masking and z-buffering
+                // specify depth function
+                gl.disable(gl.BLEND);
+                gl.depthMask(true);
+                gl.enable(gl.DEPTH_TEST);
+                gl.depthFunc(gl.LEQUAL);
+            }
+
             // Projection Matrix ....
             let projectionMatrix = mat4.create();
             let fovy = 90.0 * Math.PI / 180.0; // Vertical field of view in radians
@@ -339,6 +378,7 @@ function drawScene(gl, deltaTime, state) {
             gl.uniform3fv(object.programInfo.uniformLocations.ambientVal, object.material.ambient);
             gl.uniform3fv(object.programInfo.uniformLocations.specularVal, object.material.specular);
             gl.uniform1f(object.programInfo.uniformLocations.nVal, object.material.n);
+            gl.uniform1f(object.programInfo.uniformLocations.alpha, object.material.alpha);
 
             gl.uniform1i(object.programInfo.uniformLocations.numLights, state.numLights);
             // if (state.pointLights.length > 1) {
