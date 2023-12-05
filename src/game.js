@@ -16,10 +16,10 @@ class Game {
     // example - create a collider on our object with various fields we might need (you will likely need to add/remove/edit how this works)
     // createSphereCollider(object, radius, onCollide = null) {
     //     object.collider = {
-    //         type: "SPHERE",
-    //         radius: radius,
-    //         onCollide: onCollide ? onCollide : (otherObject) => {
-    //             console.log(`Collided with ${otherObject.name}`);
+    //     type: "SPHERE",
+    //     radius: radius,
+    //     onCollide: onCollide ? onCollide : (otherObject) => {
+    //         console.log(`Collided with ${otherObject.name}`);
     //         }
     //     };
     //     this.collidableObjects.push(object);
@@ -27,12 +27,14 @@ class Game {
 
     // example - function to check if an object is colliding with collidable objects
     // checkCollision(object) {
-    //     // loop over all the other collidable objects 
-    //     this.collidableObjects.forEach(otherObject => {
-    //         // do a check to see if we have collided, if we have we can call object.onCollide(otherObject) which will
-    //         // call the onCollide we define for that specific object. This way we can handle collisions identically for all
-    //         // objects that can collide but they can do different things (ie. player colliding vs projectile colliding)
-    //         // use the modeling transformation for object and otherObject to transform position into current location
+    // //     // loop over all the other collidable objects 
+    //     this.state.objects.forEach(otherObject => {
+    // //         // do a check to see if we have collided, if we have we can call object.onCollide(otherObject) which will
+    // //         // call the onCollide we define for that specific object. This way we can handle collisions identically for all
+    // //         // objects that can collide but they can do different things (ie. player colliding vs projectile colliding)
+    // //         // use the modeling transformation for object and otherObject to transform position into current location
+    // let colCheck = vec3.fromValues();
+    // if (otherObject.position - vec3.fromValues(object.radius, object.radius, object.radius) )
     //     });
     // }
 
@@ -53,7 +55,7 @@ class Game {
 
         // example - create sphere colliders on our two objects as an example, we give 2 objects colliders otherwise
         // no collision can happen
-        // this.createSphereCollider(this.cube, 0.5, (otherObject) => {
+        // this.createSphereCollider(this.player, 0.5, (otherObject) => {
         //     console.log(`This is a custom collision of ${otherObject.name}`)
         // });
         // this.createSphereCollider(otherCube, 0.5);
@@ -64,12 +66,10 @@ class Game {
 
             switch (e.key) {
                 case "w":
-                    var oldPlayerPos = vec3.clone(this.player.model.position);
                     this.player.movePlayerForward();
                     vec3.add(this.player.atPoint, this.player.atPoint, this.player.at);
                     console.log(this.player.model.position);
-                    var newPlayerPos = this.player.model.position;
-                    checkCamera(this.state, oldPlayerPos, newPlayerPos);
+                    checkCamera(this.state, this.player.model.position);
                     break;
 
                 case 'd':
@@ -81,11 +81,9 @@ class Game {
                     break;
 
                 case "s":
-                    var oldPlayerPos = vec3.clone(this.player.model.position);
                     this.player.movePlayerBackward()
                     console.log(this.player.model.position);
-                    var newPlayerPos = this.player.model.position;
-                    checkCamera(this.state, oldPlayerPos, newPlayerPos);
+                    checkCamera(this.state, this.player.model.position);
                     break;
 
                 case "A":

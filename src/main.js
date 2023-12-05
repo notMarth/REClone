@@ -6,6 +6,7 @@ var sceneFile = "scene.json"; // can change this to be the name of your scene
 window.onload = async () => {
     try {
         console.log("Starting to load scene file");
+        //await parseOBJFileToJSON("chandelier.obj");
         await parseSceneFile(`./statefiles/${sceneFile}`, state);
         main();
     } catch (err) {
@@ -126,6 +127,7 @@ async function main() {
         meshCache: {},
         samplerExists: 0,
         samplerNormExists: 0,
+
         ////////////////////////CAMERAS DEFINED HERE////////////////////////////////
         //Cameras are defined the following way: [cameraPos, cameraUp, cameraAtPoint]
         //where cameraPos is the position of the camera, cameraUp is the up vector,
@@ -137,28 +139,49 @@ async function main() {
             [
                 //camera2 (hallway)
                 vec3.fromValues(-9.0, 4.5, 2.5), vec3.fromValues(0, 1, 0), vec3.fromValues(-2.5, 0, -2.5)
+            ],
+            [
+                vec3.fromValues(-5.0, 2, 2), vec3.fromValues(0, 1, 0), vec3.fromValues(-12, 2, 2)
+            ],
+            [
+                vec3.fromValues(-10.5, 4, -4), vec3.fromValues(0, 1, 0), vec3.fromValues(-11.5, 0, -0.5)
+            ],
+            [
+                vec3.fromValues(-14, 7, -9), vec3.fromValues(0, 1, 0), vec3.fromValues(-11, 2, -7)
             ]
 
         ],
+
         ///////////////////////CAMERA BOUNDARIES DEFINED HERE///////////////////////
         //Camera boundaries are defined the following way: [LL, UR] where LL is the
-        //lower left point of the camera boundary plane and UR is the upper right
+        //lower left corner of the camera boundary box and UR is the upper right corner
         cameraBounds: [
             [
-                vec3.fromValues(-0.5, 0, 3.0), vec3.fromValues(0, 5.0, 2.0)
+                vec3.fromValues(0.0, 0, 0), vec3.fromValues(5, 5.0, 5.0)
+            ],
+            [
+                vec3.fromValues(-8, 0, 1), vec3.fromValues(0, 5, 3)
+            ],
+            [
+                vec3.fromValues(-12, 0, 1), vec3.fromValues(-8, 5, 3)
+            ],
+            [
+                vec3.fromValues(-12, 0, -5), vec3.fromValues(-10, 5, -1)
+            ],
+            [
+                vec3.fromValues(-14,0,-9), vec3.fromValues(-8, 24, -6)
             ]
-        ]
+        ],
 
-    };
+        currentCameraBound: 0
 
-    
+    };    
 
     state.numLights = state.pointLights.length;
 
     const now = new Date();
     for (let i = 0; i < state.loadObjects.length; i++) {
         const object = state.loadObjects[i];
-        console.log(object);
 
         if (object.type === "mesh") {
             await addMesh(object);
@@ -167,8 +190,17 @@ async function main() {
         } else if (object.type === "plane") {
             addPlane(object, state);
         } else if (object.type.includes("Custom")) {
-            console.log(object.model);
+            console.log(object.uvs);
             addCustom(object, state);
+        }
+        else if (object.type === "Room") {
+            addRoom(object, state)
+        }
+        else if (object.type === "Hallway") {
+            addHall(object, state)
+        }
+        else if (object.type === "Corner") {
+            addCorner(object, state)
         }
     }
 
@@ -190,7 +222,6 @@ async function main() {
  */
 function addObjectToScene(state, object) {
     object.name = object.name;
-    console.log(object.name);
     state.objects.push(object);
 }
 
