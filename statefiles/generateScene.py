@@ -11,8 +11,9 @@ def generateRoom1(x, z, y, origin, door, vertInd):
     vlist = []
     nlist = []
     flist = []
+    uvlist = []
 
-
+    #FRONT FACE 1
     vlist.append([origin[0], origin[1], origin[2]])
     vlist.append([origin[0], origin[1], origin[2] + door[0]])
     vlist.append([origin[0], origin[1]+door[2], origin[2] + door[0]])
@@ -23,22 +24,36 @@ def generateRoom1(x, z, y, origin, door, vertInd):
     nlist.append([origin[0], origin[1]+door[2], origin[2] + door[0]])
     nlist.append([origin[0], origin[1]+door[2], origin[2]])
 
-    flist.append([0, 1, 2])
-    flist.append([0, 2, 3])
+    flist.append([0, 2, 1])
+    flist.append([0, 3, 2])
 
-    vlist.append([origin[0], origin[1], origin[2] + z])
+    uvlist.append([0, 0])
+    uvlist.append([door[0]/z, 0])
+    uvlist.append([door[0]/z, door[2]/y])
+    uvlist.append([0, door[2]/y])
+
+
+    #FRONT FACE 2
     vlist.append([origin[0], origin[1], origin[2] + door[1]])
-    vlist.append([origin[0], origin[1]+door[2], origin[2] + door[1]])
+    vlist.append([origin[0], origin[1], origin[2] + z])
     vlist.append([origin[0], origin[1]+door[2], origin[2] + z])
+    vlist.append([origin[0], origin[1]+door[2], origin[2] + door[1]])
 
-    nlist.append([origin[0], origin[1], origin[2] + z])
+
     nlist.append([origin[0], origin[1], origin[2] + door[1]])
-    nlist.append([origin[0], origin[1]+door[2], origin[2] + door[1]])
+    nlist.append([origin[0], origin[1], origin[2] + z])
     nlist.append([origin[0], origin[1]+door[2], origin[2] + z])
+    nlist.append([origin[0], origin[1]+door[2], origin[2] + door[1]])
 
-    flist.append([4, 7, 5])
-    flist.append([5, 7, 6])
+    flist.append([4, 6, 5])
+    flist.append([4, 7, 6])
 
+    uvlist.append([0, 0])
+    uvlist.append([door[1], 0])
+    uvlist.append([door[1], door[2]/y])
+    uvlist.append([0, door[2]/y])
+
+    #FRONT FACE TOP
     vlist.append([origin[0], origin[1] + door[2], origin[2]])
     vlist.append([origin[0], origin[1] + y, origin[2]])
     vlist.append([origin[0], origin[1] + y, origin[2] + z])
@@ -49,8 +64,13 @@ def generateRoom1(x, z, y, origin, door, vertInd):
     nlist.append([origin[0], origin[1] + y, origin[2] + z])
     nlist.append([origin[0], origin[1] + door[2], origin[2] + z])
 
-    flist.append([8, 10, 9])
-    flist.append([8, 11, 10])
+    flist.append([8, 9, 10])
+    flist.append([8, 10, 11])
+
+    uvlist.append([0, 0])
+    uvlist.append([0, 1])
+    uvlist.append([1, 1])
+    uvlist.append([1, 0])
     
     vlist.append([origin[0], origin[1], origin[2]+z])
     vlist.append([origin[0]+x, origin[1], origin[2] + z])
@@ -65,6 +85,11 @@ def generateRoom1(x, z, y, origin, door, vertInd):
     flist.append([12, 13, 14])
     flist.append([12, 14, 15])
 
+    uvlist.append([0, 0])
+    uvlist.append([0, 1])
+    uvlist.append([1, 1])
+    uvlist.append([1, 0])
+
     vlist.append([origin[0]+x, origin[1], origin[2]+z])
     vlist.append([origin[0]+x, origin[1]+y, origin[2]+z])
     vlist.append([origin[0]+x, origin[1], origin[2]])
@@ -77,6 +102,11 @@ def generateRoom1(x, z, y, origin, door, vertInd):
 
     flist.append([16, 18, 17])
     flist.append([17, 18, 19])
+
+    uvlist.append([0, 0])
+    uvlist.append([0, 1])
+    uvlist.append([1, 1])
+    uvlist.append([1, 0])
 
     vlist.append([origin[0]+x, origin[1], origin[2]])
     vlist.append([origin[0]+x, origin[1]+y, origin[2]])
@@ -91,6 +121,11 @@ def generateRoom1(x, z, y, origin, door, vertInd):
     flist.append([20, 22, 21])
     flist.append([21, 22, 23])
 
+    uvlist.append([0, 0])
+    uvlist.append([0, 1])
+    uvlist.append([1, 1])
+    uvlist.append([1, 0])
+
     vlist.append([origin[0], origin[1], origin[2]])
     vlist.append([origin[0], origin[1], origin[2] + z])
     vlist.append([origin[0]+x, origin[1], origin[2] + z])
@@ -103,6 +138,11 @@ def generateRoom1(x, z, y, origin, door, vertInd):
 
     flist.append([24, 26, 25])
     flist.append([24, 27, 26])
+
+    uvlist.append([0, 0])
+    uvlist.append([0, 1])
+    uvlist.append([1, 1])
+    uvlist.append([1, 0])
 
     vlist.append([origin[0], origin[1]+y, origin[2]])
     vlist.append([origin[0], origin[1]+y, origin[2] + z])
@@ -117,11 +157,16 @@ def generateRoom1(x, z, y, origin, door, vertInd):
     flist.append([28, 29, 30])
     flist.append([28, 30, 31])
 
+    uvlist.append([0, 0])
+    uvlist.append([0, 1])
+    uvlist.append([1, 1])
+    uvlist.append([1, 0])
+
     for i in range(len(flist)):
         for j in flist[i]:
             j+=vertInd
 
-    return vlist, nlist, flist, (vertInd + len(vlist))
+    return vlist, nlist, flist, uvlist, (vertInd + len(vlist))
 
 #x gives the x length of the room
 #z gives the z length of the room
@@ -788,10 +833,10 @@ if __name__ == "__main__":
     with open('scene.json', 'w') as f:
 
 ############################################################ GENERATE FIRST ROOM
-        vlist, nlist, flist, vInd = generateRoom1(5, 5, 5, (0, 0, 0), (1, 3, 3), 0)
+        vlist, nlist, flist, uvlist, vInd = generateRoom1(5, 5, 5, (0, 0, 0), (1, 3, 3), 0)
 
         #OBJECT MATERIAL INFO
-        f.write('[ { "objects": [ {"name": "Room1", "material": {"diffuse": [1,0,0],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type":"CustomRoom",')
+        f.write('[ { "objects": [ {"name": "Room1", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [1.0,1.0,1.0],"n": 10.000002,"shaderType": 3,"alpha": 1},"type":"CustomRoom",')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -809,14 +854,19 @@ if __name__ == "__main__":
             f.write(f'{flist[i]}, ')
         f.write(f'{flist[-1]}]')
 
+        f.write(', "uvs": [')
+        for i in range(len(uvlist)-1):
+            f.write(f'{uvlist[i]}, ')
+        f.write(f'{uvlist[-1]}]')
+
         #OBJECT TEXTURE INFO
-        f.write(', "diffuseTexture": "default.jpg","normalTexture": "defaultNorm.jpg"},')
+        f.write(', "diffuseTexture": "wall.jpg","normalTexture": "defaultNorm.jpg"},')
         
 ############################################################# GENERATE HALLWAY 1
         vlist, nlist, flist, vInd = generateHallway1(-10, 5, -2, (0, 0, 3), vInd)
 
         #OBJECT MATERIAL INFO
-        f.write('{"name": "Hall1", "material": {"diffuse": [1,0,1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type":"CustomHall",')
+        f.write('{"name": "Hall1", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [1.0,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type":"CustomHall",')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -841,7 +891,7 @@ if __name__ == "__main__":
         vlist, nlist, flist, vInd = generateHallwayCorner((-10, 0, 3), (-2, 5, 0), (0, 5, -2), vInd)
 
         #OBJECT MATERIAL INFO
-        f.write('{"name": "HallCorner1", "material": {"diffuse": [0,1,0],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type":"CustomHallCorner",')
+        f.write('{"name": "HallCorner1", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type":"CustomHallCorner",')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -866,7 +916,7 @@ if __name__ == "__main__":
         vlist, nlist, flist, vInd = generateHallway2(2, 5, -7, (-12, 0, 1), vInd)
 
         #OBJECT MATERIAL INFO
-        f.write('{"name": "Hall2", "material": {"diffuse": [1,0,1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type":"CustomHall",')
+        f.write('{"name": "Hall2", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type":"CustomHall",')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -891,7 +941,7 @@ if __name__ == "__main__":
         vlist, nlist, flist, uvlist, vInd = generateMainRoom(30, 24, 10, (-21, 0, -30), (10, 11, 3), (9, 11, 3), vInd)
 
         #OBJECT MATERIAL INFO
-        f.write('{"name": "MainRoom", "material": {"diffuse": [1,1,1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type":"CustomRoom", "diffuseTexture": "default.jpg", ')
+        f.write('{"name": "MainRoom", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type":"CustomRoom", "diffuseTexture": "wall.jpg", ')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -920,7 +970,7 @@ if __name__ == "__main__":
         vlist, nlist, flist, vInd = generateGlassPanel((-1, 0, -24), (9, -12), 1, vInd)
 
         #OBJECT MATERIAL INFO
-        f.write('{"name": "GlassPanel", "material": {"diffuse": [0.1,0.1,0.3],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 0.3},"type":"CustomPanel", "diffuseTexture": "default.jpg", ')
+        f.write('{"name": "GlassPanel", "material": {"diffuse": [1,1,1],"ambient": [1,1,1], "specular": [1,1,1],"n": 300,"shaderType": 1,"alpha": 0.3},"type":"CustomPanel", "diffuseTexture": "default.jpg", ')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -945,7 +995,7 @@ if __name__ == "__main__":
         vlist, nlist, flist, vInd = generateStaircase((-1, 0, -24), (20, -5, -12), vInd)
 
         #OBJECT MATERIAL INFO
-        f.write('{"name": "StairCase", "material": {"diffuse": [0,1,0],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1.0},"type":"CustomStair", "diffuseTexture": "default.jpg", ')
+        f.write('{"name": "StairCase", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1.0},"type":"CustomStair", "diffuseTexture": "default.jpg", ')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -971,7 +1021,7 @@ if __name__ == "__main__":
         vlist, nlist, flist, vInd = generateRope((0, 0, -6), (4, 10, -18), 0.1, 1000, vInd)
 
         #OBJECT MATERIAL INFO
-        f.write('{"name": "Rope", "material": {"diffuse": [0.6,0.3,0],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1.0},"type":"CustomRope", "diffuseTexture": "default.jpg", ')
+        f.write('{"name": "Rope", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1.0},"type":"CustomRope", "diffuseTexture": "default.jpg", ')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -993,10 +1043,10 @@ if __name__ == "__main__":
         f.write('},')
 
 ########################################################## GENERATE PUZZLE ROOM
-        vlist, nlist, flist, vInd = generateRoom1(-10, 24, 5, (-21.01, 0, -30), (10,11,3), vInd)
+        vlist, nlist, flist, uvlist, vInd = generateRoom1(-10, 24, 5, (-21.01, 0, -30), (10,11,3), vInd)
 
         #OBJECT MATERIAL INFO
-        f.write('{"name": "PuzzleRoom", "material": {"diffuse": [0.3,0.3,0],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type":"CustomRoom",')
+        f.write('{"name": "PuzzleRoom", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type":"CustomRoom",')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -1022,7 +1072,7 @@ if __name__ == "__main__":
         vlist, nlist, flist, vInd = generateGlassPanel((-26, 0.01, -9), (-25, -8), 1, vInd)
 
         #OBJECT MATERIAL INFO
-        f.write('{"name": "RedPanel", "material": {"diffuse": [1,0,0],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type":"CustomPanel", "diffuseTexture": "default.jpg", ')
+        f.write('{"name": "RedPanel", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type":"CustomPanel", "diffuseTexture": "default.jpg", ')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -1047,7 +1097,7 @@ if __name__ == "__main__":
         vlist, nlist, flist, vInd = generateGlassPanel((-28, 0.01, -8), (-27, -7), 1, vInd)
 
         #OBJECT MATERIAL INFO
-        f.write('{"name": "GreenPanel", "material": {"diffuse": [0,1,0],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type":"CustomPanel", "diffuseTexture": "default.jpg", ')
+        f.write('{"name": "GreenPanel", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type":"CustomPanel", "diffuseTexture": "default.jpg", ')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -1072,7 +1122,7 @@ if __name__ == "__main__":
         vlist, nlist, flist, vInd = generateGlassPanel((-30, 0.01, -9), (-29, -8), 1, vInd)
 
         #OBJECT MATERIAL INFO
-        f.write('{"name": "BluePanel", "material": {"diffuse": [0,0,1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type":"CustomPanel", "diffuseTexture": "default.jpg", ')
+        f.write('{"name": "BluePanel", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type":"CustomPanel", "diffuseTexture": "default.jpg", ')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -1097,7 +1147,7 @@ if __name__ == "__main__":
         vlist, nlist, flist, vInd = generateHallway1(80, 8, 10, (0, -50, 0), vInd)
 
         #OBJECT MATERIAL INFO
-        f.write('{"name": "HallEnd", "material": {"diffuse": [1,0,1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type":"CustomHall",')
+        f.write('{"name": "HallEnd", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type":"CustomHall",')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -1119,4 +1169,17 @@ if __name__ == "__main__":
         f.write('},')
 
 ####################################### PLAYER, CHANDELIER, CAMERA, AND SETTINGS
-        f.write('{"name":"Chandelier","material":{"diffuse":[0.5,0.25,0.0],"ambient":[0.3,0.3,0.3],"specular":[0.5,0.5,0.5],"n":10.000002,"shaderType":1,"alpha":1},"type":"mesh","position":[-3048,51.8,1393],"scale":[0.0390625,0.0390625,0.0390625],"diffuseTexture":"default.jpg","normalTexture":"defaultNorm.jpg","rotation":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent":null,"model":"chandelier.obj"},{"name": "Player","material": {"diffuse": [0.8,0.8,0.8],"ambient": [1,1,1],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type": "cube","position": [2.5,0,2.5],"scale": [1,2.5,1],"diffuseTexture": "playerBump.jpg","normalTexture": "playerNorm.jpg","rotation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent": null,"model": null}, {"name": "Zombie","material": {"diffuse": [0,0.6,0],"ambient": [1,1,1],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type": "cube","position": [-5,-50,5],"scale": [1,2.5,1],"diffuseTexture": "playerBump.jpg","normalTexture": "playerNorm.jpg","rotation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent": null,"model": null}, {"name": "RedCrate","material": {"diffuse": [1,0,0],"ambient": [0.3,0.3,0.3],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type": "cube","position": [-30,0,-8],"scale": [1,1,1],"diffuseTexture": "default.jpg","normalTexture": "defaultNorm.jpg","parent": null,"model": null},{"name": "BlueCrate","material": {"diffuse": [0,0,1],"ambient": [0.3,0.3,0.3],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type": "cube","position": [-27,0,-24],"scale": [1,1,1],"diffuseTexture": "default.jpg","normalTexture": "defaultNorm.jpg","parent": null,"model": null},{"name": "GreenCrate","material": {"diffuse": [0,1,0],"ambient": [0.3,0.3,0.3],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type": "cube","position": [-25,0,-29],"scale": [1,1,1],"diffuseTexture": "default.jpg","normalTexture": "defaultNorm.jpg","parent": null,"model": null}],"pointLights": [{"name": "pointLight1","colour": [1,1,1],"position": [0,5,0],"strength": 2,"quadratic": 0.035,"linear": 0.09,"constant": 1,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}],"settings": {"camera": {"name": "mainCamera","position": [4,4,4],"atPoint": [2.5,0,2.5],"up": [0,1,0]},"backgroundColor": [0,0,0]}}]')
+        f.write('{"name":"Chandelier","material":{"diffuse":[0.5,0.25,0.0],"ambient":[0.3,0.3,0.3],"specular":[0.5,0.5,0.5],"n":10.000002,"shaderType":1,"alpha":1},"type":"mesh","position":[-3048,51.8,1393],"scale":[0.0390625,0.0390625,0.0390625],"diffuseTexture":"default.jpg","normalTexture":"defaultNorm.jpg","rotation":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent":null,"model":"chandelier.obj"},')
+        f.write('{"name": "Player","material": {"diffuse": [0.1,0.1,0.1],"ambient": [1,1,1],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type": "cube","position": [2.5,0,2.5],"scale": [1,2.5,1],"diffuseTexture": "playerBump.jpg","normalTexture": "playerNorm.jpg","rotation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent": null,"model": null},')
+        f.write('{"name": "Zombie","material": {"diffuse": [0,0.6,0],"ambient": [1,1,1],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type": "cube","position": [-5,-50,5],"scale": [1,2.5,1],"diffuseTexture": "playerBump.jpg","normalTexture": "playerNorm.jpg","rotation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent": null,"model": null},')
+        f.write('{"name": "RedCrate","material": {"diffuse": [1,0,0],"ambient": [0.3,0.3,0.3],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type": "cube","position": [-30,0,-8],"scale": [1,1,1],"diffuseTexture": "default.jpg","normalTexture": "defaultNorm.jpg","parent": null,"model": null},')
+        f.write('{"name": "BlueCrate","material": {"diffuse": [0,0,1],"ambient": [0.3,0.3,0.3],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type": "cube","position": [-27,0,-24],"scale": [1,1,1],"diffuseTexture": "default.jpg","normalTexture": "defaultNorm.jpg","parent": null,"model": null},')
+        f.write('{"name": "GreenCrate","material": {"diffuse": [0,1,0],"ambient": [0.3,0.3,0.3],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type": "cube","position": [-25,0,-29],"scale": [1,1,1],"diffuseTexture": "default.jpg","normalTexture": "defaultNorm.jpg","parent": null,"model": null}')
+        f.write('],')
+        f.write('"pointLights": [{"name": "startingRoomLight","colour": [0.1,0.025,0.01],"position": [10,10,10],"strength": 3,"quadratic": 0.035,"linear": 0.09,"constant": 1,"nearPlane": 0.5,"farPlane": 100,"shadow": 0},')
+        f.write('{"name": "hallLight1", "colour": [0.1,0.025,0.01],"position": [-11,3,2],"strength": 3,"quadratic": 0.035,"linear": 0.09,"constant": 1,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}')
+        f.write(',{"name": "hallLight2", "colour": [0.1,0.025,0.01],"position": [-11,3,-1],"strength": 5,"quadratic": 0.035,"linear": 0.09,"constant": 1,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}')
+        f.write(',{"name": "mainRoomLight", "colour": [0.3,0.050,0.01],"position": [-1,12,-24],"strength": 20,"quadratic": 0.035,"linear": 0.09,"constant": 1,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}')
+        f.write(',{"name": "puzzleRoomLight", "colour": [0.1,0.025,0.01],"position": [-28,3,-10],"strength": 5,"quadratic": 0.035,"linear": 0.09,"constant": 1,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}')
+        f.write('],')
+        f.write('"settings": {"camera": {"name": "mainCamera","position": [4,4,4],"atPoint": [2.5,0,2.5],"up": [0,1,0]},"backgroundColor": [0,0,0]} }]')

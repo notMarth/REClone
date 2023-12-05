@@ -87,29 +87,76 @@ async function main() {
             vec3 position;
             vec3 colour;
             float strength;
+            float linear;
+            float quadratic;
+            float n_all;
         };
 
         in vec2 oUV;
+        in vec3 oFragPosition;
+        in vec3 oNormal;
 
-        uniform PointLight mainLight;
+        uniform PointLight[MAX_LIGHTS] pointLights;
+        uniform int numLights;
+        uniform vec3 cameraPos;
+
+
         uniform vec3 diffuseVal;
+        uniform vec3 ambientVal;
+        uniform vec3 specularVal;
+        uniform float n;
         uniform float alpha;
 
         uniform int samplerExists;
         uniform sampler2D uTexture;
 
         out vec4 fragColor;
-        void main() {
 
+
+        vec3 calculateColour(PointLight light, vec3 normal) {
+            vec3 N = normalize(normal);
+            vec3 L = normalize(light.position - oFragPosition);
+            vec3 V = normalize(cameraPos - oFragPosition);
+            vec3 H = normalize(V+L);
+
+
+            float dist = length(light.position - oFragPosition);
+            float attenuation = light.strength / (1.0 + light.linear * dist + light.quadratic * (dist*dist));
+
+            vec3 amb = ambientVal*light.colour;
+            vec3 diff;
             if (samplerExists == 1) {
                 vec3 textureColour = texture(uTexture, oUV).rgb;
-                fragColor = vec4(diffuseVal * textureColour, alpha);
+                diff = diffuseVal*light.colour*max(0.0, dot(N, L));
+                diff = mix(diff, textureColour, 0.1);
             }
             else {
-                fragColor = vec4(diffuseVal, alpha);
+                diff = diffuseVal*light.colour*max(0.0, dot(N, L));
             }
+
+            vec3 spec = specularVal*light.colour*pow(max(0.0, dot(N, H)), n*light.n_all);
+
+            diff = diff * attenuation;
+            spec = spec * attenuation;
+
+            return diff+spec+amb;
+
         }
-        `;
+
+        void main() {
+
+            //final colour
+            vec3 total = vec3(0.0, 0.0, 0.0);
+
+            //iterate over light sources and sum contribution from each light source
+            for (int i =0; i < numLights; i++){
+                total += calculateColour(pointLights[i], oNormal);
+            }
+            
+            //return fragment colour
+            fragColor = vec4(total, alpha);
+
+        }`;
 
     /**
      * Initialize state with new values (some of these you can replace/change)
@@ -127,6 +174,7 @@ async function main() {
         meshCache: {},
         samplerExists: 0,
         samplerNormExists: 0,
+        n_all: 1,
 
         ////////////////////////CAMERAS DEFINED HERE////////////////////////////////
         //Cameras are defined the following way: [cameraPos, cameraUp, cameraAtPoint]
@@ -377,25 +425,30 @@ function drawScene(gl, deltaTime, state) {
             gl.uniform3fv(object.programInfo.uniformLocations.diffuseVal, object.material.diffuse);
             gl.uniform3fv(object.programInfo.uniformLocations.ambientVal, object.material.ambient);
             gl.uniform3fv(object.programInfo.uniformLocations.specularVal, object.material.specular);
-            gl.uniform1f(object.programInfo.uniformLocations.nVal, object.material.n);
+            gl.uniform1f(object.programInfo.uniformLocations.n, object.material.n);
             gl.uniform1f(object.programInfo.uniformLocations.alpha, object.material.alpha);
 
             gl.uniform1i(object.programInfo.uniformLocations.numLights, state.numLights);
-            // if (state.pointLights.length > 1) {
-            //     for (let i = 0; i < state.pointLights.length; i++) {
-            //         gl.uniform3fv(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].position'), state.pointLights[i].position);
-            //         gl.uniform3fv(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].colour'), state.pointLights[i].colour);
-            //         gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].strength'), state.pointLights[i].strength);
-            //         gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].linear'), state.pointLights[i].linear);
-            //         gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].quadratic'), state.pointLights[i].quadratic);
-            //     }
-            // }
+            for (let i = 0; i < state.pointLights.length; i++) {
+                
+                gl.uniform3fv(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].position'), state.pointLights[i].position);
+                gl.uniform3fv(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].colour'), state.pointLights[i].colour);
+                gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].strength'), state.pointLights[i].strength);
+                gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].linear'), state.pointLights[i].linear);
+                gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].quadratic'), state.pointLights[i].quadratic);
+                gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].n_all'), state.pointLights[i].constant);
 
-            let mainLight = state.pointLights[0];
+            }
+
+
+
+            // one light case
             
-            gl.uniform3fv(gl.getUniformLocation(object.programInfo.program, 'mainLight.position'), mainLight.position);
-            gl.uniform3fv(gl.getUniformLocation(object.programInfo.program, 'mainLight.colour'), mainLight.colour);
-            gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'mainLight.strength'), mainLight.strength);
+            // let mainLight = state.pointLights[0];
+            
+            // gl.uniform3fv(gl.getUniformLocation(object.programInfo.program, 'mainLight.position'), mainLight.position);
+            // gl.uniform3fv(gl.getUniformLocation(object.programInfo.program, 'mainLight.colour'), mainLight.colour);
+            // gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'mainLight.strength'), mainLight.strength);
             
 
 
