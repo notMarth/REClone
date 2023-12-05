@@ -7,6 +7,7 @@ class Game {
         this.DEBUG = true;
         this.KNIFE = false;
         this.CHANDELIER = false;
+        this.ZOMBIE;
         this.zombies = [];
     }
 
@@ -66,6 +67,9 @@ class Game {
         this.rope = getObject(this.state, "Rope");
         this.chandelier = getObject(this.state, "Chandelier");
         this.glass = getObject(this.state, "GlassPanel");
+        
+        this.zombie = getObject(this.state, "Zombie");
+        this.zombies.push(this.zombie);
 
         // example - create sphere colliders on our two objects as an example, we give 2 objects colliders otherwise
         // no collision can happen
@@ -287,10 +291,27 @@ class Game {
             }
         }
 
-        if(this.player.model.position[0] <=-0.5) {
-            // this.player.model.position = vec3.fromValues(0, -50, 5);
-            // this.state.camera.position = vec3.fromValues(20, -45, 5);
-            // this.state.camera.atPoint = vec3.fromValues(0, -50, 5);
+        if(this.player.model.position[0] <= 8 && this.player.model.position[0] >= -1 &&
+            this.player.model.position[2] <=-12 && this.player.model.position[2] >=-24) {
+
+            this.player.model.position = vec3.fromValues(0, -50, 5);
+            this.player.atPoint = vec3.fromValues(1, -50, 5)
+            this.player.at = vec3.fromValues(1, 0, 0);
+            this.state.camera.position = vec3.fromValues(20, -45, 5);
+            this.state.camera.atPoint = vec3.fromValues(0, -50, 5);
+
+            this.ZOMBIE = true;
+        }
+
+        if(this.ZOMBIE) {
+            
+            var temp = vec3.fromValues();
+            //vec3.transformMat4(temp, this.zombies[0].model.position,this.zombies[0].model.modelMatrix);
+            vec3.subtract(temp, this.player.model.position, this.zombies[0].model.position);
+            vec3.scale(temp, temp, deltaTime*0.1);
+            this.zombies[0].translate(temp);
+
+            
         }
         // TODO - Here we can add game logic, like moving game objects, detecting collisions, you name it. Examples of functions can be found in sceneFunctions
 
