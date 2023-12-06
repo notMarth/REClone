@@ -8,6 +8,7 @@ window.onload = async () => {
         console.log("Starting to load scene file");
         //await parseOBJFileToJSON("chandelier.obj");
         await parseSceneFile(`./statefiles/${sceneFile}`, state);
+        
         main();
     } catch (err) {
         console.error(err);
@@ -89,7 +90,7 @@ async function main() {
             float strength;
             float linear;
             float quadratic;
-            float n_all;
+            float constant;
         };
 
         in vec2 oUV;
@@ -121,7 +122,7 @@ async function main() {
 
 
             float dist = length(light.position - oFragPosition);
-            float attenuation = light.strength / (1.0 + light.linear * dist + light.quadratic * (dist*dist));
+            float attenuation = light.strength / (light.constant + light.linear * dist + light.quadratic * (dist*dist));
 
             vec3 amb = ambientVal*light.colour;
             vec3 diff;
@@ -134,7 +135,96 @@ async function main() {
                 diff = diffuseVal*light.colour*max(0.0, dot(N, L));
             }
 
-            vec3 spec = specularVal*light.colour*pow(max(0.0, dot(N, H)), n*light.n_all);
+            vec3 spec = specularVal*light.colour*pow(max(0.0, dot(N, H)), n);
+
+            diff = diff * attenuation;
+            spec = spec * attenuation;
+
+            return diff+spec+amb;
+
+        }
+
+        void main() {
+
+            //final colour
+            vec3 total = vec3(0.0, 0.0, 0.0);
+
+            //iterate over light sources and sum contribution from each light source
+            for (int i =0; i < numLights; i++){
+                total += calculateColour(pointLights[i], oNormal);
+            }
+            
+            //return fragment colour
+            fragColor = vec4(total, alpha);
+
+        }`;
+
+        const fragShaderRooms =
+        `#version 300 es
+        #define MAX_LIGHTS 20
+        precision highp float;
+
+        struct PointLight {
+            vec3 position;
+            vec3 colour;
+            float strength;
+            float linear;
+            float quadratic;
+            float constant;
+        };
+
+        in vec2 oUV;
+        in vec3 oFragPosition;
+        in vec3 oNormal;
+
+        uniform PointLight[MAX_LIGHTS] pointLights;
+        uniform int numLights;
+        uniform vec3 cameraPos;
+
+
+        uniform vec3 diffuseVal;
+        uniform vec3 ambientVal;
+        uniform vec3 specularVal;
+        uniform float n;
+        uniform float alpha;
+
+        uniform int samplerExists;
+        uniform sampler2D uTextureWall;
+        uniform sampler2D uTextureFloor;
+
+        out vec4 fragColor;
+
+
+        vec3 calculateColour(PointLight light, vec3 normal) {
+            vec3 N = normalize(normal);
+            vec3 L = normalize(light.position - oFragPosition);
+            vec3 V = normalize(cameraPos - oFragPosition);
+            vec3 H = normalize(V+L);
+
+
+            float dist = length(light.position - oFragPosition);
+            float attenuation = light.strength / (light.constant + light.linear * dist + light.quadratic * (dist*dist));
+
+            vec3 amb = ambientVal*light.colour;
+            vec3 diff;
+            if (samplerExists == 1) {
+                vec3 textureColour;
+                if(oUV[0] < 0.0 || oUV[1] < 0.0) {
+                    textureColour = texture(uTextureFloor, oUV).rgb;
+                    diff = diffuseVal*light.colour*max(0.0, dot(N, L));
+                    diff = mix(diff, textureColour, 0.1);
+                }
+                else {
+                    textureColour = texture(uTextureWall, oUV).rgb;
+                    diff = diffuseVal*light.colour*max(0.0, dot(N, L));
+                    diff = mix(diff, textureColour, 0.1);
+                }
+            }
+            else {
+                diff = diffuseVal*light.colour*max(0.0, dot(N, L));
+            }
+
+            vec3 spec = specularVal*light.colour*pow(max(0.0, dot(N, H)), n);
 
             diff = diff * attenuation;
             spec = spec * attenuation;
@@ -166,6 +256,7 @@ async function main() {
         gl,
         vertShaderSample,
         fragShaderSample,
+        fragShaderRooms,
         canvas: canvas,
         objectCount: 0,
         lightIndices: [],
@@ -181,7 +272,8 @@ async function main() {
         //where cameraPos is the position of the camera, cameraUp is the up vector,
         //at cameraAtPoint is the lookat point for the camera
         cameras: [
-            [   //camera1 is the default camera
+            [
+                //STARTING ROOM
                 state.camera.position, state.camera.up, state.camera.atPoint,
             ],
             [
@@ -189,22 +281,72 @@ async function main() {
                 vec3.fromValues(-9.0, 4.5, 2.5), vec3.fromValues(0, 1, 0), vec3.fromValues(-2.5, 0, -2.5)
             ],
             [
+                //HALLWAY 1 ANGLE 1
                 vec3.fromValues(-5.0, 2, 2), vec3.fromValues(0, 1, 0), vec3.fromValues(-12, 2, 2)
             ],
             [
+                //HALLWAY 1 ANGLE 2 + CORNER
                 vec3.fromValues(-10.5, 4, -4), vec3.fromValues(0, 1, 0), vec3.fromValues(-11.5, 0, -0.5)
             ],
             [
+                //MAIN ROOM ENTRANCE
                 vec3.fromValues(-14, 7, -10), vec3.fromValues(0, 1, 0), vec3.fromValues(-11, 2, -7)
             ],
             [
+                //MAIN ROOM TOWARDS PUZZLE ROOM
                 vec3.fromValues(-10, 7, -14), vec3.fromValues(0, 1, 0), vec3.fromValues(-18, 3, -12)
             ],
             [
-                vec3.fromValues(-26, 4.5, -30), vec3.fromValues(0, 1, 0), vec3.fromValues(-26, 2, -9)
+                //PUZZLE ROOM ENTRANCE
+                vec3.fromValues(-29, 3.5, -22), vec3.fromValues(0, 1, 0), vec3.fromValues(-26, 1.5, -20)
             ],
             [
-                vec3.fromValues(-25, 4.9, -12), vec3.fromValues(0, 0, 1), vec3.fromValues(-25, 0, -12)
+                //PUZZLE ROOM BACK
+                vec3.fromValues(-24, 3, -26), vec3.fromValues(0, 1, 0), vec3.fromValues(-24, 1, -30)
+            ],
+            [
+                //PUZZLE ROOM TILES
+                vec3.fromValues(-21.5, 3, -7), vec3.fromValues(0, 1, 0), vec3.fromValues(-26, 1, -9.5)
+            ],
+
+            [
+                //BACKSIDE OF MAIN ROOM
+                vec3.fromValues(-20.5, 4, -29), vec3.fromValues(0, 1, 0), vec3.fromValues(-12, 1, -29)
+            ],
+            [
+                //CENTER OF MAIN ROOM
+                vec3.fromValues(-14, 3, -24), vec3.fromValues(0, 1, 0), vec3.fromValues(-2, 1, -24)
+            ],
+            [
+                //CHANDELIER
+                vec3.fromValues(-2.7, 2.3, -6.1), vec3.fromValues(0, 1, 0), vec3.fromValues(4.3, 1, -26)
+            ],
+
+            [
+                //ROPE
+                vec3.fromValues(8, 7, -6.5), vec3.fromValues(0, 1, 0), vec3.fromValues(4, 3, -9)
+            ],
+
+            [
+                //OVERLOOKING GLASS
+                vec3.fromValues(-6.5, 7, -19), vec3.fromValues(0, 1, 0), vec3.fromValues(4,-2, -24.5)
+            ],
+            [
+                //ENTER THE END
+                vec3.fromValues(5,-48, 9), vec3.fromValues(0, 1, 0), vec3.fromValues(7,-48.5, 8)
+            ],
+
+            [
+                //MIDWAY THROUGH THE END
+                vec3.fromValues(20.8,-46, 0.6), vec3.fromValues(0, 1, 0), vec3.fromValues(23,-47, 5)
+            ],
+            [
+                //DONT STOP YET
+                vec3.fromValues(20.25,-43, 8.5), vec3.fromValues(0, 1, 0), vec3.fromValues(33,-44, 7)
+            ],
+            [
+                //FINAL STRETCH
+                vec3.fromValues(30,-45, 5), vec3.fromValues(0, 1, 0), vec3.fromValues(50,-45, 5)
             ],
 
         ],
@@ -214,29 +356,80 @@ async function main() {
         //vec3 defining the minimum values of the box, and max the vec3 determining the maximum values
         cameraBounds: [
             [
+                //STARTING ROOM
                 vec3.fromValues(0.0, 0, 0), vec3.fromValues(5, 5.0, 5.0)
             ],
             [
+                //HALLWAY 1 ANGLE 1
                 vec3.fromValues(-8, 0, 1), vec3.fromValues(0, 5, 3)
             ],
             [
+                //HALLWAY 1 ANGLE 2 + CORNER
                 vec3.fromValues(-12, 0, 1), vec3.fromValues(-8, 5, 3)
             ],
             [
+                //HALLWAY 2 + CORNER
                 vec3.fromValues(-12, 0, -5), vec3.fromValues(-10, 5, -1)
             ],
             [
-                vec3.fromValues(-14,0,-7), vec3.fromValues(-8, 24, -6)
+                //MAIN ROOM ENTRANCE
+                vec3.fromValues(-14,0,-10), vec3.fromValues(-8, 24, -6)
             ],
             [
+                //MAIN ROOM TOWARDS PUZZLE ROOM
                 vec3.fromValues(-21,0,-22), vec3.fromValues(-14, 24, -6)
             ],
             [
-                vec3.fromValues(-31,0,-30), vec3.fromValues(-21, 5, -18)
+                //PUZZLE ROOM ENTRANCE
+                vec3.fromValues(-31,0,-28), vec3.fromValues(-21, 5, -18)
             ],
             [
+                //PUZZLE ROOM BACK
+                vec3.fromValues(-31,0,-30), vec3.fromValues(-21, 5, -28)
+            ],
+            [
+                //PUZZLE ROOM TILES
                 vec3.fromValues(-31,0,-18), vec3.fromValues(-21, 5, -6)
             ],
+            [
+                //BACKSIDE OF MAIN ROOM
+                vec3.fromValues(-21,0,-30), vec3.fromValues(3, 5, -20)
+            ],
+            [
+                //CENTER OF MAIN ROOM
+                vec3.fromValues(-14,0,-28), vec3.fromValues(-8, 5, -10)
+            ],
+
+            [
+                //CHANDELIER
+                vec3.fromValues(-3,0,-10), vec3.fromValues(3, 5, -6)
+            ],
+            [
+                //ROPE
+                vec3.fromValues(-8,0,-10), vec3.fromValues(-3, 5, -6)
+            ],
+            [
+                //OVERLOOKING GLASS
+                vec3.fromValues(-8,0,-28), vec3.fromValues(0, 24, -10)
+            ],
+            [
+                //ENTER THE END
+                vec3.fromValues(0,-50,0), vec3.fromValues(12, -25, 9)
+            ],
+            [
+                //MIDWAY THROUGH THE END
+                vec3.fromValues(12,-50,0), vec3.fromValues(21, -25, 9)
+            ],
+            [
+                //DONT STOP YET
+                vec3.fromValues(21,-50,0), vec3.fromValues(31, -25, 9)
+            ],
+            [
+                //FINAL STRETCH!
+                vec3.fromValues(31,-50,0), vec3.fromValues(200, -25, 9)
+            ],
+
+            
         ],
 
         currentCameraBound: 0,
@@ -259,13 +452,15 @@ async function main() {
             addCube(object, state);
         } else if (object.type === "plane") {
             addPlane(object, state);
-        } else if (object.type.includes("Custom")) {
+        } 
+        else if (object.type === "Room") {
+            addRoom(object, state)
+        }
+        else if (object.type.includes("Custom")) {
             addCustom(object, state);
         }
         // Not using custom object classes for now
-        // else if (object.type === "Room") {
-        //     addRoom(object, state)
-        // }
+        
         // else if (object.type === "Hallway") {
         //     addHall(object, state)
         // }
@@ -437,7 +632,7 @@ function drawScene(gl, deltaTime, state) {
                 gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].strength'), state.pointLights[i].strength);
                 gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].linear'), state.pointLights[i].linear);
                 gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].quadratic'), state.pointLights[i].quadratic);
-                gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].n_all'), state.pointLights[i].constant);
+                gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].constant'), state.pointLights[i].constant);
 
             }
 
@@ -464,7 +659,20 @@ function drawScene(gl, deltaTime, state) {
                     gl.uniform1i(object.programInfo.uniformLocations.samplerExists, state.samplerExists);
                     gl.uniform1i(object.programInfo.uniformLocations.sampler, 0);
                     gl.bindTexture(gl.TEXTURE_2D, object.model.texture);
-                } else {
+                } 
+                else if(object.material.shaderType === 5) {
+                    state.samplerExists = 1;
+                    gl.activeTexture(gl.TEXTURE0 + 0);
+                    gl.uniform1i(object.programInfo.uniformLocations.samplerExists, state.samplerExists);
+                    gl.uniform1i(object.programInfo.uniformLocations.samplerWall, 0);
+                    gl.uniform1i(object.programInfo.uniformLocations.samplerFloor, 1);
+                    gl.bindTexture(gl.TEXTURE_2D, object.model.textureW);
+                    gl.activeTexture(gl.TEXTURE0 + 1);
+                    gl.bindTexture(gl.TEXTURE_2D, object.model.textureF);
+
+                }
+                
+                else {
                     gl.activeTexture(gl.TEXTURE0);
                     state.samplerExists = 0;
                     gl.uniform1i(object.programInfo.uniformLocations.samplerExists, state.samplerExists);

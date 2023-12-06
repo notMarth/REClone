@@ -13,6 +13,8 @@ class Game {
         this.CHANDELIER = false;
         this.ZOMBIE;
         this.zombies = [];
+
+        this.music = new Audio("mainMusic.mp3");
         this.playerSpeed = 1;
         this.playerTurnSpeed = 1;
         this.pressedKeys = {
@@ -284,6 +286,8 @@ class Game {
     // runs once on startup after the scene loads the objects
     async onStart() {
 
+        this.music.loop = true;
+
         console.log("On start");
         this.startTime = Date.now();
 
@@ -291,6 +295,7 @@ class Game {
         document.addEventListener("contextmenu", (e) => {
             e.preventDefault();
         }, false);
+
 
         // example - set an object in onStart before starting our render loop!
         this.player = getObject(this.state, "Player");
@@ -307,9 +312,20 @@ class Game {
         this.rope = getObject(this.state, "Rope");
         this.chandelier = getObject(this.state, "Chandelier");
         this.glass = getObject(this.state, "GlassPanel");
+        this.knife = getObject(this.state, "knife");
+
         
-        this.zombie = getObject(this.state, "Zombie");
-        this.zombies.push(this.zombie);
+        const zombie1 = getObject(this.state, 'Zombie1');
+        const zombie2 = getObject(this.state, 'Zombie2');
+        const zombie3 = getObject(this.state, 'Zombie3');
+        const zombie4 = getObject(this.state, 'Zombie4');
+
+        this.zombies.push(zombie1);
+        this.zombies.push(zombie2);
+        this.zombies.push(zombie3);
+        this.zombies.push(zombie4);
+
+
         console.log(this.player)
 
         // Add all the rooms to the list of rooms
@@ -416,6 +432,8 @@ class Game {
             switch (e.key) {
                 /*case "w":
                     // Move forwards
+                    this.music.play();
+
                     var oldPlayerPos = vec3.clone(this.player.model.position);
                     this.player.movePlayerForward(this.playerSpeed);
                     // if(this.state.holdItem) {
@@ -474,12 +492,25 @@ class Game {
                     break;*/
 
                 case " ":
-                    checkPickup(this.state, this.player);
 
-                    if (vec3.dist(this.player.model.position, vec3.fromValues(0.0, 0, -6)) <= 1.0) {
+                    if (vec3.dist(this.player.model.position, vec3.fromValues(0.0, 0, -6)) <= 2.0 && this.state.holdItem.name == "knife") {
                         this.rope.translate(vec3.fromValues(0.0, -50.0, 0.0));
                         this.CHANDELIER = true;
+                        break;
                     }
+
+                    checkPickup(this.state, this.player);
+
+
+
+                    if (this.checkInMap(this.player)) {
+                    //console.log(this.player.model.position);
+                        var newPlayerPos = this.player.model.position;
+                        checkCamera(this.state, oldPlayerPos, newPlayerPos);
+                    } else {
+                       this.player.movePlayerForward();
+                    }
+                    //console.log("in map: " + this.checkInMap(this.player) + ", pos: " + this.player.model.position);
                     break;
 
                 case "A":
@@ -591,7 +622,18 @@ class Game {
 
     // Runs once every frame non stop after the scene loads
     onUpdate(deltaTime) {
-        if(vec3.dist(this.crateR.model.position, this.panelR.centroid) <= 0.5 && vec3.dist(this.crateB.model.position, this.panelB.centroid) <= 0.5 && vec3.dist(this.crateG.model.position, this.panelG.centroid) <=0.5 && !this.KNIFE) {
+
+        if(this.player.model.position[0] > 78) {
+            this.state.settings.backgroundColor = vec3.fromValues(0, 0, 0);
+            this.state.pointLights = [];
+            this.state.numLights = 0;
+        }
+
+        if(vec3.dist(this.crateR.model.position, this.panelR.centroid) <= 0.75 && vec3.dist(this.crateB.model.position, this.panelB.centroid) <= 0.75 && vec3.dist(this.crateG.model.position, this.panelG.centroid) <=0.75 && !this.KNIFE) {
+            let knifeAudio = new Audio("knife.mp3");
+            knifeAudio.play();
+            this.knife.translate(vec3.fromValues(0.0, -20, 0.0));
+            this.state.pickupItems.push(this.knife)
             this.KNIFE = true;
         }
 
@@ -603,7 +645,10 @@ class Game {
                 this.chandelier.translate(vec3.fromValues(0.0, -6*deltaTime, 0.0));
             }
             else {
+                let glassAudio = new Audio("glass.mp3");
+                glassAudio.play();
                 this.chandelier.translate(vec3.fromValues(0.0, -50, 0.0));
+                this.state.pointLights[3].position = vec3.fromValues(0.0, 100, 0.0);
                 this.glass.translate(vec3.fromValues(0.0, -50, 0.0));
                 this.CHANDELIER = false;
             }
@@ -617,17 +662,24 @@ class Game {
             this.player.at = vec3.fromValues(1, 0, 0);
             this.state.camera.position = vec3.fromValues(20, -45, 5);
             this.state.camera.atPoint = vec3.fromValues(0, -50, 5);
-
+            this.state.settings.backgroundColor = vec3.fromValues(1, 1, 1)
             this.ZOMBIE = true;
         }
 
         if(this.ZOMBIE) {
             
-            var temp = vec3.fromValues();
-            //vec3.transformMat4(temp, this.zombies[0].model.position,this.zombies[0].model.modelMatrix);
-            vec3.subtract(temp, this.player.model.position, this.zombies[0].model.position);
-            vec3.scale(temp, temp, deltaTime*0.1);
-            this.zombies[0].translate(temp);
+            for(let i=0; i < this.zombies.length; i++) {
+                var temp = vec3.fromValues();
+                vec3.subtract(temp, this.player.model.position, this.zombies[i].model.position);
+                vec3.scale(temp, temp, deltaTime*0.5);
+                this.zombies[i].translate(temp);
+            }
+
+            // var temp = vec3.fromValues();
+            // //vec3.transformMat4(temp, this.zombies[0].model.position,this.zombies[0].model.modelMatrix);
+            // vec3.subtract(temp, this.player.model.position, this.zombies[0].model.position);
+            // vec3.scale(temp, temp, deltaTime*0.1);
+            // this.zombies[0].translate(temp);
 
             
         }

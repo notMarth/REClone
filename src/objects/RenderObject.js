@@ -33,6 +33,8 @@ class RenderObject {
       scale: vec3.fromValues(1.0, 1.0, 1.0),
       diffuseTexture: object.diffuseTexture ? object.diffuseTexture : "default.png",
       normalTexture: object.normalTexture ? object.normalTexture : "defaultNorm.png",
+      wallTexture: object.wallTexture ? getTextures(glContext, object.wallTexture) : null,
+      floorTexture: object.floorTexture ? getTextures(glContext, object.floorTexture) : null,
       texture: object.diffuseTexture ? getTextures(glContext, object.diffuseTexture) : null,
       textureNorm: object.normalTexture ? getTextures(glContext, object.normalTexture) : null,
     };
