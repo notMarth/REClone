@@ -10,6 +10,8 @@ class Game {
         this.CHANDELIER = false;
         this.ZOMBIE;
         this.zombies = [];
+
+        this.music = new Audio("mainMusic.mp3");
     }
 
 
@@ -246,6 +248,8 @@ class Game {
     // runs once on startup after the scene loads the objects
     async onStart() {
 
+        this.music.loop = true;
+
         console.log("On start");
         this.startTime = Date.now();
 
@@ -253,6 +257,7 @@ class Game {
         document.addEventListener("contextmenu", (e) => {
             e.preventDefault();
         }, false);
+
 
         // example - set an object in onStart before starting our render loop!
         this.player = getObject(this.state, "Player");
@@ -304,6 +309,8 @@ class Game {
             switch (e.key) {
                 case "w":
                     // Move forwards
+                    this.music.play();
+
                     var oldPlayerPos = vec3.clone(this.player.model.position);
                     this.player.movePlayerForward();
                     // if(this.state.holdItem) {

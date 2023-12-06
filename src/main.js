@@ -90,7 +90,7 @@ async function main() {
             float strength;
             float linear;
             float quadratic;
-            float n_all;
+            float constant;
         };
 
         in vec2 oUV;
@@ -122,7 +122,7 @@ async function main() {
 
 
             float dist = length(light.position - oFragPosition);
-            float attenuation = light.strength / (1.0 + light.linear * dist + light.quadratic * (dist*dist));
+            float attenuation = light.strength / (light.constant + light.linear * dist + light.quadratic * (dist*dist));
 
             vec3 amb = ambientVal*light.colour;
             vec3 diff;
@@ -135,7 +135,7 @@ async function main() {
                 diff = diffuseVal*light.colour*max(0.0, dot(N, L));
             }
 
-            vec3 spec = specularVal*light.colour*pow(max(0.0, dot(N, H)), n*light.n_all);
+            vec3 spec = specularVal*light.colour*pow(max(0.0, dot(N, H)), n);
 
             diff = diff * attenuation;
             spec = spec * attenuation;
@@ -170,7 +170,7 @@ async function main() {
             float strength;
             float linear;
             float quadratic;
-            float n_all;
+            float constant;
         };
 
         in vec2 oUV;
@@ -203,7 +203,7 @@ async function main() {
 
 
             float dist = length(light.position - oFragPosition);
-            float attenuation = light.strength / (1.0 + light.linear * dist + light.quadratic * (dist*dist));
+            float attenuation = light.strength / (light.constant + light.linear * dist + light.quadratic * (dist*dist));
 
             vec3 amb = ambientVal*light.colour;
             vec3 diff;
@@ -224,7 +224,7 @@ async function main() {
                 diff = diffuseVal*light.colour*max(0.0, dot(N, L));
             }
 
-            vec3 spec = specularVal*light.colour*pow(max(0.0, dot(N, H)), n*light.n_all);
+            vec3 spec = specularVal*light.colour*pow(max(0.0, dot(N, H)), n);
 
             diff = diff * attenuation;
             spec = spec * attenuation;
@@ -272,7 +272,8 @@ async function main() {
         //where cameraPos is the position of the camera, cameraUp is the up vector,
         //at cameraAtPoint is the lookat point for the camera
         cameras: [
-            [   //camera1 is the default camera
+            [
+                //STARTING ROOM
                 state.camera.position, state.camera.up, state.camera.atPoint,
             ],
             [
@@ -280,21 +281,27 @@ async function main() {
                 vec3.fromValues(-9.0, 4.5, 2.5), vec3.fromValues(0, 1, 0), vec3.fromValues(-2.5, 0, -2.5)
             ],
             [
+                //HALLWAY 1 ANGLE 1
                 vec3.fromValues(-5.0, 2, 2), vec3.fromValues(0, 1, 0), vec3.fromValues(-12, 2, 2)
             ],
             [
+                //HALLWAY 1 ANGLE 2 + CORNER
                 vec3.fromValues(-10.5, 4, -4), vec3.fromValues(0, 1, 0), vec3.fromValues(-11.5, 0, -0.5)
             ],
             [
+                //MAIN ROOM ENTRANCE
                 vec3.fromValues(-14, 7, -10), vec3.fromValues(0, 1, 0), vec3.fromValues(-11, 2, -7)
             ],
             [
+                //MAIN ROOM TOWARDS PUZZLE ROOM
                 vec3.fromValues(-10, 7, -14), vec3.fromValues(0, 1, 0), vec3.fromValues(-18, 3, -12)
             ],
             [
+                //PUZZLE ROOM ENTRANCE
                 vec3.fromValues(-26, 4.5, -30), vec3.fromValues(0, 1, 0), vec3.fromValues(-26, 2, -9)
             ],
             [
+                //PUZZLE ROOM TILES
                 vec3.fromValues(-25, 4.9, -12), vec3.fromValues(0, 0, 1), vec3.fromValues(-25, 0, -12)
             ],
 
@@ -305,27 +312,35 @@ async function main() {
         //vec3 defining the minimum values of the box, and max the vec3 determining the maximum values
         cameraBounds: [
             [
+                //STARTING ROOM
                 vec3.fromValues(0.0, 0, 0), vec3.fromValues(5, 5.0, 5.0)
             ],
             [
+                //HALLWAY 1 ANGLE 1
                 vec3.fromValues(-8, 0, 1), vec3.fromValues(0, 5, 3)
             ],
             [
+                //HALLWAY 1 ANGLE 2 + CORNER
                 vec3.fromValues(-12, 0, 1), vec3.fromValues(-8, 5, 3)
             ],
             [
+                //HALLWAY 2 + CORNER
                 vec3.fromValues(-12, 0, -5), vec3.fromValues(-10, 5, -1)
             ],
             [
+                //MAIN ROOM ENTRANCE
                 vec3.fromValues(-14,0,-7), vec3.fromValues(-8, 24, -6)
             ],
             [
+                //MAIN ROOM TOWARDS PUZZLE ROOM
                 vec3.fromValues(-21,0,-22), vec3.fromValues(-14, 24, -6)
             ],
             [
+                //PUZZLE ROOM ENTRANCE
                 vec3.fromValues(-31,0,-30), vec3.fromValues(-21, 5, -18)
             ],
             [
+                //PUZZLE ROOM TILES
                 vec3.fromValues(-31,0,-18), vec3.fromValues(-21, 5, -6)
             ],
         ],
@@ -530,7 +545,7 @@ function drawScene(gl, deltaTime, state) {
                 gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].strength'), state.pointLights[i].strength);
                 gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].linear'), state.pointLights[i].linear);
                 gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].quadratic'), state.pointLights[i].quadratic);
-                gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].n_all'), state.pointLights[i].constant);
+                gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].constant'), state.pointLights[i].constant);
 
             }
 
