@@ -7,9 +7,9 @@ class RenderObject {
 
     //UP AT AND RIGHT VECTORS FOR MOVEMENT//
     this.up = vec3.fromValues(0.0, 1.0, 0.0);
-    this.right = vec3.fromValues(-1.0, 0.0, 0.0);
-    this.at = vec3.fromValues(0.0, 0.0, 1.0);
-    this.atPoint = vec3.fromValues(0.0, 0.0, 1.0);
+    this.right = vec3.fromValues(0.0, 0.0, 1.0);
+    this.at = vec3.fromValues(-1.0, 0, 0.0);
+    this.atPoint = vec3.fromValues(1.5, 0.0, 2.5);
 
 
     this.initialTransform = {
@@ -62,6 +62,7 @@ class RenderObject {
       vec3.cross(this.right, this.at, this.up);
       vec3.normalize(this.at, this.at);
       vec3.normalize(this.right, this.right);
+      vec3.add(this.atPoint, this.at, this.model.position);
     } else if (axis == 'z') {
       mat4.rotateZ(this.model.rotation, this.model.rotation, angle)
     }
@@ -73,13 +74,19 @@ class RenderObject {
 
   movePlayerForward(){
     vec3.add(this.model.position, this.model.position, vec3.fromValues(this.at[0]*0.1, this.at[1]*0.1, this.at[2]*0.1));
-    vec3.add(this.atPoint, this.atPoint, this.at);
+    vec3.add(this.atPoint, this.atPoint, vec3.fromValues(this.at[0]*0.1, this.at[1]*0.1, this.at[2]*0.1));
+    vec3.subtract(this.at, this.atPoint, this.model.position);
+    vec3.normalize(this.at, this.at);
+    
   }
 
   movePlayerBackward(){
     vec3.add(this.model.position, this.model.position, vec3.fromValues(this.at[0]*-0.1, this.at[1]*-0.1, this.at[2]*-0.1));
-    vec3.add(this.atPoint, this.atPoint, this.at);
+    vec3.add(this.atPoint, this.atPoint, vec3.fromValues(this.at[0]*-0.1, this.at[1]*-0.1, this.at[2]*-0.1));
+    vec3.subtract(this.at, this.atPoint, this.model.position);
+    vec3.normalize(this.at, this.at);
   }
+
 
   scale(scaleVec) {
     //model scale
@@ -137,18 +144,18 @@ class RenderObject {
         view: this.gl.getUniformLocation(shaderProgram, 'uViewMatrix'),
         model: this.gl.getUniformLocation(shaderProgram, 'uModelMatrix'),
         // normalMatrix: this.gl.getUniformLocation(shaderProgram, 'normalMatrix'),
-        diffuseVal: this.gl.getUniformLocation(shaderProgram, 'uDiffuseVal'),
-        // ambientVal: this.gl.getUniformLocation(shaderProgram, 'ambientVal'),
-        // specularVal: this.gl.getUniformLocation(shaderProgram, 'specularVal'),
-        // nVal: this.gl.getUniformLocation(shaderProgram, 'nVal'),
-        alphaVal: this.gl.getUniformLocation(shaderProgram, 'uAlphaVal'),
-        // cameraPosition: this.gl.getUniformLocation(shaderProgram, 'uCameraPosition'),
-        // numLights: this.gl.getUniformLocation(shaderProgram, 'numLights'),
-        // lightPositions: this.gl.getUniformLocation(shaderProgram, 'uLightPositions'),
-        // lightColours: this.gl.getUniformLocation(shaderProgram, 'uLightColours'),
-        // lightStrengths: this.gl.getUniformLocation(shaderProgram, 'uLightStrengths'),
+        diffuseVal: this.gl.getUniformLocation(shaderProgram, 'diffuseVal'),
+        ambientVal: this.gl.getUniformLocation(shaderProgram, 'ambientVal'),
+        specularVal: this.gl.getUniformLocation(shaderProgram, 'specularVal'),
+        n: this.gl.getUniformLocation(shaderProgram, 'n'),
+        cameraPosition: this.gl.getUniformLocation(shaderProgram, 'cameraPos'),
+        numLights: this.gl.getUniformLocation(shaderProgram, 'numLights'),
+        //lightPosition: this.gl.getUniformLocation(shaderProgram, 'lightPos'),
+        //lightColour: this.gl.getUniformLocation(shaderProgram, 'lightColour'),
+        //lightStrength: this.gl.getUniformLocation(shaderProgram, 'lightStrength'),
         sampler: this.gl.getUniformLocation(shaderProgram, 'uTexture'),
-        samplerExists: this.gl.getUniformLocation(shaderProgram, "samplerExists")
+        samplerExists: this.gl.getUniformLocation(shaderProgram, "samplerExists"),
+        alpha: this.gl.getUniformLocation(shaderProgram, 'alpha')
       },
     };
     shaderValuesErrorCheck(programInfo);

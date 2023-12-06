@@ -1,4 +1,4 @@
-class Room extends RenderObject {
+class Hallway extends RenderObject {
     constructor(glContext, object) {
         this.state = {};
         this.gl = glContext;

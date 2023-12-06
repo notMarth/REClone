@@ -443,6 +443,33 @@ function addCustom(object, state, vertShader = null, fragShader = null) {
     return tempObject;
 }
 
+function addRoom(object, state, vertShader = null, fragShader = null) {
+    let tempObject = new Room(state.gl, object);
+    tempObject.vertShader = vertShader ? vertShader : state.vertShaderSample;
+    tempObject.fragShader = fragShader ? fragShader : state.fragShaderSample;
+    tempObject.setup();
+    addObjectToScene(state, tempObject);
+    return tempObject;
+}
+
+function addHall(object, state, vertShader = null, fragShader = null) {
+    let tempObject = new Hallway(state.gl, object);
+    tempObject.vertShader = vertShader ? vertShader : state.vertShaderSample;
+    tempObject.fragShader = fragShader ? fragShader : state.fragShaderSample;
+    tempObject.setup();
+    addObjectToScene(state, tempObject);
+    return tempObject;
+}
+
+function addCorner(object, state, vertShader = null, fragShader = null) {
+    let tempObject = new Corner(state.gl, object);
+    tempObject.vertShader = vertShader ? vertShader : state.vertShaderSample;
+    tempObject.fragShader = fragShader ? fragShader : state.fragShaderSample;
+    tempObject.setup();
+    addObjectToScene(state, tempObject);
+    return tempObject;
+}
+
 async function addMesh(object, vertShader = null, fragShader = null) {
     if (state.meshCache[object.model]) { // a way to load the mesh faster by re-using model data
         const created = await createMesh(state.meshCache[object.model], object, vertShader, fragShader);

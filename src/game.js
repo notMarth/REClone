@@ -6,8 +6,10 @@ class Game {
         this.rooms = [];
         this.check = true;
         this.DEBUG = true;
-        this.startTime;
-        this.frameFrate = 0;
+        this.KNIFE = false;
+        this.CHANDELIER = false;
+        this.ZOMBIE;
+        this.zombies = [];
     }
 
 
@@ -17,6 +19,16 @@ class Game {
     }
 
     // example - create a collider on our object with various fields we might need (you will likely need to add/remove/edit how this works)
+    // createSphereCollider(object, radius, onCollide = null) {
+    //     object.collider = {
+    //     type: "SPHERE",
+    //     radius: radius,
+    //     onCollide: onCollide ? onCollide : (otherObject) => {
+    //         console.log(`Collided with ${otherObject.name}`);
+    //         }
+    //     };
+    //     this.collidableObjects.push(object);
+    // }
     createSphereCollider(object, radius, onCollide = null) {
         object.collider = {
             type: "SPHERE",
@@ -135,12 +147,14 @@ class Game {
 
     // example - function to check if an object is colliding with collidable objects
     // checkCollision(object) {
-    //     // loop over all the other collidable objects 
-    //     this.collidableObjects.forEach(otherObject => {
-    //         // do a check to see if we have collided, if we have we can call object.onCollide(otherObject) which will
-    //         // call the onCollide we define for that specific object. This way we can handle collisions identically for all
-    //         // objects that can collide but they can do different things (ie. player colliding vs projectile colliding)
-    //         // use the modeling transformation for object and otherObject to transform position into current location
+    // //     // loop over all the other collidable objects 
+    //     this.state.objects.forEach(otherObject => {
+    // //         // do a check to see if we have collided, if we have we can call object.onCollide(otherObject) which will
+    // //         // call the onCollide we define for that specific object. This way we can handle collisions identically for all
+    // //         // objects that can collide but they can do different things (ie. player colliding vs projectile colliding)
+    // //         // use the modeling transformation for object and otherObject to transform position into current location
+    // let colCheck = vec3.fromValues();
+    // if (otherObject.position - vec3.fromValues(object.radius, object.radius, object.radius) )
     //     });
     // }
 
@@ -243,6 +257,22 @@ class Game {
 
         // example - set an object in onStart before starting our render loop!
         this.player = getObject(this.state, "Player");
+        this.crateR = getObject(this.state, "RedCrate");
+        this.crateB = getObject(this.state, "BlueCrate");
+        this.crateG = getObject(this.state, "GreenCrate");
+
+        this.panelR = getObject(this.state, "RedPanel");
+        this.panelB = getObject(this.state, "BluePanel");
+        this.panelG = getObject(this.state, "GreenPanel");
+
+        this.state.pickupItems.push(this.crateR, this.crateB, this.crateG);
+        
+        this.rope = getObject(this.state, "Rope");
+        this.chandelier = getObject(this.state, "Chandelier");
+        this.glass = getObject(this.state, "GlassPanel");
+        
+        this.zombie = getObject(this.state, "Zombie");
+        this.zombies.push(this.zombie);
         console.log(this.player)
 
         // Add all the rooms to the list of rooms
@@ -263,7 +293,7 @@ class Game {
 
         // example - create sphere colliders on our two objects as an example, we give 2 objects colliders otherwise
         // no collision can happen
-        // this.createSphereCollider(this.cube, 0.5, (otherObject) => {
+        // this.createSphereCollider(this.player, 0.5, (otherObject) => {
         //     console.log(`This is a custom collision of ${otherObject.name}`)
         // });
         // this.createSphereCollider(otherCube, 0.5);
@@ -277,18 +307,20 @@ class Game {
                     // Move forwards
                     var oldPlayerPos = vec3.clone(this.player.model.position);
                     this.player.movePlayerForward();
+                    // if(this.state.holdItem) {
+                    //     var temp = vec3.fromValues();
+                    //     vec3.scale(temp, this.player.at, 0.1);
+                    //     this.state.holdItem.translate(temp);
+                    // }
+                    console.log(this.player.model.position);
 
                     if (this.checkInMap(this.player)) {
-                        //TODO what does this do? it's not in the "s" case
-                        // This is already present in the function movePlayerForward()
-                        //vec3.add(this.player.atPoint, this.player.atPoint, this.player.at);
-                        //console.log(this.player.model.position);
                         var newPlayerPos = this.player.model.position;
                         checkCamera(this.state, oldPlayerPos, newPlayerPos);
                     } else {
                        this.player.movePlayerBackward();
                     }
-                    console.log("in map: " + this.checkInMap(this.player) + ", pos: " + this.player.model.position + ", room: ");
+                    //console.log("in map: " + this.checkInMap(this.player) + ", pos: " + this.player.model.position);
                     break;
 
                 case 'd':
@@ -305,15 +337,32 @@ class Game {
                     // Move player backwards
                     var oldPlayerPos = vec3.clone(this.player.model.position);
                     this.player.movePlayerBackward()
+                    // if(this.state.holdItem) {
+                    //     var temp = vec3.fromValues();
+                    //     vec3.scale(temp, this.player.at, -0.1);
+                    //     this.state.holdItem.translate(temp);
+                    // }
+                    console.log(this.player.model.position);
+                    checkCamera(this.state, this.player.model.position);
+                    break;
+
+                case " ":
+                    checkPickup(this.state, this.player);
+
+                    if (vec3.dist(this.player.model.position, vec3.fromValues(0.0, 0, -6)) <= 1.0) {
+                        this.rope.translate(vec3.fromValues(0.0, -50.0, 0.0));
+                        this.CHANDELIER = true;
+                    }
+
 
                     if (this.checkInMap(this.player)) {
                     //console.log(this.player.model.position);
-                    var newPlayerPos = this.player.model.position;
-                    checkCamera(this.state, oldPlayerPos, newPlayerPos);
+                        var newPlayerPos = this.player.model.position;
+                        checkCamera(this.state, oldPlayerPos, newPlayerPos);
                     } else {
                        this.player.movePlayerForward();
                     }
-                    console.log("in map: " + this.checkInMap(this.player) + ", pos: " + this.player.model.position);
+                    //console.log("in map: " + this.checkInMap(this.player) + ", pos: " + this.player.model.position);
                     break;
 
                 case "A":
@@ -410,6 +459,13 @@ class Game {
                     }
                     break;
 
+                case "Q":
+                    if (this.DEBUG) {
+                        console.log(this.state.camera.position);
+                        console.log(this.state.camera.atPoint);
+                        console.log(this.state.camera.up);
+                    }
+                    break;
                 default:
                     break;
             }
@@ -459,8 +515,46 @@ class Game {
 
     // Runs once every frame non stop after the scene loads
     onUpdate(deltaTime) {
-        this.frameFrate ++;
-        //console.log("Framerate: " + this.frameFrate / ((Date.now() - this.startTime) * .001));
+        if(vec3.dist(this.crateR.model.position, this.panelR.centroid) <= 0.5 && vec3.dist(this.crateB.model.position, this.panelB.centroid) <= 0.5 && vec3.dist(this.crateG.model.position, this.panelG.centroid) <=0.5 && !this.KNIFE) {
+            this.KNIFE = true;
+        }
+
+        if(this.CHANDELIER) {
+            var temp = vec3.fromValues();
+            vec3.transformMat4(temp,this.chandelier.model.position, this.chandelier.model.modelMatrix);
+            if(temp[1] > 4) {
+                
+                this.chandelier.translate(vec3.fromValues(0.0, -6*deltaTime, 0.0));
+            }
+            else {
+                this.chandelier.translate(vec3.fromValues(0.0, -50, 0.0));
+                this.glass.translate(vec3.fromValues(0.0, -50, 0.0));
+                this.CHANDELIER = false;
+            }
+        }
+
+        if(this.player.model.position[0] <= 8 && this.player.model.position[0] >= -1 &&
+            this.player.model.position[2] <=-12 && this.player.model.position[2] >=-24) {
+
+            this.player.model.position = vec3.fromValues(0, -50, 5);
+            this.player.atPoint = vec3.fromValues(1, -50, 5)
+            this.player.at = vec3.fromValues(1, 0, 0);
+            this.state.camera.position = vec3.fromValues(20, -45, 5);
+            this.state.camera.atPoint = vec3.fromValues(0, -50, 5);
+
+            this.ZOMBIE = true;
+        }
+
+        if(this.ZOMBIE) {
+            
+            var temp = vec3.fromValues();
+            //vec3.transformMat4(temp, this.zombies[0].model.position,this.zombies[0].model.modelMatrix);
+            vec3.subtract(temp, this.player.model.position, this.zombies[0].model.position);
+            vec3.scale(temp, temp, deltaTime*0.1);
+            this.zombies[0].translate(temp);
+
+            
+        }
         // TODO - Here we can add game logic, like moving game objects, detecting collisions, you name it. Examples of functions can be found in sceneFunctions
 
         // example: Rotate a single object we defined in our start method

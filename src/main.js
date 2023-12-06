@@ -6,6 +6,7 @@ var sceneFile = "scene.json"; // can change this to be the name of your scene
 window.onload = async () => {
     try {
         console.log("Starting to load scene file");
+        //await parseOBJFileToJSON("chandelier.obj");
         await parseSceneFile(`./statefiles/${sceneFile}`, state);
         main();
     } catch (err) {
@@ -86,30 +87,76 @@ async function main() {
             vec3 position;
             vec3 colour;
             float strength;
+            float linear;
+            float quadratic;
+            float n_all;
         };
 
         in vec2 oUV;
+        in vec3 oFragPosition;
+        in vec3 oNormal;
 
-        uniform PointLight mainLight;
-        uniform vec3 uDiffuseVal;
-        uniform float uAlphaVal;
-        
+        uniform PointLight[MAX_LIGHTS] pointLights;
+        uniform int numLights;
+        uniform vec3 cameraPos;
+
+
+        uniform vec3 diffuseVal;
+        uniform vec3 ambientVal;
+        uniform vec3 specularVal;
+        uniform float n;
+        uniform float alpha;
 
         uniform int samplerExists;
         uniform sampler2D uTexture;
 
         out vec4 fragColor;
-        void main() {
 
+
+        vec3 calculateColour(PointLight light, vec3 normal) {
+            vec3 N = normalize(normal);
+            vec3 L = normalize(light.position - oFragPosition);
+            vec3 V = normalize(cameraPos - oFragPosition);
+            vec3 H = normalize(V+L);
+
+
+            float dist = length(light.position - oFragPosition);
+            float attenuation = light.strength / (1.0 + light.linear * dist + light.quadratic * (dist*dist));
+
+            vec3 amb = ambientVal*light.colour;
+            vec3 diff;
             if (samplerExists == 1) {
                 vec3 textureColour = texture(uTexture, oUV).rgb;
-                fragColor = vec4(uDiffuseVal * textureColour, uAlphaVal);
+                diff = diffuseVal*light.colour*max(0.0, dot(N, L));
+                diff = mix(diff, textureColour, 0.1);
             }
             else {
-                fragColor = vec4(uDiffuseVal, uAlphaVal);
+                diff = diffuseVal*light.colour*max(0.0, dot(N, L));
             }
+
+            vec3 spec = specularVal*light.colour*pow(max(0.0, dot(N, H)), n*light.n_all);
+
+            diff = diff * attenuation;
+            spec = spec * attenuation;
+
+            return diff+spec+amb;
+
         }
-        `;
+
+        void main() {
+
+            //final colour
+            vec3 total = vec3(0.0, 0.0, 0.0);
+
+            //iterate over light sources and sum contribution from each light source
+            for (int i =0; i < numLights; i++){
+                total += calculateColour(pointLights[i], oNormal);
+            }
+            
+            //return fragment colour
+            fragColor = vec4(total, alpha);
+
+        }`;
 
     /**
      * Initialize state with new values (some of these you can replace/change)
@@ -127,6 +174,8 @@ async function main() {
         meshCache: {},
         samplerExists: 0,
         samplerNormExists: 0,
+        n_all: 1,
+
         ////////////////////////CAMERAS DEFINED HERE////////////////////////////////
         //Cameras are defined the following way: [cameraPos, cameraUp, cameraAtPoint]
         //where cameraPos is the position of the camera, cameraUp is the up vector,
@@ -138,28 +187,71 @@ async function main() {
             [
                 //camera2 (hallway)
                 vec3.fromValues(-9.0, 4.5, 2.5), vec3.fromValues(0, 1, 0), vec3.fromValues(-2.5, 0, -2.5)
-            ]
+            ],
+            [
+                vec3.fromValues(-5.0, 2, 2), vec3.fromValues(0, 1, 0), vec3.fromValues(-12, 2, 2)
+            ],
+            [
+                vec3.fromValues(-10.5, 4, -4), vec3.fromValues(0, 1, 0), vec3.fromValues(-11.5, 0, -0.5)
+            ],
+            [
+                vec3.fromValues(-14, 7, -10), vec3.fromValues(0, 1, 0), vec3.fromValues(-11, 2, -7)
+            ],
+            [
+                vec3.fromValues(-10, 7, -14), vec3.fromValues(0, 1, 0), vec3.fromValues(-18, 3, -12)
+            ],
+            [
+                vec3.fromValues(-26, 4.5, -30), vec3.fromValues(0, 1, 0), vec3.fromValues(-26, 2, -9)
+            ],
+            [
+                vec3.fromValues(-25, 4.9, -12), vec3.fromValues(0, 0, 1), vec3.fromValues(-25, 0, -12)
+            ],
 
         ],
+
         ///////////////////////CAMERA BOUNDARIES DEFINED HERE///////////////////////
-        //Camera boundaries are defined the following way: [LL, UR] where LL is the
-        //lower left point of the camera boundary plane and UR is the upper right
+        //Camera boundaries are defined the following way: [min, max] where min is the
+        //vec3 defining the minimum values of the box, and max the vec3 determining the maximum values
         cameraBounds: [
             [
-                vec3.fromValues(-0.5, 0, 3.0), vec3.fromValues(0, 5.0, 2.0)
-            ]
-        ]
+                vec3.fromValues(0.0, 0, 0), vec3.fromValues(5, 5.0, 5.0)
+            ],
+            [
+                vec3.fromValues(-8, 0, 1), vec3.fromValues(0, 5, 3)
+            ],
+            [
+                vec3.fromValues(-12, 0, 1), vec3.fromValues(-8, 5, 3)
+            ],
+            [
+                vec3.fromValues(-12, 0, -5), vec3.fromValues(-10, 5, -1)
+            ],
+            [
+                vec3.fromValues(-14,0,-7), vec3.fromValues(-8, 24, -6)
+            ],
+            [
+                vec3.fromValues(-21,0,-22), vec3.fromValues(-14, 24, -6)
+            ],
+            [
+                vec3.fromValues(-31,0,-30), vec3.fromValues(-21, 5, -18)
+            ],
+            [
+                vec3.fromValues(-31,0,-18), vec3.fromValues(-21, 5, -6)
+            ],
+        ],
 
-    };
+        currentCameraBound: 0,
 
-    
+        pickupItems: [],
+
+        holdItem: null,
+
+    };    
 
     state.numLights = state.pointLights.length;
 
     const now = new Date();
     for (let i = 0; i < state.loadObjects.length; i++) {
         const object = state.loadObjects[i];
-        console.log(object);
 
         if (object.type === "mesh") {
             await addMesh(object);
@@ -168,8 +260,16 @@ async function main() {
         } else if (object.type === "plane") {
             addPlane(object, state);
         } else if (object.type.includes("Custom")) {
-            console.log(object.model);
             addCustom(object, state);
+        }
+        else if (object.type === "Room") {
+            addRoom(object, state)
+        }
+        else if (object.type === "Hallway") {
+            addHall(object, state)
+        }
+        else if (object.type === "Corner") {
+            addCorner(object, state)
         }
     }
 
@@ -191,7 +291,6 @@ async function main() {
  */
 function addObjectToScene(state, object) {
     object.name = object.name;
-    console.log(object.name);
     state.objects.push(object);
 }
 
@@ -254,32 +353,25 @@ function drawScene(gl, deltaTime, state) {
     // iterate over each object and render them
     sorted.map((object) => {
         gl.useProgram(object.programInfo.program);
-
-        // Not working atm
-        if (object.material.alpha < 1.0) {
-            // Depth testing allows WebGL to figure out what order to draw our objects such that the look natural.
-            // We want to draw far objects first, and then draw nearer objects on top of those to obscure them.
-            // To determine the order to draw, WebGL can test the Z value of the objects.
-            // The z-axis goes out of the screen
-
-            // TODO turn off depth masking
-            gl.depthMask(false);
-            // enable blending and specify blending function
-            gl.enable(gl.BLEND);
-            gl.blendFunc(gl.ONE_MINUS_CONSTANT_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-            //gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-        }
-        else {
-            // TODO disable blending
-            gl.disable(gl.BLEND);
-            // enable depth masking and z-buffering
-            gl.depthMask(true);
-            gl.enable(gl.DEPTH_TEST);
-            // specify depth function
-            gl.depthFunc(gl.LEQUAL); // Near things obscure far things
-        }
-
         {
+
+            if (object.material.alpha < 1.0) {
+                // TODO turn off depth masking
+                // enable blending and specify blending function 
+                gl.depthMask(false);
+                gl.enable(gl.BLEND);
+                gl.blendFunc(gl.ONE_MINUS_CONSTANT_ALPHA,gl.ONE_MINUS_SRC_ALPHA);                
+            }
+            else {
+                // TODO disable blending 
+                // enable depth masking and z-buffering
+                // specify depth function
+                gl.disable(gl.BLEND);
+                gl.depthMask(true);
+                gl.enable(gl.DEPTH_TEST);
+                gl.depthFunc(gl.LEQUAL);
+            }
+
             // Projection Matrix ....
             let projectionMatrix = mat4.create();
             let fovy = 90.0 * Math.PI / 180.0; // Vertical field of view in radians
@@ -333,25 +425,30 @@ function drawScene(gl, deltaTime, state) {
             gl.uniform3fv(object.programInfo.uniformLocations.diffuseVal, object.material.diffuse);
             gl.uniform3fv(object.programInfo.uniformLocations.ambientVal, object.material.ambient);
             gl.uniform3fv(object.programInfo.uniformLocations.specularVal, object.material.specular);
-            gl.uniform1f(object.programInfo.uniformLocations.nVal, object.material.n);
-            gl.uniform1f(object.programInfo.uniformLocations.alphaVal, object.material.alpha);
+            gl.uniform1f(object.programInfo.uniformLocations.n, object.material.n);
+            gl.uniform1f(object.programInfo.uniformLocations.alpha, object.material.alpha);
 
             gl.uniform1i(object.programInfo.uniformLocations.numLights, state.numLights);
-            // if (state.pointLights.length > 1) {
-            //     for (let i = 0; i < state.pointLights.length; i++) {
-            //         gl.uniform3fv(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].position'), state.pointLights[i].position);
-            //         gl.uniform3fv(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].colour'), state.pointLights[i].colour);
-            //         gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].strength'), state.pointLights[i].strength);
-            //         gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].linear'), state.pointLights[i].linear);
-            //         gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].quadratic'), state.pointLights[i].quadratic);
-            //     }
-            // }
+            for (let i = 0; i < state.pointLights.length; i++) {
+                
+                gl.uniform3fv(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].position'), state.pointLights[i].position);
+                gl.uniform3fv(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].colour'), state.pointLights[i].colour);
+                gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].strength'), state.pointLights[i].strength);
+                gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].linear'), state.pointLights[i].linear);
+                gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].quadratic'), state.pointLights[i].quadratic);
+                gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'pointLights[' + i + '].n_all'), state.pointLights[i].constant);
 
-            let mainLight = state.pointLights[0];
+            }
+
+
+
+            // one light case
             
-            gl.uniform3fv(gl.getUniformLocation(object.programInfo.program, 'mainLight.position'), mainLight.position);
-            gl.uniform3fv(gl.getUniformLocation(object.programInfo.program, 'mainLight.colour'), mainLight.colour);
-            gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'mainLight.strength'), mainLight.strength);
+            // let mainLight = state.pointLights[0];
+            
+            // gl.uniform3fv(gl.getUniformLocation(object.programInfo.program, 'mainLight.position'), mainLight.position);
+            // gl.uniform3fv(gl.getUniformLocation(object.programInfo.program, 'mainLight.colour'), mainLight.colour);
+            // gl.uniform1f(gl.getUniformLocation(object.programInfo.program, 'mainLight.strength'), mainLight.strength);
             
 
 
