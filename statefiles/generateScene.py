@@ -452,12 +452,14 @@ def generateRoomObj(x, z, y, origin, door):
 if __name__ == "__main__":
 
     with open('scene.json', 'w') as f:
+        # Start of object JSON file
+        f.write('[ { "objects": [ ')
 
 ############################################################ GENERATE FIRST ROOM
         vlist, nlist, flist, vInd = generateRoom1(5, 5, 5, (0, 0, 0), (2, 3, 3), 0)
 
         #OBJECT MATERIAL INFO
-        f.write('[ { "objects": [ {"name": "Room1", "material": {"diffuse": [1,0,0],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type":"CustomRoom",')
+        f.write('{"name": "Room1", "material": {"diffuse": [1,0,0],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type":"CustomRoom",')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -478,6 +480,11 @@ if __name__ == "__main__":
         #OBJECT TEXTURE INFO
         f.write(', "diffuseTexture": "default.jpg","normalTexture": "defaultNorm.jpg"},')
         
+
+
+############################################################ GENERATE DOOR FOR FIRST ROOM / HALLWAY 1
+        f.write('{"name": "Room1Hallway1Door", "material": {"diffuse": [1,1,1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 0.2},"type":"CustomDoor", "vertices": [[0, 0, 2], [0, 0, 3], [0, 3, 2], [0, 3, 3]], "normals": [[0, 0, 2], [0, 0, 3], [0, 3, 2], [0, 3, 3]], "triangles": [[0, 1, 2], [0, 2, 3]]},')
+
 ############################################################# GENERATE HALLWAY 1
         vlist, nlist, flist, vInd = generateHallway1(-8, 5, -1, (0, 0, 3), vInd)
 
@@ -554,4 +561,11 @@ if __name__ == "__main__":
         f.write('},')
 
 ################################################### PLAYER, CAMERA, AND SETTINGS
-        f.write('{"name": "Player","material": {"diffuse": [0.5882,0.5882,0.5882],"ambient": [0.3,0.3,0.3],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type": "cube","position": [2.5,0,2.5],"scale": [1,2.5,1],"diffuseTexture": "default.jpg","normalTexture": "defaultNorm.jpg","rotation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent": null,"model": null}],"pointLights": [{"name": "pointLight1","colour": [1,1,1],"position": [0,5,0],"strength": 2,"quadratic": 0.035,"linear": 0.09,"constant": 1,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}],"settings": {"camera": {"name": "mainCamera","position": [4,4,4],"atPoint": [2.5,0,2.5],"up": [0,1,0]},"backgroundColor": [0,0,0]}}]')
+        f.write('{"name": "Player","material": {"diffuse": [0.5882,0.5882,0.5882],"ambient": [0.3,0.3,0.3],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type": "cube","position": [2.5,0,2.5],"scale": [1,2.5,1],"diffuseTexture": "default.jpg","normalTexture": "defaultNorm.jpg","rotation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent": null,"model": null}],"pointLights": [{"name": "pointLight1","colour": [1,1,1],"position": [0,5,0],"strength": 2,"quadratic": 0.035,"linear": 0.09,"constant": 1,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}],"settings": {"camera": {"name": "mainCamera","position": [4,4,4],"atPoint": [2.5,0,2.5],"up": [0,1,0]},"backgroundColor": [0,0,0]}')
+
+
+
+
+################################################### END OF JSON FILE
+
+        f.write(' } ]')

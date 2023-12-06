@@ -91,7 +91,8 @@ async function main() {
         in vec2 oUV;
 
         uniform PointLight mainLight;
-        uniform vec3 diffuseVal;
+        uniform vec3 uDiffuseVal;
+        uniform float uAlphaVal;
         
 
         uniform int samplerExists;
@@ -102,10 +103,10 @@ async function main() {
 
             if (samplerExists == 1) {
                 vec3 textureColour = texture(uTexture, oUV).rgb;
-                fragColor = vec4(diffuseVal * textureColour, 1.0);
+                fragColor = vec4(uDiffuseVal * textureColour, uAlphaVal);
             }
             else {
-                fragColor = vec4(diffuseVal, 1.0);
+                fragColor = vec4(uDiffuseVal, uAlphaVal);
             }
         }
         `;
@@ -253,6 +254,31 @@ function drawScene(gl, deltaTime, state) {
     // iterate over each object and render them
     sorted.map((object) => {
         gl.useProgram(object.programInfo.program);
+
+        // Not working atm
+        if (object.material.alpha < 1.0) {
+            // Depth testing allows WebGL to figure out what order to draw our objects such that the look natural.
+            // We want to draw far objects first, and then draw nearer objects on top of those to obscure them.
+            // To determine the order to draw, WebGL can test the Z value of the objects.
+            // The z-axis goes out of the screen
+
+            // TODO turn off depth masking
+            gl.depthMask(false);
+            // enable blending and specify blending function
+            gl.enable(gl.BLEND);
+            gl.blendFunc(gl.ONE_MINUS_CONSTANT_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+            //gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        }
+        else {
+            // TODO disable blending
+            gl.disable(gl.BLEND);
+            // enable depth masking and z-buffering
+            gl.depthMask(true);
+            gl.enable(gl.DEPTH_TEST);
+            // specify depth function
+            gl.depthFunc(gl.LEQUAL); // Near things obscure far things
+        }
+
         {
             // Projection Matrix ....
             let projectionMatrix = mat4.create();
@@ -308,6 +334,7 @@ function drawScene(gl, deltaTime, state) {
             gl.uniform3fv(object.programInfo.uniformLocations.ambientVal, object.material.ambient);
             gl.uniform3fv(object.programInfo.uniformLocations.specularVal, object.material.specular);
             gl.uniform1f(object.programInfo.uniformLocations.nVal, object.material.n);
+            gl.uniform1f(object.programInfo.uniformLocations.alphaVal, object.material.alpha);
 
             gl.uniform1i(object.programInfo.uniformLocations.numLights, state.numLights);
             // if (state.pointLights.length > 1) {

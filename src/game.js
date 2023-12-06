@@ -3,8 +3,11 @@ class Game {
         this.state = state;
         this.spawnedObjects = [];
         this.collidableObjects = [];
+        this.rooms = [];
         this.check = true;
         this.DEBUG = true;
+        this.startTime;
+        this.frameFrate = 0;
     }
 
 
@@ -14,16 +17,121 @@ class Game {
     }
 
     // example - create a collider on our object with various fields we might need (you will likely need to add/remove/edit how this works)
-    // createSphereCollider(object, radius, onCollide = null) {
-    //     object.collider = {
-    //         type: "SPHERE",
-    //         radius: radius,
-    //         onCollide: onCollide ? onCollide : (otherObject) => {
-    //             console.log(`Collided with ${otherObject.name}`);
-    //         }
-    //     };
-    //     this.collidableObjects.push(object);
-    // }
+    createSphereCollider(object, radius, onCollide = null) {
+        object.collider = {
+            type: "SPHERE",
+            radius: radius,
+            onCollide: onCollide ? onCollide : (otherObject) => {
+                console.log(`Collided with ${otherObject.name}`);
+            }
+        };
+        this.collidableObjects.push(object);
+    }
+
+    createRoom(object) {
+        let minX = null;
+        let maxX = null;
+        let minZ = null;
+        let maxZ = null;
+
+        for (let i = 0; i < object.model.vertices.length; i+=3) {
+            let x = object.model.vertices[i];
+            let z = object.model.vertices[i+2];
+
+            if (minX == null || x < minX) {
+                minX = x;
+            }
+
+            if (maxX == null || x > maxX) {
+                maxX = x;
+            }
+
+            if (minZ == null || z < minZ) {
+                minZ = z;
+            }
+            
+            if (maxZ == null || z > maxZ) {
+                maxZ = z;
+            }
+        }
+
+        object.collider = {
+            type: "ROOM",
+            bounds : {
+                minX: minX,
+                maxX: maxX,
+                minZ: minZ,
+                maxZ: maxZ,
+            },
+            /*onCollide: onCollide ? onCollide : (otherObject) => {
+                console.log(`Collided with ${otherObject.name}`);
+                object.stop = 1;
+            }*/
+        };
+        this.rooms.push(object);
+    }
+
+    // Similar to creating a room, except doors occupy 1D so area must be added to either side of the doors
+    createDoor(object) {
+        let minX = null;
+        let maxX = null;
+        let minZ = null;
+        let maxZ = null;
+
+        // How far to extend the door "room"
+        let extension = 1;
+
+        for (let i = 0; i < object.model.vertices.length; i+=3) {
+            let x = object.model.vertices[i];
+            let z = object.model.vertices[i+2];
+
+            if (minX == null || x < minX) {
+                minX = x;
+            }
+
+            if (maxX == null || x > maxX) {
+                maxX = x;
+            }
+
+            if (minZ == null || z < minZ) {
+                minZ = z;
+            }
+            
+            if (maxZ == null || z > maxZ) {
+                maxZ = z;
+            }
+        }
+
+        if (minX == maxX) {
+            // The door is parallel to the x plane, extend into +- x
+            console.log(`Door paralel to x: x1:${minX}, x2:${maxX}, z1:${minZ}, z2:${maxZ}`)
+            minX -= extension * 2;
+            maxX += extension * 2;
+            minZ -= extension / 2;
+            maxZ += extension / 2 ;
+        } else if (minZ == maxZ) {
+            // The door is parallel to the z plane, extend into +- z
+            minX -= extension / 2;
+            maxX += extension / 2;
+            minZ -= extension * 2;
+            maxZ += extension * 2;
+        }
+
+        object.collider = {
+            type: "DOOR",
+            bounds : {
+                minX: minX,
+                maxX: maxX,
+                minZ: minZ,
+                maxZ: maxZ,
+            },
+            /*onCollide: onCollide ? onCollide : (otherObject) => {
+                console.log(`Collided with ${otherObject.name}`);
+                object.stop = 1;
+            }*/
+        };
+        this.rooms.push(object);
+    }
 
     // example - function to check if an object is colliding with collidable objects
     // checkCollision(object) {
@@ -36,10 +144,97 @@ class Game {
     //     });
     // }
 
+    // Check if a point is inside bounds
+    // Adapted from https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_collision_detection#point_vs._aabb
+    isPointInsideBounds(point, bounds, radius = 0) {
+        //let posX = point.x;
+        //let posZ = point.z;
+        let posX = point[0];
+        let posZ = point[2];
+        return (
+            posX - radius > bounds.minX &&
+            posX + radius < bounds.maxX &&
+            posZ - radius > bounds.minZ &&
+            posZ + radius < bounds.maxZ
+          );
+    }
+
+    // example - function to check if an object is colliding with collidable objects
+    checkCollision(object) {
+
+        // keep track of any collisions, and the minimum distance between two objects when colliding
+        let minDistance = null;
+        let collisionDetected = false;
+        let inMap = false;
+
+        let position1 = vec3.create();
+        vec3.transformMat4(position1, object.model.position, object.modelMatrix);
+        let position2 = vec3.create();
+
+        // loop over all the other collidable objects 
+        for (const otherObject of this.collidableObjects) {
+
+            // Skip when the objects are the same
+            if (otherObject.name === object.name) {
+                continue;
+            }
+
+            if (otherObject.collider.type === "ROOM") {
+                // For rooms, just check if the object is outside the x and y min / max
+
+                if (object.collider.type === "SPHERE") {
+                    if (this.isPointInsideBounds(object.model.position, otherObject.collider.bounds, object.collider.radius)) {
+                        inMap = true;
+                    }
+                }
+
+            } else {
+
+                vec3.transformMat4(position2, otherObject.model.position, otherObject.modelMatrix);
+
+                let distance = vec3.distance(position1, position2);
+                let combinedRadius = (object.collider.radius + otherObject.collider.radius);
+
+                // check the distance is less than the 2 radius values combined
+                if (distance < combinedRadius) {
+                    object.collider.onCollide(otherObject);
+                    minDistance = combinedRadius - distance;
+                    if (minDistance == null || combinedRadius - distance < minDistance) {
+                        minDistance = combinedRadius - distance;
+                    }
+                    collisionDetected = true;
+                }
+            }
+            // do a check to see if we have collided, if we have we can call object.onCollide(otherObject) which will
+            // call the onCollide we define for that specific object. This way we can handle collisions identically for all
+            // objects that can collide but they can do different things (ie. player colliding vs projectile colliding)
+            // use the modeling transformation for object and otherObject to transform position into current location
+        };
+        return inMap;
+    }
+
+    checkInMap(object) {
+        let inMap = false;
+
+        let position1 = vec3.create();
+        vec3.transformMat4(position1, object.model.position, object.modelMatrix);
+
+        // loop over all the other room objects 
+        for (const otherObject of this.rooms) {
+            if (object.collider.type === "SPHERE") {
+                if (this.isPointInsideBounds(position1, otherObject.collider.bounds, object.collider.radius)) {
+                    inMap = true;
+                }
+            }
+        };
+        return inMap;
+    }
+
     // runs once on startup after the scene loads the objects
     async onStart() {
 
         console.log("On start");
+        this.startTime = Date.now();
 
         // this just prevents the context menu from popping up when you right click
         document.addEventListener("contextmenu", (e) => {
@@ -49,7 +244,22 @@ class Game {
         // example - set an object in onStart before starting our render loop!
         this.player = getObject(this.state, "Player");
         console.log(this.player)
-        const otherCube = getObject(this.state, "cube2"); // we wont save this as instance var since we dont plan on using it in update
+
+        // Add all the rooms to the list of rooms
+        for (const obj of this.state.objects) {
+            if (obj.name.includes("Door")) {
+                this.createDoor(obj);
+                console.log(obj);
+            }
+            else if (obj.name.includes("Room") || obj.name.includes("Hall")) {
+                this.createRoom(obj);
+                console.log(obj);
+            }
+        }
+
+        this.createSphereCollider(this.player, 0.4);
+
+        //const otherCube = getObject(this.state, "cube2"); // we wont save this as instance var since we dont plan on using it in update
 
         // example - create sphere colliders on our two objects as an example, we give 2 objects colliders otherwise
         // no collision can happen
@@ -64,28 +274,46 @@ class Game {
 
             switch (e.key) {
                 case "w":
+                    // Move forwards
                     var oldPlayerPos = vec3.clone(this.player.model.position);
                     this.player.movePlayerForward();
-                    vec3.add(this.player.atPoint, this.player.atPoint, this.player.at);
-                    console.log(this.player.model.position);
-                    var newPlayerPos = this.player.model.position;
-                    checkCamera(this.state, oldPlayerPos, newPlayerPos);
+
+                    if (this.checkInMap(this.player)) {
+                        //TODO what does this do? it's not in the "s" case
+                        // This is already present in the function movePlayerForward()
+                        //vec3.add(this.player.atPoint, this.player.atPoint, this.player.at);
+                        //console.log(this.player.model.position);
+                        var newPlayerPos = this.player.model.position;
+                        checkCamera(this.state, oldPlayerPos, newPlayerPos);
+                    } else {
+                       this.player.movePlayerBackward();
+                    }
+                    console.log("in map: " + this.checkInMap(this.player) + ", pos: " + this.player.model.position + ", room: ");
                     break;
 
                 case 'd':
+                    // Turn player to right
                     this.player.rotatePlayer('y', -0.05);
                     break;
 
                 case 'a':
+                    // Turn player left
                     this.player.rotatePlayer('y', 0.05);
                     break;
 
                 case "s":
+                    // Move player backwards
                     var oldPlayerPos = vec3.clone(this.player.model.position);
                     this.player.movePlayerBackward()
-                    console.log(this.player.model.position);
+
+                    if (this.checkInMap(this.player)) {
+                    //console.log(this.player.model.position);
                     var newPlayerPos = this.player.model.position;
                     checkCamera(this.state, oldPlayerPos, newPlayerPos);
+                    } else {
+                       this.player.movePlayerForward();
+                    }
+                    console.log("in map: " + this.checkInMap(this.player) + ", pos: " + this.player.model.position);
                     break;
 
                 case "A":
@@ -231,6 +459,8 @@ class Game {
 
     // Runs once every frame non stop after the scene loads
     onUpdate(deltaTime) {
+        this.frameFrate ++;
+        //console.log("Framerate: " + this.frameFrate / ((Date.now() - this.startTime) * .001));
         // TODO - Here we can add game logic, like moving game objects, detecting collisions, you name it. Examples of functions can be found in sceneFunctions
 
         // example: Rotate a single object we defined in our start method
