@@ -355,6 +355,7 @@ class Game {
             }
         }
 
+        // Make the player collidable
         this.createSphereCollider(this.player, 0.3);
 
         // example - setting up a key press event to move an object in the scene
@@ -431,69 +432,7 @@ class Game {
             e.preventDefault();
 
             switch (e.key) {
-                /*case "w":
-                    // Move forwards
-                    this.music.play();
-
-                    var oldPlayerPos = vec3.clone(this.player.model.position);
-                    this.player.movePlayerForward(this.playerSpeed);
-                    // if(this.state.holdItem) {
-                    //     var temp = vec3.fromValues();
-                    //     vec3.scale(temp, this.player.at, 0.1);
-                    //     this.state.holdItem.translate(temp);
-                    // }
-                    var centroid = vec3.create();
-                    vec3.add(centroid, this.player.model.position, this.player.centroid)
-                    //console.log(`Player position: ${this.player.model.position}, centroid: ${this.player.centroid}, real centroid: ${centroid}`);
-
-                    if (this.checkInMap(this.player)) {
-                        var newPlayerPos = this.player.model.position;
-                        checkCamera(this.state, oldPlayerPos, newPlayerPos);
-                    } else {
-                      this.player.movePlayerBackward(this.playerSpeed);
-                    }
-                    var inBounds = this.checkInMap(this.player);
-                    console.log(`in map: ${inBounds}, pos: ${this.player.model.position}, centroid pos: ${centroid}`);
-                    if (!inBounds) {
-                        console.error("Out of bounds");
-                    }
-                    break;
-
-                case 'd':
-                    // Turn player to right
-                    this.player.rotatePlayer('y', -0.05 * this.playerTurnSpeed);
-                    break;
-
-                case 'a':
-                    // Turn player left
-                    this.player.rotatePlayer('y', 0.05 * this.playerTurnSpeed);
-                    break;
-
-                case "s":
-                    // Move player backwards
-                    var oldPlayerPos = vec3.clone(this.player.model.position);
-                    this.player.movePlayerBackward(this.playerSpeed)
-                    var centroid = vec3.create();
-                    vec3.add(centroid, this.player.model.position, this.player.centroid)
-                    // if(this.state.holdItem) {
-                    //     var temp = vec3.fromValues();
-                    //     vec3.scale(temp, this.player.at, -0.1);
-                    //     this.state.holdItem.translate(temp);
-                    // }
-                    //console.log(this.player.model.position);
-
-                    if (this.checkInMap(this.player)) {
-                        var newPlayerPos = this.player.model.position;
-                        checkCamera(this.state, oldPlayerPos, newPlayerPos);
-                    } else {
-                      this.player.movePlayerForward(this.playerSpeed);
-                    }
-                    var inBounds = this.checkInMap(this.player);
-                    console.log(`in map: ${inBounds}, pos: ${this.player.model.position}, centroid pos: ${centroid}`);
-                    break;*/
-
                 case " ":
-
                     if (vec3.dist(this.player.model.position, vec3.fromValues(0.0, 0, -6)) <= 2.0 && this.state.holdItem.name == "knife") {
                         this.rope.translate(vec3.fromValues(0.0, -50.0, 0.0));
                         this.CHANDELIER = true;
