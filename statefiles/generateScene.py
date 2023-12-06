@@ -48,10 +48,10 @@ def generateRoom1(x, z, y, origin, door, vertInd):
     flist.append([4, 6, 5])
     flist.append([4, 7, 6])
 
-    uvlist.append([0, 0])
-    uvlist.append([door[1], 0])
-    uvlist.append([door[1], door[2]/y])
-    uvlist.append([0, door[2]/y])
+    uvlist.append([door[1]/z, 0])
+    uvlist.append([1, 0])
+    uvlist.append([1, door[2]/y])
+    uvlist.append([door[1]/z, door[2]/y])
 
     #FRONT FACE TOP
     vlist.append([origin[0], origin[1] + door[2], origin[2]])
@@ -67,11 +67,12 @@ def generateRoom1(x, z, y, origin, door, vertInd):
     flist.append([8, 9, 10])
     flist.append([8, 10, 11])
 
-    uvlist.append([0, 0])
+    uvlist.append([0, door[2]/y])
     uvlist.append([0, 1])
     uvlist.append([1, 1])
-    uvlist.append([1, 0])
-    
+    uvlist.append([1, door[2]/y])
+
+    #LEFT FACE
     vlist.append([origin[0], origin[1], origin[2]+z])
     vlist.append([origin[0]+x, origin[1], origin[2] + z])
     vlist.append([origin[0]+x, origin[1]+y, origin[2] + z])
@@ -90,6 +91,7 @@ def generateRoom1(x, z, y, origin, door, vertInd):
     uvlist.append([1, 1])
     uvlist.append([1, 0])
 
+    #BACK FACE
     vlist.append([origin[0]+x, origin[1], origin[2]+z])
     vlist.append([origin[0]+x, origin[1]+y, origin[2]+z])
     vlist.append([origin[0]+x, origin[1], origin[2]])
@@ -108,6 +110,7 @@ def generateRoom1(x, z, y, origin, door, vertInd):
     uvlist.append([1, 1])
     uvlist.append([1, 0])
 
+    #RIGHT FACE
     vlist.append([origin[0]+x, origin[1], origin[2]])
     vlist.append([origin[0]+x, origin[1]+y, origin[2]])
     vlist.append([origin[0], origin[1], origin[2]])
@@ -126,6 +129,7 @@ def generateRoom1(x, z, y, origin, door, vertInd):
     uvlist.append([1, 1])
     uvlist.append([1, 0])
 
+    #BOTTOM FACE
     vlist.append([origin[0], origin[1], origin[2]])
     vlist.append([origin[0], origin[1], origin[2] + z])
     vlist.append([origin[0]+x, origin[1], origin[2] + z])
@@ -144,6 +148,7 @@ def generateRoom1(x, z, y, origin, door, vertInd):
     uvlist.append([-2, -2])
     uvlist.append([-2, -1])
 
+    #TOP FACE
     vlist.append([origin[0], origin[1]+y, origin[2]])
     vlist.append([origin[0], origin[1]+y, origin[2] + z])
     vlist.append([origin[0]+x, origin[1]+y, origin[2] + z])
@@ -831,12 +836,14 @@ def generateRoomObj(x, z, y, origin, door):
 if __name__ == "__main__":
 
     with open('scene.json', 'w') as f:
+        # Start of object JSON file
+        f.write('[ { "objects": [ ')
 
 ############################################################ GENERATE FIRST ROOM
         vlist, nlist, flist, uvlist, vInd = generateRoom1(5, 5, 5, (0, 0, 0), (1, 3, 3), 0)
 
         #OBJECT MATERIAL INFO
-        f.write('[ { "objects": [ {"name": "Room1", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [1.0,1.0,1.0],"n": 10.000002,"shaderType": 3,"alpha": 1},"type":"CustomRoom",')
+        f.write('{"name": "Room1", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [1.0,1.0,1.0],"n": 10.000002,"shaderType": 3,"alpha": 1},"type":"CustomRoom",')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -862,6 +869,11 @@ if __name__ == "__main__":
         #OBJECT TEXTURE INFO
         f.write(', "diffuseTexture": "wall.jpg", "floorTexture": "cementFloor1.jpg","normalTexture": "defaultNorm.jpg"},')
         
+
+
+############################################################ GENERATE DOOR FOR FIRST ROOM / HALLWAY 1
+        f.write('{"name": "Room1Hallway1Door", "material": {"diffuse": [1,1,1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 0.2},"type":"CustomDoor", "vertices": [[0, 0, 1], [0, 0, 3]], "normals": [[0, 0, 1], [0, 0, 3]], "triangles": []},')
+
 ############################################################# GENERATE HALLWAY 1
         vlist, nlist, flist, vInd = generateHallway1(-10, 5, -2, (0, 0, 3), vInd)
 
@@ -1182,4 +1194,11 @@ if __name__ == "__main__":
         f.write(',{"name": "mainRoomLight", "colour": [0.3,0.050,0.01],"position": [-1,12,-24],"strength": 20,"quadratic": 0.035,"linear": 0.09,"constant": 1,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}')
         f.write(',{"name": "puzzleRoomLight", "colour": [0.1,0.025,0.01],"position": [-28,3,-10],"strength": 5,"quadratic": 0.035,"linear": 0.09,"constant": 1,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}')
         f.write('],')
-        f.write('"settings": {"camera": {"name": "mainCamera","position": [4,4,4],"atPoint": [2.5,0,2.5],"up": [0,1,0]},"backgroundColor": [0,0,0]} }]')
+        f.write('"settings": {"camera": {"name": "mainCamera","position": [4,4,4],"atPoint": [2.5,0,2.5],"up": [0,1,0]},"backgroundColor": [0,0,0]} ')
+
+
+
+
+################################################### END OF JSON FILE
+
+        f.write(' } ]')

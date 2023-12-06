@@ -92,7 +92,6 @@ class CustomObject {
                 alpha: this.gl.getUniformLocation(shaderProgram, 'alpha'),
                 // normalSamplerExists: this.gl.getUniformLocation(shaderProgram, 'uTextureNormExists'),
                 // normalSampler: this.gl.getUniformLocation(shaderProgram, 'uTextureNorm')
-                alpha: this.gl.getUniformLocation(shaderProgram, 'alpha'),
             },
         };
 
