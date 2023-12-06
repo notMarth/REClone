@@ -116,7 +116,6 @@ class Game {
 
         if (minX == maxX) {
             // The door is parallel to the x plane, extend into +- x
-            console.log(`Door paralel to x: x1:${minX}, x2:${maxX}, z1:${minZ}, z2:${maxZ}`)
             minX -= extension * 2;
             maxX += extension * 2;
             minZ -= extension / 2;
@@ -314,12 +313,12 @@ class Game {
                     // }
                     console.log(this.player.model.position);
 
-                    if (this.checkInMap(this.player)) {
+                    //if (this.checkInMap(this.player)) {
                         var newPlayerPos = this.player.model.position;
                         checkCamera(this.state, oldPlayerPos, newPlayerPos);
-                    } else {
-                       this.player.movePlayerBackward();
-                    }
+                    //} else {
+                    //   this.player.movePlayerBackward();
+                    //}
                     //console.log("in map: " + this.checkInMap(this.player) + ", pos: " + this.player.model.position);
                     break;
 

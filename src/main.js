@@ -262,15 +262,16 @@ async function main() {
         } else if (object.type.includes("Custom")) {
             addCustom(object, state);
         }
-        else if (object.type === "Room") {
-            addRoom(object, state)
-        }
-        else if (object.type === "Hallway") {
-            addHall(object, state)
-        }
-        else if (object.type === "Corner") {
-            addCorner(object, state)
-        }
+        // Not using custom object classes for now
+        // else if (object.type === "Room") {
+        //     addRoom(object, state)
+        // }
+        // else if (object.type === "Hallway") {
+        //     addHall(object, state)
+        // }
+        // else if (object.type === "Corner") {
+        //     addCorner(object, state)
+        // }
     }
 
     const then = new Date();

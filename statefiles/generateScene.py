@@ -48,10 +48,10 @@ def generateRoom1(x, z, y, origin, door, vertInd):
     flist.append([4, 6, 5])
     flist.append([4, 7, 6])
 
-    uvlist.append([0, 0])
-    uvlist.append([door[1], 0])
-    uvlist.append([door[1], door[2]/y])
-    uvlist.append([0, door[2]/y])
+    uvlist.append([door[1]/z, 0])
+    uvlist.append([1, 0])
+    uvlist.append([1, door[2]/y])
+    uvlist.append([door[1]/z, door[2]/y])
 
     #FRONT FACE TOP
     vlist.append([origin[0], origin[1] + door[2], origin[2]])
@@ -867,7 +867,7 @@ if __name__ == "__main__":
 
 
 ############################################################ GENERATE DOOR FOR FIRST ROOM / HALLWAY 1
-        f.write('{"name": "Room1Hallway1Door", "material": {"diffuse": [1,1,1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 0.2},"type":"CustomDoor", "vertices": [[0, 0, 2], [0, 0, 3], [0, 3, 2], [0, 3, 3]], "normals": [[0, 0, 2], [0, 0, 3], [0, 3, 2], [0, 3, 3]], "triangles": [[0, 1, 2], [0, 2, 3]]},')
+        f.write('{"name": "Room1Hallway1Door", "material": {"diffuse": [1,1,1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 0.2},"type":"CustomDoor", "vertices": [[0, 0, 1], [0, 0, 3]], "normals": [[0, 0, 1], [0, 0, 3]], "triangles": []},')
 
 ############################################################# GENERATE HALLWAY 1
         vlist, nlist, flist, vInd = generateHallway1(-10, 5, -2, (0, 0, 3), vInd)
