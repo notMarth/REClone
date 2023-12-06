@@ -67,11 +67,12 @@ def generateRoom1(x, z, y, origin, door, vertInd):
     flist.append([8, 9, 10])
     flist.append([8, 10, 11])
 
-    uvlist.append([0, 0])
+    uvlist.append([0, door[2]/y])
     uvlist.append([0, 1])
     uvlist.append([1, 1])
-    uvlist.append([1, 0])
-    
+    uvlist.append([1, door[2]/y])
+
+    #LEFT FACE
     vlist.append([origin[0], origin[1], origin[2]+z])
     vlist.append([origin[0]+x, origin[1], origin[2] + z])
     vlist.append([origin[0]+x, origin[1]+y, origin[2] + z])
@@ -90,6 +91,7 @@ def generateRoom1(x, z, y, origin, door, vertInd):
     uvlist.append([1, 1])
     uvlist.append([1, 0])
 
+    #BACK FACE
     vlist.append([origin[0]+x, origin[1], origin[2]+z])
     vlist.append([origin[0]+x, origin[1]+y, origin[2]+z])
     vlist.append([origin[0]+x, origin[1], origin[2]])
@@ -108,6 +110,7 @@ def generateRoom1(x, z, y, origin, door, vertInd):
     uvlist.append([1, 1])
     uvlist.append([1, 0])
 
+    #RIGHT FACE
     vlist.append([origin[0]+x, origin[1], origin[2]])
     vlist.append([origin[0]+x, origin[1]+y, origin[2]])
     vlist.append([origin[0], origin[1], origin[2]])
@@ -126,6 +129,7 @@ def generateRoom1(x, z, y, origin, door, vertInd):
     uvlist.append([1, 1])
     uvlist.append([1, 0])
 
+    #BOTTOM FACE
     vlist.append([origin[0], origin[1], origin[2]])
     vlist.append([origin[0], origin[1], origin[2] + z])
     vlist.append([origin[0]+x, origin[1], origin[2] + z])
@@ -144,6 +148,7 @@ def generateRoom1(x, z, y, origin, door, vertInd):
     uvlist.append([1, 1])
     uvlist.append([1, 0])
 
+    #TOP FACE
     vlist.append([origin[0], origin[1]+y, origin[2]])
     vlist.append([origin[0], origin[1]+y, origin[2] + z])
     vlist.append([origin[0]+x, origin[1]+y, origin[2] + z])
