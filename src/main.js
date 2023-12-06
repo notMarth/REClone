@@ -333,16 +333,16 @@ async function main() {
             ],
             [
                 //ENTER THE END
-                vec3.fromValues(5,-49, 9), vec3.fromValues(0, 1, 0), vec3.fromValues(5.6,-48.5, 8)
+                vec3.fromValues(5,-48, 9), vec3.fromValues(0, 1, 0), vec3.fromValues(7,-48.5, 8)
             ],
 
             [
                 //MIDWAY THROUGH THE END
-                vec3.fromValues(20,-46, 0.1), vec3.fromValues(0, 1, 0), vec3.fromValues(20,-47, 1.5)
+                vec3.fromValues(20.8,-46, 0.6), vec3.fromValues(0, 1, 0), vec3.fromValues(23,-47, 5)
             ],
             [
                 //DONT STOP YET
-                vec3.fromValues(29,-42, 9.8), vec3.fromValues(0, 1, 0), vec3.fromValues(30,-43, 8.5)
+                vec3.fromValues(20.25,-43, 8.5), vec3.fromValues(0, 1, 0), vec3.fromValues(33,-44, 7)
             ],
             [
                 //FINAL STRETCH
@@ -373,7 +373,7 @@ async function main() {
             ],
             [
                 //MAIN ROOM ENTRANCE
-                vec3.fromValues(-14,0,-9), vec3.fromValues(-8, 24, -6)
+                vec3.fromValues(-14,0,-10), vec3.fromValues(-8, 24, -6)
             ],
             [
                 //MAIN ROOM TOWARDS PUZZLE ROOM
@@ -399,11 +399,11 @@ async function main() {
                 //CENTER OF MAIN ROOM
                 vec3.fromValues(-14,0,-28), vec3.fromValues(-8, 5, -10)
             ],
+
             [
                 //CHANDELIER
                 vec3.fromValues(-3,0,-10), vec3.fromValues(3, 5, -6)
             ],
-
             [
                 //ROPE
                 vec3.fromValues(-8,0,-10), vec3.fromValues(-3, 5, -6)

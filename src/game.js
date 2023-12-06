@@ -364,12 +364,15 @@ class Game {
                     break;
 
                 case " ":
-                    checkPickup(this.state, this.player);
 
-                    if (vec3.dist(this.player.model.position, vec3.fromValues(0.0, 0, -6)) <= 2.0) {
+                    if (vec3.dist(this.player.model.position, vec3.fromValues(0.0, 0, -6)) <= 2.0 && this.state.holdItem.name == "knife") {
                         this.rope.translate(vec3.fromValues(0.0, -50.0, 0.0));
                         this.CHANDELIER = true;
+                        break;
                     }
+
+                    checkPickup(this.state, this.player);
+
 
 
                     if (this.checkInMap(this.player)) {
@@ -533,10 +536,16 @@ class Game {
     // Runs once every frame non stop after the scene loads
     onUpdate(deltaTime) {
 
-        if(vec3.dist(this.crateR.model.position, this.panelR.centroid) <= 0.5 && vec3.dist(this.crateB.model.position, this.panelB.centroid) <= 0.5 && vec3.dist(this.crateG.model.position, this.panelG.centroid) <=0.5 && !this.KNIFE) {
+        if(this.player.model.position[0] > 78) {
+            this.state.settings.backgroundColor = vec3.fromValues(0, 0, 0);
+            this.state.pointLights = [];
+            this.state.numLights = 0;
+        }
+
+        if(vec3.dist(this.crateR.model.position, this.panelR.centroid) <= 0.75 && vec3.dist(this.crateB.model.position, this.panelB.centroid) <= 0.75 && vec3.dist(this.crateG.model.position, this.panelG.centroid) <=0.75 && !this.KNIFE) {
             let knifeAudio = new Audio("knife.mp3");
             knifeAudio.play();
-            this.knife.translate(0.0, -20, 0.0);
+            this.knife.translate(vec3.fromValues(0.0, -20, 0.0));
             this.state.pickupItems.push(this.knife)
             this.KNIFE = true;
         }

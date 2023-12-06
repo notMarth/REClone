@@ -198,30 +198,31 @@ def generateMainRoom(x, z, y, origin, door1, door2, vertInd):
     nlist.append([origin[0], origin[1]+door1[2], origin[2]])
 
     uvlist.append([0, 0])
-    uvlist.append([1, 0])
-    uvlist.append([1, 1])
-    uvlist.append([0, 1])
+    uvlist.append([door1[0]/z, 0])
+    uvlist.append([door1[0]/z, door1[2]/y])
+    uvlist.append([0, door1[2]/y])
 
     flist.append([0, 1, 2])
     flist.append([0, 2, 3])
 
-    vlist.append([origin[0], origin[1], origin[2] + z])
     vlist.append([origin[0], origin[1], origin[2] + door1[1]])
-    vlist.append([origin[0], origin[1]+door1[2], origin[2] + door1[1]])
+    vlist.append([origin[0], origin[1], origin[2] + z])
     vlist.append([origin[0], origin[1]+door1[2], origin[2] + z])
+    vlist.append([origin[0], origin[1]+door1[2], origin[2] + door1[1]])
 
-    nlist.append([origin[0], origin[1], origin[2] + z])
+
     nlist.append([origin[0], origin[1], origin[2] + door1[1]])
-    nlist.append([origin[0], origin[1]+door1[2], origin[2] + door1[1]])
+    nlist.append([origin[0], origin[1], origin[2] + z])
     nlist.append([origin[0], origin[1]+door1[2], origin[2] + z])
+    nlist.append([origin[0], origin[1]+door1[2], origin[2] + door1[1]])
 
+    uvlist.append([door1[1]/z, 0])
     uvlist.append([1, 0])
-    uvlist.append([0, 0])
-    uvlist.append([0, 1])
-    uvlist.append([1, 1])
+    uvlist.append([1, door1[2]/y])
+    uvlist.append([door1[1]/z, door1[2]/y])
 
-    flist.append([4, 7, 5])
-    flist.append([5, 7, 6])
+    flist.append([4, 6, 5])
+    flist.append([4, 7, 6])
 
     vlist.append([origin[0], origin[1] + door1[2], origin[2]])
     vlist.append([origin[0], origin[1] + y, origin[2]])
@@ -233,13 +234,13 @@ def generateMainRoom(x, z, y, origin, door1, door2, vertInd):
     nlist.append([origin[0], origin[1] + y, origin[2] + z])
     nlist.append([origin[0], origin[1] + door1[2], origin[2] + z])
 
-    uvlist.append([0, 0])
+    uvlist.append([0, door1[2]/y])
     uvlist.append([0, 1])
     uvlist.append([1, 1])
-    uvlist.append([1, 0])
+    uvlist.append([1, door1[2]/y])
 
-    flist.append([8, 10, 9])
-    flist.append([8, 11, 10])
+    flist.append([8, 9, 10])
+    flist.append([8, 10, 11])
     
     vlist.append([origin[0], origin[1], origin[2]+z])
     vlist.append([origin[0]+door2[0], origin[1], origin[2] + z])
@@ -252,9 +253,9 @@ def generateMainRoom(x, z, y, origin, door1, door2, vertInd):
     nlist.append([origin[0], origin[1]+door2[2], origin[2]+z])
 
     uvlist.append([0, 0])
-    uvlist.append([1, 0])
-    uvlist.append([1, 1])
-    uvlist.append([0, 1])
+    uvlist.append([door2[0]/x, 0])
+    uvlist.append([door2[0]/x, door2[2]/y])
+    uvlist.append([0, door2[2]/y])
 
     flist.append([12, 14, 13])
     flist.append([12, 15, 14])
@@ -269,10 +270,10 @@ def generateMainRoom(x, z, y, origin, door1, door2, vertInd):
     nlist.append([origin[0]+x, origin[1] + door2[2], origin[2]])
     nlist.append([origin[0]+door2[1], origin[1]+door2[2], origin[2]])
 
-    uvlist.append([0, 0])
+    uvlist.append([door2[1]/x, 0])
     uvlist.append([1, 0])
-    uvlist.append([1, 1])
-    uvlist.append([0, 1])
+    uvlist.append([1, door2[2]/y])
+    uvlist.append([door2[1]/x, door2[2]/y])
 
     flist.append([16, 18, 17])
     flist.append([16, 19, 18])
@@ -287,10 +288,10 @@ def generateMainRoom(x, z, y, origin, door1, door2, vertInd):
     nlist.append([origin[0]+x, origin[1] + y, origin[2]])
     nlist.append([origin[0]+x, origin[1]+door2[2], origin[2]])
 
-    uvlist.append([0, 0])
+    uvlist.append([0, door2[2]/y])
     uvlist.append([0, 1])
     uvlist.append([1, 1])
-    uvlist.append([1, 0])
+    uvlist.append([1, door2[2]/y])
 
     flist.append([20, 22, 23])
     flist.append([20, 21, 22])    
@@ -920,7 +921,7 @@ if __name__ == "__main__":
         
         f.write(',"wallTexture": "wall.jpg", "floorTexture":"carpet.jpg"},')
 ##############################################################GENERATE MAIN ROOM
-        vlist, nlist, flist, uvlist, vInd = generateMainRoom(30, 24, 10, (-21, 0, -30), (10, 11, 3), (9, 11, 3), vInd)
+        vlist, nlist, flist, uvlist, vInd = generateMainRoom(30, 24, 10, (-21, 0, -30), (10, 12, 3), (9, 11, 3), vInd)
 
         #OBJECT MATERIAL INFO
         f.write('{"name": "MainRoom", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 5,"alpha": 1},"type":"Room", ')
@@ -1031,7 +1032,7 @@ if __name__ == "__main__":
         f.write('},')
 
 ########################################################## GENERATE PUZZLE ROOM
-        vlist, nlist, flist, uvlist, vInd = generateRoom1(-10, 24, 5, (-21.01, 0, -30), (10,11,3), (-1, -8), vInd)
+        vlist, nlist, flist, uvlist, vInd = generateRoom1(-10, 24, 5, (-21.01, 0, -30), (10,12,3), (-1, -8), vInd)
 
         #OBJECT MATERIAL INFO
         f.write('{"name": "PuzzleRoom", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 5,"alpha": 1},"type":"Room",')
@@ -1065,7 +1066,7 @@ if __name__ == "__main__":
         vlist, nlist, flist, uvlist, vInd = generateGlassPanel((-26, 0.02, -9), (-25, -8), 1, vInd)
 
         #OBJECT MATERIAL INFO
-        f.write('{"name": "RedPanel", "material": {"diffuse": [1,0.1,0.1],"ambient": [1,0.3,0.3], "specular": [1,0.05,0.05],"n": 20,"shaderType": 3,"alpha": 0.8},"type":"CustomPanel", "diffuseTexture": "glass.jpg", ')
+        f.write('{"name": "RedPanel", "material": {"diffuse": [1,0.1,0.1],"ambient": [1,0.3,0.3], "specular": [1,0.05,0.05],"n": 20,"shaderType": 3,"alpha": 1},"type":"CustomPanel", "diffuseTexture": "glass.jpg", ')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -1094,7 +1095,7 @@ if __name__ == "__main__":
         vlist, nlist, flist, uvlist, vInd = generateGlassPanel((-28, 0.02, -8), (-27, -7), 1, vInd)
 
         #OBJECT MATERIAL INFO
-        f.write('{"name": "GreenPanel", "material": {"diffuse": [0.1,1,0.1],"ambient": [0.3,1,0.3], "specular": [0.05,1,0.05],"n": 20,"shaderType": 3,"alpha": 0.8},"type":"CustomPanel", "diffuseTexture": "glass.jpg", ')
+        f.write('{"name": "GreenPanel", "material": {"diffuse": [0.1,1,0.1],"ambient": [0.3,1,0.3], "specular": [0.05,1,0.05],"n": 20,"shaderType": 3,"alpha": 1},"type":"CustomPanel", "diffuseTexture": "glass.jpg", ')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -1123,7 +1124,7 @@ if __name__ == "__main__":
         vlist, nlist, flist, uvlist, vInd = generateGlassPanel((-30, 0.02, -9), (-29, -8), 1, vInd)
 
         #OBJECT MATERIAL INFO
-        f.write('{"name": "BluePanel", "material": {"diffuse": [0.1,0.1,1],"ambient": [0.1,0.1,1], "specular": [0.05,0.05,1],"n": 20,"shaderType": 1,"alpha": 0.8},"type":"CustomPanel", "diffuseTexture": "glass.jpg", ')
+        f.write('{"name": "BluePanel", "material": {"diffuse": [0.1,0.1,1],"ambient": [0.1,0.1,1], "specular": [0.05,0.05,1],"n": 20,"shaderType": 1,"alpha": 1},"type":"CustomPanel", "diffuseTexture": "glass.jpg", ')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -1186,10 +1187,10 @@ if __name__ == "__main__":
         f.write('{"name": "GreenCrate","material": {"diffuse": [0,1,0],"ambient": [0.01,1,0.01],"specular": [0,0,0],"n": 10.000002,"shaderType": 3,"alpha": 1},"type": "cube","position": [-25,0,-29],"scale": [1,1,1],"diffuseTexture": "plywood.jpg","normalTexture": "defaultNorm.jpg","parent": null,"model": null}')
         f.write('],')
         f.write('"pointLights": [{"name": "startingRoomLight","colour": [0.001,0.025,0.025],"position": [2.5,2,2.5],"strength": 2,"quadratic": 0.25,"linear": 0.025,"constant": 0,"nearPlane": 0.5,"farPlane": 100,"shadow": 0},')
-        f.write('{"name": "hallLight1", "colour": [0.001,0.025,0.01],"position": [-8,3,2],"strength": 1,"quadratic": 0.25,"linear": 4,"constant": 0,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}')
-        f.write(',{"name": "hallLight2", "colour": [0.1,0.025,0.01],"position": [-11,3,-1],"strength": 1,"quadratic": 0.0025,"linear": 0.1,"constant": 0,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}')
+        f.write('{"name": "hallLight1", "colour": [0.001,0.01,0.01],"position": [-8,3,2],"strength": 1,"quadratic": 0.25,"linear": 4,"constant": 0,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}')
+        f.write(',{"name": "hallLight2", "colour": [0.001,0.01,0.01],"position": [-11,3,-1],"strength": 1,"quadratic": 0.0025,"linear": 0.1,"constant": 0,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}')
         f.write(',{"name": "mainRoomLight", "colour": [0,0.05,0.1],"position": [4.48,9.8,-17],"strength": 2,"quadratic": 0.0035,"linear": 0.0625,"constant":0 ,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}')
-        f.write(',{"name": "puzzleRoomLight", "colour": [0.1,0.025,0.01],"position": [-28,3,-10],"strength": 1,"quadratic": 0.035,"linear": 0.09,"constant": 0,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}')
+        f.write(',{"name": "puzzleRoomLight", "colour": [0.01,0.05,0.01],"position": [-28,3,-10],"strength": 1,"quadratic": 0.035,"linear": 0.1,"constant": 0,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}')
         f.write(',{"name": "endLight", "colour": [0.1,0.1,0.1],"position": [80,-50,5],"strength": 20,"quadratic": 0.00390625,"linear": 0.0625,"constant": 1,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}')
 
         f.write('],')
