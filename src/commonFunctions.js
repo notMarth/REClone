@@ -436,23 +436,24 @@ function addPlane(object, state, vertShader = null, fragShader = null) {
 
 function addCustom(object, state, vertShader = null, fragShader = null) {
     let tempObject = new CustomObject(state.gl, object);
+    tempObject.fragShader = fragShader ? fragShader : state.fragShaderSample;
 
-    if (tempObject.name.includes("Room") || tempObject.name.includes("Hallway")) {
-        tempObject.fragShader = state.fragShaderRooms;
-    }
-    else {
-        tempObject.fragShader = fragShader ? fragShader : state.fragShaderSample;
-    }
+    // if (tempObject.name.includes("Room") || tempObject.name.includes("Hallway")) {
+    //     tempObject.fragShader = state.fragShaderRooms;
+    // }
+    // else {
+    //     tempObject.fragShader = fragShader ? fragShader : state.fragShaderSample;
+    // }
     tempObject.vertShader = vertShader ? vertShader : state.vertShaderSample;
     tempObject.setup();
     addObjectToScene(state, tempObject);
     return tempObject;
 }
 
-function addRoom(object, state, vertShader = null, fragShader = null) {
+function addRoom(object, state, vertShader = null, fragShader = state.fragShaderRooms) {
     let tempObject = new Room(state.gl, object);
     tempObject.vertShader = vertShader ? vertShader : state.vertShaderSample;
-    tempObject.fragShader = fragShader ? fragShader : state.fragShaderSample;
+    tempObject.fragShader = fragShader ? fragShader : state.fragShaderRooms;
     tempObject.setup();
     addObjectToScene(state, tempObject);
     return tempObject;

@@ -8,6 +8,7 @@ window.onload = async () => {
         console.log("Starting to load scene file");
         //await parseOBJFileToJSON("chandelier.obj");
         await parseSceneFile(`./statefiles/${sceneFile}`, state);
+        
         main();
     } catch (err) {
         console.error(err);
@@ -349,13 +350,15 @@ async function main() {
             addCube(object, state);
         } else if (object.type === "plane") {
             addPlane(object, state);
-        } else if (object.type.includes("Custom")) {
+        } 
+        else if (object.type === "Room") {
+            addRoom(object, state)
+        }
+        else if (object.type.includes("Custom")) {
             addCustom(object, state);
         }
         // Not using custom object classes for now
-        // else if (object.type === "Room") {
-        //     addRoom(object, state)
-        // }
+        
         // else if (object.type === "Hallway") {
         //     addHall(object, state)
         // }
@@ -557,15 +560,16 @@ function drawScene(gl, deltaTime, state) {
                 } 
                 else if(object.material.shaderType === 5) {
                     state.samplerExists = 1;
-                    gl.activeTexture(gl.TEXTURE0);
+                    gl.activeTexture(gl.TEXTURE0 + 0);
                     gl.uniform1i(object.programInfo.uniformLocations.samplerExists, state.samplerExists);
                     gl.uniform1i(object.programInfo.uniformLocations.samplerWall, 0);
-                    gl.bindTexture(gl.TEXTURE_2D, object.model.floorTexture);
-                    gl.activeTexture(gl.TEXTURE1);
                     gl.uniform1i(object.programInfo.uniformLocations.samplerFloor, 1);
-                    gl.bindTexture(gl.TEXTURE_2D, object.model.wallTexture);
+                    gl.bindTexture(gl.TEXTURE_2D, object.model.textureW);
+                    gl.activeTexture(gl.TEXTURE0 + 1);
+                    gl.bindTexture(gl.TEXTURE_2D, object.model.textureF);
 
                 }
+                
                 else {
                     gl.activeTexture(gl.TEXTURE0);
                     state.samplerExists = 0;

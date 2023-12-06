@@ -422,6 +422,7 @@ def generateHallway1(x, y, z, origin, vertInd):
     vlist = []
     nlist = []
     flist = []
+    uvlist = []
 
     vlist.append([origin[0], origin[1], origin[2]])
     vlist.append([origin[0] + x, origin[1], origin[2]])
@@ -433,8 +434,13 @@ def generateHallway1(x, y, z, origin, vertInd):
     nlist.append([origin[0] + x, origin[1] + y, origin[2]])
     nlist.append([origin[0], origin[1] + y, origin[2]])
 
-    flist.append([0, 2, 1])
-    flist.append([0, 3, 2])
+    flist.append([0, 1, 2])
+    flist.append([0, 2, 3])
+
+    uvlist.append([0, 0])
+    uvlist.append([1, 0])
+    uvlist.append([1, 1])
+    uvlist.append([0, 1])
 
     vlist.append([origin[0], origin[1], origin[2]+z])
     vlist.append([origin[0] + x, origin[1], origin[2]+z])
@@ -446,8 +452,13 @@ def generateHallway1(x, y, z, origin, vertInd):
     nlist.append([origin[0] + x, origin[1] + y, origin[2]+z])
     nlist.append([origin[0], origin[1] + y, origin[2]+z])
 
-    flist.append([4, 5, 6])
-    flist.append([4, 6, 7])
+    flist.append([4, 6, 5])
+    flist.append([4, 7, 6])
+
+    uvlist.append([0, 0])
+    uvlist.append([1, 0])
+    uvlist.append([1, 1])
+    uvlist.append([0, 1])
 
     vlist.append([origin[0], origin[1], origin[2]])
     vlist.append([origin[0], origin[1], origin[2]+z])
@@ -459,8 +470,13 @@ def generateHallway1(x, y, z, origin, vertInd):
     nlist.append([origin[0] + x, origin[1], origin[2]+z])
     nlist.append([origin[0] + x, origin[1], origin[2]])
 
-    flist.append([8, 10, 9])
-    flist.append([8, 11, 10])
+    flist.append([8, 9, 10])
+    flist.append([8, 10, 11])
+
+    uvlist.append([-1, -1])
+    uvlist.append([-2, -1])
+    uvlist.append([-2, -2])
+    uvlist.append([-1, -2])
 
     vlist.append([origin[0], origin[1]+y, origin[2]])
     vlist.append([origin[0], origin[1]+y, origin[2]+z])
@@ -472,14 +488,19 @@ def generateHallway1(x, y, z, origin, vertInd):
     nlist.append([origin[0] + x, origin[1]+y, origin[2]+z])
     nlist.append([origin[0] + x, origin[1]+y, origin[2]])
 
-    flist.append([12, 13, 14])
-    flist.append([12, 14, 15])
+    flist.append([12, 14, 13])
+    flist.append([12, 15, 14])
+
+    uvlist.append([0, 0])
+    uvlist.append([1, 0])
+    uvlist.append([1, 1])
+    uvlist.append([0, 1])
 
     for i in range(len(flist)):
         for j in flist[i]:
             j+=vertInd
 
-    return vlist, nlist, flist, (vertInd + len(vlist))
+    return vlist, nlist, flist, uvlist, (vertInd + len(vlist))
 
 #x gives the x width of the hallway
 #y gives the height of the hallway
@@ -713,126 +734,6 @@ def generateRope(origin, endPoint, width, n, vertInd):
     return vlist, nlist, flist, (vertInd + len(vlist))
 
 
-#x gives the x length of the room
-#z gives the z length of the room
-#y gives the height of the room
-#origin gives the bottom left corner of the room (tuple)
-#suggestion: add number of triangles per rectangle subsection? Not sure if
-#large rectangles will be nice on textures
-#Just generates rectangles to bound the room
-#Used for obj testing in 3dviewer
-def generateRoomObj(x, z, y, origin, door):
-    vlist = []
-    nlist = []
-    flist = []
-    ind = 8
-
-    vlist.append(f'v {origin[0]} {origin[1]} {origin[2]}')
-    vlist.append(f'v {origin[0]} {origin[1]} {origin[2] + door[0]}')
-    vlist.append(f'v {origin[0]} {origin[1]+door[2]} {origin[2] + door[0]}')
-    vlist.append(f'v {origin[0]} {origin[1]+door[2]} {origin[2]}')
-
-    nlist.append(f'vn {origin[0]} {origin[1]} {origin[2]}')
-    nlist.append(f'vn {origin[0]} {origin[1]} {origin[2] + door[0]}')
-    nlist.append(f'vn {origin[0]} {origin[1]+door[2]} {origin[2] + door[0]}')
-    nlist.append(f'vn {origin[0]} {origin[1]+door[2]} {origin[2]}')
-
-    flist.append('f 1//1 3//3 2//2')
-    flist.append('f 1//1 4//4 3//3')
-
-    vlist.append(f'v {origin[0]} {origin[1]} {origin[2] + z}')
-    vlist.append(f'v {origin[0]} {origin[1]} {origin[2] + door[1]}')
-    vlist.append(f'v {origin[0]} {origin[1]+door[2]} {origin[2] + door[1]}')
-    vlist.append(f'v {origin[0]} {origin[1]+door[2]} {origin[2] + z}')
-
-    nlist.append(f'vn {origin[0]} {origin[1]} {origin[2] + z}')
-    nlist.append(f'vn {origin[0]} {origin[1]} {origin[2] + door[1]}')
-    nlist.append(f'vn {origin[0]} {origin[1]+door[2]} {origin[2] + door[1]}')
-    nlist.append(f'vn {origin[0]} {origin[1]+door[2]} {origin[2] + z}')
-
-    flist.append('f 5//5 6//6 8//8')
-    flist.append('f 6//6 7//7 8//8')
-
-    vlist.append(f'v {origin[0]} {origin[1] + door[2]} {origin[2]}')
-    vlist.append(f'v {origin[0]} {origin[1] + y} {origin[2]}')
-    vlist.append(f'v {origin[0]} {origin[1] + y} {origin[2] + z}')
-    vlist.append(f'v {origin[0]} {origin[1] + door[2]} {origin[2] + z}')
-
-    nlist.append(f'vn {origin[0]} {origin[1] + door[2]} {origin[2]}')
-    nlist.append(f'vn {origin[0]} {origin[1] + y} {origin[2]}')
-    nlist.append(f'vn {origin[0]} {origin[1] + y} {origin[2] + z}')
-    nlist.append(f'vn {origin[0]} {origin[1] + door[2]} {origin[2] + z}')
-
-    flist.append('f 9//9 11//11 12//12')
-    flist.append('f 9//9 10//10 11//11')
-    
-    vlist.append(f'v {origin[0]} {origin[1]} {origin[2]+z}')
-    vlist.append(f'v {origin[0]+x} {origin[1]} {origin[2] + z}')
-    vlist.append(f'v {origin[0]+x} {origin[1]+y} {origin[2] + z}')
-    vlist.append(f'v {origin[0]} {origin[1]+y} {origin[2]+z}')
-
-    nlist.append(f'vn {origin[0]} {origin[1]} {origin[2]+z}')
-    nlist.append(f'vn {origin[0]+x} {origin[1]} {origin[2] + z}')
-    nlist.append(f'vn {origin[0]+x} {origin[1]+y} {origin[2] + z}')
-    nlist.append(f'vn {origin[0]} {origin[1]+y} {origin[2]+z}')
-
-    flist.append(f'f {5+ind}//{5+ind} {7+ind}//{7+ind} {6+ind}//{6+ind}')
-    flist.append(f'f {ind+5}//{ind+5} {ind+8}//{ind+8} {ind+7}//{ind+7}')
-
-    vlist.append(f'v {origin[0]+x} {origin[1]} {origin[2]+z}')
-    vlist.append(f'v {origin[0]+x} {origin[1]+y} {origin[2]+z}')
-    vlist.append(f'v {origin[0]+x} {origin[1]} {origin[2]}')
-    vlist.append(f'v {origin[0]+x} {origin[1]+y} {origin[2]}')
-
-    nlist.append(f'vn {origin[0]+x} {origin[1]} {origin[2]+z}')
-    nlist.append(f'vn {origin[0]+x} {origin[1]+y} {origin[2]+z}')
-    nlist.append(f'vn {origin[0]+x} {origin[1]} {origin[2]}')
-    nlist.append(f'vn {origin[0]+x} {origin[1]+y} {origin[2]}')
-
-    flist.append(f'f {ind+9}//{ind+9} {ind+10}//{ind+10} {ind+11}//{ind+11}')
-    flist.append(f'f {ind+11}//{ind+11} {ind+10}//{ind+10} {ind+12}//{ind+12}')
-
-    vlist.append(f'v {origin[0]+x} {origin[1]} {origin[2]}')
-    vlist.append(f'v {origin[0]+x} {origin[1]+y} {origin[2]}')
-    vlist.append(f'v {origin[0]} {origin[1]} {origin[2]}')
-    vlist.append(f'v {origin[0]} {origin[1]+y} {origin[2]}')
-
-    nlist.append(f'vn {origin[0]+x} {origin[1]} {origin[2]}')
-    nlist.append(f'vn {origin[0]+x} {origin[1]+y} {origin[2]}')
-    nlist.append(f'vn {origin[0]} {origin[1]} {origin[2]}')
-    nlist.append(f'vn {origin[0]} {origin[1]+y} {origin[2]}')
-
-    flist.append(f'f {ind+13}//{ind+13} {ind+14}//{ind+14} {ind+15}//{ind+15}')
-    flist.append(f'f {ind+15}//{ind+15} {ind+16}//{ind+16} {ind+14}//{ind+14}')
-
-    vlist.append(f'v {origin[0]} {origin[1]} {origin[2]}')
-    vlist.append(f'v {origin[0]} {origin[1]} {origin[2] + z}')
-    vlist.append(f'v {origin[0]+x} {origin[1]} {origin[2] + z}')
-    vlist.append(f'v {origin[0]+x} {origin[1]} {origin[2]}')
-
-    nlist.append(f'vn {origin[0]} {origin[1]} {origin[2]}')
-    nlist.append(f'vn {origin[0]} {origin[1]} {origin[2] + z}')
-    nlist.append(f'vn {origin[0]+x} {origin[1]} {origin[2] + z}')
-    nlist.append(f'vn {origin[0]+x} {origin[1]} {origin[2]}')
-
-    flist.append(f'f {ind+17}//{ind+17} {ind+18}//{ind+18} {ind+19}//{ind+19}')
-    flist.append(f'f {ind+17}//{ind+17} {ind+19}//{ind+19} {ind+20}//{ind+20}')
-
-    vlist.append(f'v {origin[0]} {origin[1]+y} {origin[2]}')
-    vlist.append(f'v {origin[0]} {origin[1]+y} {origin[2] + z}')
-    vlist.append(f'v {origin[0]+x} {origin[1]+y} {origin[2] + z}')
-    vlist.append(f'v {origin[0]+x} {origin[1]+y} {origin[2]}')
-
-    nlist.append(f'vn {origin[0]} {origin[1]+y} {origin[2]}')
-    nlist.append(f'vn {origin[0]} {origin[1]+y} {origin[2] + z}')
-    nlist.append(f'vn {origin[0]+x} {origin[1]+y} {origin[2] + z}')
-    nlist.append(f'vn {origin[0]+x} {origin[1]+y} {origin[2]}')
-
-    flist.append(f'f {ind+21}//{ind+21} {ind+23}//{ind+23} {ind+22}//{ind+22}')
-    flist.append(f'f {ind+21}//{ind+21} {ind+24}//{ind+24} {ind+23}//{ind+23}')
-
-    return vlist, nlist, flist
-
 if __name__ == "__main__":
 
     with open('scene.json', 'w') as f:
@@ -843,7 +744,7 @@ if __name__ == "__main__":
         vlist, nlist, flist, uvlist, vInd = generateRoom1(5, 5, 5, (0, 0, 0), (1, 3, 3), 0)
 
         #OBJECT MATERIAL INFO
-        f.write('{"name": "Room1", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [1.0,1.0,1.0],"n": 10.000002,"shaderType": 3,"alpha": 1},"type":"CustomRoom",')
+        f.write('{"name": "Room1", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [1.0,1.0,1.0],"n": 10.000002,"shaderType": 5,"alpha": 1},"type":"Room",')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -867,7 +768,7 @@ if __name__ == "__main__":
         f.write(f'{uvlist[-1]}]')
 
         #OBJECT TEXTURE INFO
-        f.write(', "diffuseTexture": "wall.jpg", "floorTexture": "cementFloor1.jpg","normalTexture": "defaultNorm.jpg"},')
+        f.write(', "wallTexture": "wall.jpg", "floorTexture": "cementFloor1.jpg","normalTexture": "defaultNorm.jpg"},')
         
 
 
@@ -875,10 +776,10 @@ if __name__ == "__main__":
         f.write('{"name": "Room1Hallway1Door", "material": {"diffuse": [1,1,1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 0.2},"type":"CustomDoor", "vertices": [[0, 0, 1], [0, 0, 3]], "normals": [[0, 0, 1], [0, 0, 3]], "triangles": []},')
 
 ############################################################# GENERATE HALLWAY 1
-        vlist, nlist, flist, vInd = generateHallway1(-10, 5, -2, (0, 0, 3), vInd)
+        vlist, nlist, flist, uvlist, vInd = generateHallway1(-10, 5, -2, (0, 0, 3), vInd)
 
         #OBJECT MATERIAL INFO
-        f.write('{"name": "Hall1", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [1.0,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type":"CustomHall",')
+        f.write('{"name": "Hall1", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [1.0,0.5,0.5],"n": 10.000002,"shaderType": 5,"alpha": 1},"type":"Room",')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -896,8 +797,13 @@ if __name__ == "__main__":
             f.write(f'{flist[i]}, ')
         f.write(f'{flist[-1]}]')
 
+        f.write(', "uvs": [')
+        for i in range(len(uvlist)-1):
+            f.write(f'{uvlist[i]}, ')
+        f.write(f'{uvlist[-1]}]')
+
         #OBJECT TEXTURE INFO
-        f.write('},')
+        f.write(', "wallTexture": "wall.jpg", "floorTexture": "cementFloor1.jpg","normalTexture": "defaultNorm.jpg"},')
 
 ###################################################### GENERATE HALLWAY CORNER 1
         vlist, nlist, flist, vInd = generateHallwayCorner((-10, 0, 3), (-2, 5, 0), (0, 5, -2), vInd)
@@ -953,7 +859,7 @@ if __name__ == "__main__":
         vlist, nlist, flist, uvlist, vInd = generateMainRoom(30, 24, 10, (-21, 0, -30), (10, 11, 3), (9, 11, 3), vInd)
 
         #OBJECT MATERIAL INFO
-        f.write('{"name": "MainRoom", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type":"CustomRoom", "diffuseTexture": "wall.jpg", ')
+        f.write('{"name": "MainRoom", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 5,"alpha": 1},"type":"Room", ')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -976,7 +882,8 @@ if __name__ == "__main__":
         for i in range(len(uvlist)-1):
             f.write(f'{uvlist[i]}, ')
         f.write(f'{uvlist[-1]}]')
-        f.write('},')
+        
+        f.write(',"wallTexture": "wall.jpg", "floorTexture":"concreteFloor1.jpg"},')
 
 ########################################################### GENERATE GLASS PANEL
         vlist, nlist, flist, vInd = generateGlassPanel((-1, 0, -24), (9, -12), 1, vInd)
@@ -1058,7 +965,7 @@ if __name__ == "__main__":
         vlist, nlist, flist, uvlist, vInd = generateRoom1(-10, 24, 5, (-21.01, 0, -30), (10,11,3), vInd)
 
         #OBJECT MATERIAL INFO
-        f.write('{"name": "PuzzleRoom", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type":"CustomRoom",')
+        f.write('{"name": "PuzzleRoom", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type":"Room",')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -1077,7 +984,7 @@ if __name__ == "__main__":
         f.write(f'{flist[-1]}]')
 
         #OBJECT TEXTURE INFO
-        f.write('},')
+        f.write(',"wallTexture": "wall.jpg", "floorTexture":"concreteFloor1.jpg"},')
 
 ######################################################### GENERATE PUZZLE PANELS
 #RED
@@ -1156,10 +1063,10 @@ if __name__ == "__main__":
         f.write('},')
 
 ########################################################### GENERATE END HALLWAY
-        vlist, nlist, flist, vInd = generateHallway1(80, 8, 10, (0, -50, 0), vInd)
+        vlist, nlist, flist, uvlist, vInd = generateHallway1(80, 8, 10, (0, -50, 0), vInd)
 
         #OBJECT MATERIAL INFO
-        f.write('{"name": "HallEnd", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type":"CustomHall",')
+        f.write('{"name": "HallEnd", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 5,"alpha": 1},"type":"Room",')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -1178,7 +1085,7 @@ if __name__ == "__main__":
         f.write(f'{flist[-1]}]')
 
         #OBJECT TEXTURE INFO
-        f.write('},')
+        f.write(',"wallTexture": "wall.jpg", "floorTexture":"concreteFloor1.jpg"},')
 
 ####################################### PLAYER, CHANDELIER, CAMERA, AND SETTINGS
         f.write('{"name":"Chandelier","material":{"diffuse":[0.5,0.25,0.0],"ambient":[0.3,0.3,0.3],"specular":[0.5,0.5,0.5],"n":10.000002,"shaderType":1,"alpha":1},"type":"mesh","position":[-3048,51.8,1393],"scale":[0.0390625,0.0390625,0.0390625],"diffuseTexture":"default.jpg","normalTexture":"defaultNorm.jpg","rotation":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent":null,"model":"chandelier.obj"},')
