@@ -249,7 +249,7 @@ async function main() {
 
     state.numLights = state.pointLights.length;
 
-    const now = new Date();
+    const then = Date.now();
     for (let i = 0; i < state.loadObjects.length; i++) {
         const object = state.loadObjects[i];
 
@@ -274,8 +274,8 @@ async function main() {
         // }
     }
 
-    const then = new Date();
-    const loadingTime = (then.getTime() - now.getTime()) / 1000;
+    const now = Date.now();
+    const loadingTime = (now - then) / 1000;
     console.log(`Scene file loaded in ${loadingTime} seconds.`);
 
     game = new Game(state);

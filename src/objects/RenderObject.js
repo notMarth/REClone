@@ -72,20 +72,49 @@ class RenderObject {
     vec3.add(this.model.position, this.model.position, vec3.fromValues(translateVec[0], translateVec[1], translateVec[2]));
   }
 
-  movePlayerForward(){
-    vec3.add(this.model.position, this.model.position, vec3.fromValues(this.at[0]*0.1, this.at[1]*0.1, this.at[2]*0.1));
-    vec3.add(this.atPoint, this.atPoint, vec3.fromValues(this.at[0]*0.1, this.at[1]*0.1, this.at[2]*0.1));
+  movePlayerForward(speed = 1){
+    vec3.add(this.model.position, this.model.position, vec3.fromValues(this.at[0]*0.1*speed, this.at[1]*0.1*speed, this.at[2]*0.1*speed));
+    vec3.add(this.atPoint, this.atPoint, vec3.fromValues(this.at[0]*0.1*speed, this.at[1]*0.1*speed, this.at[2]*0.1*speed));
     vec3.subtract(this.at, this.atPoint, this.model.position);
     vec3.normalize(this.at, this.at);
-    
   }
 
-  movePlayerBackward(){
-    vec3.add(this.model.position, this.model.position, vec3.fromValues(this.at[0]*-0.1, this.at[1]*-0.1, this.at[2]*-0.1));
-    vec3.add(this.atPoint, this.atPoint, vec3.fromValues(this.at[0]*-0.1, this.at[1]*-0.1, this.at[2]*-0.1));
+  movePlayerBackward(speed = 1){
+    vec3.add(this.model.position, this.model.position, vec3.fromValues(this.at[0]*-0.1*speed, this.at[1]*-0.1*speed, this.at[2]*-0.1*speed));
+    vec3.add(this.atPoint, this.atPoint, vec3.fromValues(this.at[0]*-0.1*speed, this.at[1]*-0.1*speed, this.at[2]*-0.1*speed));
     vec3.subtract(this.at, this.atPoint, this.model.position);
     vec3.normalize(this.at, this.at);
   }
+
+  movePlayerX(speed = 1){
+    vec3.add(this.model.position, this.model.position, vec3.fromValues(this.at[0]*0.1*speed, 0, 0));
+    vec3.add(this.atPoint, this.atPoint, vec3.fromValues(this.at[0]*0.1*speed, 0, 0));
+    vec3.subtract(this.at, this.atPoint, this.model.position);
+    vec3.normalize(this.at, this.at);
+  }
+
+  movePlayerZ(speed = 1){
+    vec3.add(this.model.position, this.model.position, vec3.fromValues(0, 0, this.at[2]*0.1*speed));
+    vec3.add(this.atPoint, this.atPoint, vec3.fromValues(0, 0, this.at[2]*0.1*speed));
+    vec3.subtract(this.at, this.atPoint, this.model.position);
+    vec3.normalize(this.at, this.at);
+  }
+
+  // Strafe right
+  movePlayerRight(speed = 1) {
+    vec3.add(this.model.position, this.model.position, vec3.fromValues(this.right[0]*0.1*speed, this.right[1]*0.1*speed, this.right[2]*0.1*speed));
+    vec3.add(this.atPoint, this.atPoint, vec3.fromValues(this.right[0]*0.1*speed, this.right[1]*0.1*speed, this.right[2]*0.1*speed));
+    vec3.subtract(this.at, this.atPoint, this.model.position);
+    vec3.normalize(this.at, this.at);
+  }
+
+// Strafe left
+movePlayerLeft(speed = 1) {
+    vec3.add(this.model.position, this.model.position, vec3.fromValues(this.right[0]*-0.1*speed, this.right[1]*-0.1*speed, this.right[2]*-0.1*speed));
+    vec3.add(this.atPoint, this.atPoint, vec3.fromValues(this.right[0]*-0.1*speed, this.right[1]*-0.1*speed, this.right[2]*-0.1*speed));
+    vec3.subtract(this.at, this.atPoint, this.model.position);
+    vec3.normalize(this.at, this.at);
+}
 
 
   scale(scaleVec) {

@@ -3,32 +3,27 @@ class Game {
         this.state = state;
         this.spawnedObjects = [];
         this.collidableObjects = [];
-        this.rooms = [];
+        // Putting this in a sub objects would allow using getObject()
+        this.rooms = {
+            objects: []
+        };
         this.check = true;
-        this.DEBUG = true;
+        this.DEBUG = false;
         this.KNIFE = false;
         this.CHANDELIER = false;
         this.ZOMBIE;
         this.zombies = [];
+        this.playerSpeed = 1;
+        this.playerTurnSpeed = 1;
+        this.pressedKeys = {
+            w : false,
+            a : false,
+            s : false,
+            d : false,
+        }
+        this.intervalID = null;
     }
 
-
-    // example - we can add our own custom method to our game and call it using 'this.customMethod()'
-    customMethod() {
-        console.log("Custom method!");
-    }
-
-    // example - create a collider on our object with various fields we might need (you will likely need to add/remove/edit how this works)
-    // createSphereCollider(object, radius, onCollide = null) {
-    //     object.collider = {
-    //     type: "SPHERE",
-    //     radius: radius,
-    //     onCollide: onCollide ? onCollide : (otherObject) => {
-    //         console.log(`Collided with ${otherObject.name}`);
-    //         }
-    //     };
-    //     this.collidableObjects.push(object);
-    // }
     createSphereCollider(object, radius, onCollide = null) {
         object.collider = {
             type: "SPHERE",
@@ -40,14 +35,17 @@ class Game {
         this.collidableObjects.push(object);
     }
 
-    createRoom(object) {
+    createRoom(object, extensionX = 0, extensionY = 0, extensionZ = 0) {
         let minX = null;
         let maxX = null;
+        let minY = null;
+        let maxY = null;
         let minZ = null;
         let maxZ = null;
 
         for (let i = 0; i < object.model.vertices.length; i+=3) {
             let x = object.model.vertices[i];
+            let y = object.model.vertices[i+1];
             let z = object.model.vertices[i+2];
 
             if (minX == null || x < minX) {
@@ -56,6 +54,14 @@ class Game {
 
             if (maxX == null || x > maxX) {
                 maxX = x;
+            }
+
+            if (minY == null || y < minY) {
+                minY = y;
+            }
+
+            if (maxY == null || y > maxY) {
+                maxY = y;
             }
 
             if (minZ == null || z < minZ) {
@@ -70,106 +76,19 @@ class Game {
         object.collider = {
             type: "ROOM",
             bounds : {
-                minX: minX,
-                maxX: maxX,
-                minZ: minZ,
-                maxZ: maxZ,
+                minX: minX - extensionX,
+                maxX: maxX + extensionX,
+                minY: minY - extensionY,
+                maxY: maxY + extensionY,
+                minZ: minZ - extensionZ,
+                maxZ: maxZ + extensionZ
             },
             /*onCollide: onCollide ? onCollide : (otherObject) => {
                 console.log(`Collided with ${otherObject.name}`);
                 object.stop = 1;
             }*/
         };
-        this.rooms.push(object);
-    }
-
-    // Similar to creating a room, except doors occupy 1D so area must be added to either side of the doors
-    createDoor(object) {
-        let minX = null;
-        let maxX = null;
-        let minZ = null;
-        let maxZ = null;
-
-        // How far to extend the door "room"
-        let extension = 1;
-
-        for (let i = 0; i < object.model.vertices.length; i+=3) {
-            let x = object.model.vertices[i];
-            let z = object.model.vertices[i+2];
-
-            if (minX == null || x < minX) {
-                minX = x;
-            }
-
-            if (maxX == null || x > maxX) {
-                maxX = x;
-            }
-
-            if (minZ == null || z < minZ) {
-                minZ = z;
-            }
-            
-            if (maxZ == null || z > maxZ) {
-                maxZ = z;
-            }
-        }
-
-        if (minX == maxX) {
-            // The door is parallel to the x plane, extend into +- x
-            minX -= extension * 2;
-            maxX += extension * 2;
-            minZ -= extension / 2;
-            maxZ += extension / 2 ;
-        } else if (minZ == maxZ) {
-            // The door is parallel to the z plane, extend into +- z
-            minX -= extension / 2;
-            maxX += extension / 2;
-            minZ -= extension * 2;
-            maxZ += extension * 2;
-        }
-
-        object.collider = {
-            type: "DOOR",
-            bounds : {
-                minX: minX,
-                maxX: maxX,
-                minZ: minZ,
-                maxZ: maxZ,
-            },
-            /*onCollide: onCollide ? onCollide : (otherObject) => {
-                console.log(`Collided with ${otherObject.name}`);
-                object.stop = 1;
-            }*/
-        };
-        this.rooms.push(object);
-    }
-
-    // example - function to check if an object is colliding with collidable objects
-    // checkCollision(object) {
-    // //     // loop over all the other collidable objects 
-    //     this.state.objects.forEach(otherObject => {
-    // //         // do a check to see if we have collided, if we have we can call object.onCollide(otherObject) which will
-    // //         // call the onCollide we define for that specific object. This way we can handle collisions identically for all
-    // //         // objects that can collide but they can do different things (ie. player colliding vs projectile colliding)
-    // //         // use the modeling transformation for object and otherObject to transform position into current location
-    // let colCheck = vec3.fromValues();
-    // if (otherObject.position - vec3.fromValues(object.radius, object.radius, object.radius) )
-    //     });
-    // }
-
-    // Check if a point is inside bounds
-    // Adapted from https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_collision_detection#point_vs._aabb
-    isPointInsideBounds(point, bounds, radius = 0) {
-        //let posX = point.x;
-        //let posZ = point.z;
-        let posX = point[0];
-        let posZ = point[2];
-        return (
-            posX - radius > bounds.minX &&
-            posX + radius < bounds.maxX &&
-            posZ - radius > bounds.minZ &&
-            posZ + radius < bounds.maxZ
-          );
+        this.rooms.objects.push(object);
     }
 
     // example - function to check if an object is colliding with collidable objects
@@ -226,14 +145,36 @@ class Game {
         return inMap;
     }
 
+    // Check if a point is inside bounds
+    // Adapted from https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_collision_detection#point_vs._aabb
+    isPointInsideBounds(point, bounds, radius = 0) {
+        //let posX = point.x;
+        //let posZ = point.z;
+        let posX = point[0];
+        let posY = point[1];
+        let posZ = point[2];
+
+        // Don't apply radius to the Y value
+        return (
+            posX - radius > bounds.minX &&
+            posX + radius < bounds.maxX &&
+            posY > bounds.minY &&
+            posY < bounds.maxY &&
+            posZ - radius > bounds.minZ &&
+            posZ + radius < bounds.maxZ
+          );
+    }
+
+    // Check if an object is inside any of the rooms
     checkInMap(object) {
         let inMap = false;
 
         let position1 = vec3.create();
         vec3.transformMat4(position1, object.model.position, object.modelMatrix);
+        vec3.add(position1, position1, object.centroid);
 
         // loop over all the other room objects 
-        for (const otherObject of this.rooms) {
+        for (const otherObject of this.rooms.objects) {
             if (object.collider.type === "SPHERE") {
                 if (this.isPointInsideBounds(position1, otherObject.collider.bounds, object.collider.radius)) {
                     inMap = true;
@@ -241,6 +182,103 @@ class Game {
             }
         };
         return inMap;
+    }
+
+    // Set of functions to be called at an interval when keys are pressed
+    pressedW(object) {
+        var validPosition = false;
+        var oldPlayerPos = vec3.clone(object.model.position);
+        object.movePlayerForward(this.playerSpeed);
+        // if(this.state.holdItem) {
+        //     var temp = vec3.fromValues();
+        //     vec3.scale(temp, object.at, 0.1);
+        //     this.state.holdItem.translate(temp);
+        // }
+
+        if (this.checkInMap(object)) {
+            validPosition = true;
+        } else {
+            // Not valid, move back
+            object.movePlayerBackward(this.playerSpeed);
+
+            // Try moving in the X direction and see if it's valid
+            object.movePlayerX(this.playerSpeed);
+
+            if (this.checkInMap(object)) {
+                validPosition = true;
+            } else {
+
+                // Not valid, move back
+                object.movePlayerX(-1 * this.playerSpeed);
+
+                // Try moving in the Z direction and see if it's valid
+                object.movePlayerZ(this.playerSpeed);
+
+                if (this.checkInMap(object)) {
+                    validPosition = true;
+                } else {
+                    // Not valid, move back
+                    object.movePlayerZ(-1 * this.playerSpeed);
+                }
+            }
+        }
+
+        if (validPosition) {
+            var newPlayerPos = object.model.position;
+            checkCamera(this.state, oldPlayerPos, newPlayerPos);
+        }
+    }
+
+    pressedS(object) {
+        var validPosition = false;
+        var oldPlayerPos = vec3.clone(object.model.position);
+        object.movePlayerBackward(this.playerSpeed);
+        // if(this.state.holdItem) {
+        //     var temp = vec3.fromValues();
+        //     vec3.scale(temp, object.at, 0.1);
+        //     this.state.holdItem.translate(temp);
+        // }
+
+        if (this.checkInMap(this.player)) {
+            var validPosition = true;
+        } else {
+            // Not valid, move back
+            object.movePlayerForward(this.playerSpeed);
+
+            // Try moving in the X direction and see if it's valid
+            object.movePlayerX(-1 * this.playerSpeed);
+
+            if (this.checkInMap(object)) {
+                validPosition = true;
+            } else {
+
+                // Not valid, move back
+                object.movePlayerX(this.playerSpeed);
+
+                // Try moving in the Z direction and see if it's valid
+                object.movePlayerZ(-1 * this.playerSpeed);
+
+                if (this.checkInMap(object)) {
+                    validPosition = true;
+                } else {
+                    // Not valid, move back
+                    object.movePlayerZ(this.playerSpeed);
+                }
+            }
+        }
+
+        if (validPosition) {
+            var newPlayerPos = object.model.position;
+            checkCamera(this.state, oldPlayerPos, newPlayerPos);
+        }
+    }
+
+    pressedA(object) {
+        object.rotatePlayer('y', 0.05 * this.playerTurnSpeed);
+    }
+
+    pressedD(object) {
+        object.rotatePlayer('y', -0.05 * this.playerTurnSpeed);
     }
 
     // runs once on startup after the scene loads the objects
@@ -276,74 +314,164 @@ class Game {
 
         // Add all the rooms to the list of rooms
         for (const obj of this.state.objects) {
-            if (obj.name.includes("Door")) {
-                this.createDoor(obj);
-                console.log(obj);
-            }
-            else if (obj.name.includes("Room") || obj.name.includes("Hall")) {
-                this.createRoom(obj);
+            if (obj.type.includes("Door") || obj.type.includes("Hall") || obj.type.includes("Room")) {
+                var extensionX = 0;
+                var extensionY = 0;
+                var extensionZ = 0;
+
+                // Special cases of rooms that require extensions to their boundaries so
+                // that checking with checkInMap() works correctly
+                switch(obj.name) {
+                    case "Hall1":
+                        extensionX = 2;
+                        break;
+                    case "Hall2":
+                        extensionZ = 2;
+                        break;
+                    case "MainRoomPuzzleRoomDoor":
+                        extensionX = 4;
+                        extensionZ = 0.1;
+                        break;
+                }
+                this.createRoom(obj, extensionX, extensionY, extensionZ);
                 console.log(obj);
             }
         }
 
-        this.createSphereCollider(this.player, 0.4);
-
-        //const otherCube = getObject(this.state, "cube2"); // we wont save this as instance var since we dont plan on using it in update
-
-        // example - create sphere colliders on our two objects as an example, we give 2 objects colliders otherwise
-        // no collision can happen
-        // this.createSphereCollider(this.player, 0.5, (otherObject) => {
-        //     console.log(`This is a custom collision of ${otherObject.name}`)
-        // });
-        // this.createSphereCollider(otherCube, 0.5);
+        this.createSphereCollider(this.player, 0.3);
 
         // example - setting up a key press event to move an object in the scene
+        document.addEventListener("keydown", (e) => {
+            switch(e.key) {
+                case "w":
+                    // Move forwards
+                    if (this.pressedKeys.w || this.pressedKeys.s || this.pressedKeys.a || this.pressedKeys.d) {
+                        break;
+                    }
+                    this.pressedKeys.w = true;
+                    // console.log(e.key);
+                    this.intervalID = window.setInterval(() => this.pressedW(this.player), 50);
+                    break;
+
+                case "s":
+                    // Move backwards
+                    if (this.pressedKeys.w || this.pressedKeys.s || this.pressedKeys.a || this.pressedKeys.d) {
+                        break;
+                    }
+                    this.pressedKeys.s = true;
+                    this.intervalID = window.setInterval(() => this.pressedS(this.player), 50);
+                    break;
+                    
+                case "a":
+                    // Turn left
+                    if (this.pressedKeys.w || this.pressedKeys.s || this.pressedKeys.a || this.pressedKeys.d) {
+                        break;
+                    }
+                    this.pressedKeys.a = true;
+                    this.intervalID = window.setInterval(() => this.pressedA(this.player), 50);
+                    break;
+                    
+                case "d":
+                    // Turn right
+                    if (this.pressedKeys.w || this.pressedKeys.s || this.pressedKeys.a || this.pressedKeys.d) {
+                        break;
+                    }
+                    this.pressedKeys.d = true;
+                    this.intervalID = window.setInterval(() => this.pressedD(this.player), 50);
+                    break;
+            }
+        });
+
+        document.addEventListener("keyup", (e) => {
+            switch(e.key) {
+                case "w":
+                    // Stopped moving forward
+                    window.clearInterval(this.intervalID);
+                    this.pressedKeys.w = false;
+                    break;
+
+                case "s":
+                    // Stopped moving backward
+                    window.clearInterval(this.intervalID);
+                    this.pressedKeys.s = false;
+                    break;
+                    
+                case "a":
+                    // Stopped turning left
+                    window.clearInterval(this.intervalID);
+                    this.pressedKeys.a = false;
+                    break;
+                    
+                case "d":
+                    // Stopped turning right
+                    window.clearInterval(this.intervalID);
+                    this.pressedKeys.d = false;
+                    break;
+            }
+        });
+
         document.addEventListener("keypress", (e) => {
             e.preventDefault();
 
             switch (e.key) {
-                case "w":
+                /*case "w":
                     // Move forwards
                     var oldPlayerPos = vec3.clone(this.player.model.position);
-                    this.player.movePlayerForward();
+                    this.player.movePlayerForward(this.playerSpeed);
                     // if(this.state.holdItem) {
                     //     var temp = vec3.fromValues();
                     //     vec3.scale(temp, this.player.at, 0.1);
                     //     this.state.holdItem.translate(temp);
                     // }
-                    console.log(this.player.model.position);
+                    var centroid = vec3.create();
+                    vec3.add(centroid, this.player.model.position, this.player.centroid)
+                    //console.log(`Player position: ${this.player.model.position}, centroid: ${this.player.centroid}, real centroid: ${centroid}`);
 
-                    //if (this.checkInMap(this.player)) {
+                    if (this.checkInMap(this.player)) {
                         var newPlayerPos = this.player.model.position;
                         checkCamera(this.state, oldPlayerPos, newPlayerPos);
-                    //} else {
-                    //   this.player.movePlayerBackward();
-                    //}
-                    //console.log("in map: " + this.checkInMap(this.player) + ", pos: " + this.player.model.position);
+                    } else {
+                      this.player.movePlayerBackward(this.playerSpeed);
+                    }
+                    var inBounds = this.checkInMap(this.player);
+                    console.log(`in map: ${inBounds}, pos: ${this.player.model.position}, centroid pos: ${centroid}`);
+                    if (!inBounds) {
+                        console.error("Out of bounds");
+                    }
                     break;
 
                 case 'd':
                     // Turn player to right
-                    this.player.rotatePlayer('y', -0.05);
+                    this.player.rotatePlayer('y', -0.05 * this.playerTurnSpeed);
                     break;
 
                 case 'a':
                     // Turn player left
-                    this.player.rotatePlayer('y', 0.05);
+                    this.player.rotatePlayer('y', 0.05 * this.playerTurnSpeed);
                     break;
 
                 case "s":
                     // Move player backwards
                     var oldPlayerPos = vec3.clone(this.player.model.position);
-                    this.player.movePlayerBackward()
+                    this.player.movePlayerBackward(this.playerSpeed)
+                    var centroid = vec3.create();
+                    vec3.add(centroid, this.player.model.position, this.player.centroid)
                     // if(this.state.holdItem) {
                     //     var temp = vec3.fromValues();
                     //     vec3.scale(temp, this.player.at, -0.1);
                     //     this.state.holdItem.translate(temp);
                     // }
-                    console.log(this.player.model.position);
-                    checkCamera(this.state, this.player.model.position);
-                    break;
+                    //console.log(this.player.model.position);
+
+                    if (this.checkInMap(this.player)) {
+                        var newPlayerPos = this.player.model.position;
+                        checkCamera(this.state, oldPlayerPos, newPlayerPos);
+                    } else {
+                      this.player.movePlayerForward(this.playerSpeed);
+                    }
+                    var inBounds = this.checkInMap(this.player);
+                    console.log(`in map: ${inBounds}, pos: ${this.player.model.position}, centroid pos: ${centroid}`);
+                    break;*/
 
                 case " ":
                     checkPickup(this.state, this.player);
@@ -352,16 +480,6 @@ class Game {
                         this.rope.translate(vec3.fromValues(0.0, -50.0, 0.0));
                         this.CHANDELIER = true;
                     }
-
-
-                    if (this.checkInMap(this.player)) {
-                    //console.log(this.player.model.position);
-                        var newPlayerPos = this.player.model.position;
-                        checkCamera(this.state, oldPlayerPos, newPlayerPos);
-                    } else {
-                       this.player.movePlayerForward();
-                    }
-                    //console.log("in map: " + this.checkInMap(this.player) + ", pos: " + this.player.model.position);
                     break;
 
                 case "A":
@@ -469,47 +587,6 @@ class Game {
                     break;
             }
         });
-
-
-        this.customMethod(); // calling our custom method! (we could put spawning logic, collision logic etc in there ;) )
-        
-        // example: spawn some stuff before the scene starts
-        // for (let i = 0; i < 10; i++) {
-        //     for (let j = 0; j < 10; j++) {
-        //         for (let k = 0; k < 10; k++) {
-        //             spawnObject({
-        //                 name: `new-Object${i}${j}${k}`,
-        //                 type: "cube",
-        //                 material: {
-        //                     diffuse: randomVec3(0, 1)
-        //                 },
-        //                 position: vec3.fromValues(4 - i, 5 - j, 10 - k),
-        //                 scale: vec3.fromValues(0.5, 0.5, 0.5)
-        //             }, this.state);
-        //         }
-        //     }
-        // }
-
-        // for (let i = 0; i < 10; i++) {
-        //     let tempObject = await spawnObject({
-        //         name: `new-Object${i}`,
-        //         type: "cube",
-        //         material: {
-        //             diffuse: randomVec3(0, 1)
-        //         },
-        //         position: vec3.fromValues(4 - i, 0, 0),
-        //         scale: vec3.fromValues(0.5, 0.5, 0.5)
-        //     }, this.state);
-
-
-        // tempObject.constantRotate = true; // lets add a flag so we can access it later
-        // this.spawnedObjects.push(tempObject); // add these to a spawned objects list
-
-        // tempObject.collidable = true;
-        // tempObject.onCollide = (object) => { // we can also set a function on an object without defining the function before hand!
-        //     console.log(`I collided with ${object.name}!`);
-        // };
-        // }
     }
 
     // Runs once every frame non stop after the scene loads
@@ -554,30 +631,5 @@ class Game {
 
             
         }
-        // TODO - Here we can add game logic, like moving game objects, detecting collisions, you name it. Examples of functions can be found in sceneFunctions
-
-        // example: Rotate a single object we defined in our start method
-        // this.cube.rotate('x', deltaTime * 0.5);
-
-        // example: Rotate all objects in the scene marked with a flag
-        // this.state.objects.forEach((object) => {
-        //     if (object.constantRotate) {
-        //         object.rotate('y', deltaTime * 0.5);
-        //     }
-        // });
-
-        // simulate a collision between the first spawned object and 'cube' 
-        // if (this.spawnedObjects[0].collidable) {
-        //     this.spawnedObjects[0].onCollide(this.cube);
-        // }
-
-        // example: Rotate all the 'spawned' objects in the scene
-        // this.spawnedObjects.forEach((object) => {
-        //     object.rotate('y', deltaTime * 0.5);
-        // });
-
-
-        // example - call our collision check method on our cube
-        // this.checkCollision(this.cube);
     }
 }

@@ -872,7 +872,7 @@ if __name__ == "__main__":
 
 
 ############################################################ GENERATE DOOR FOR FIRST ROOM / HALLWAY 1
-        f.write('{"name": "Room1Hallway1Door", "material": {"diffuse": [1,1,1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 0.2},"type":"CustomDoor", "vertices": [[0, 0, 1], [0, 0, 3]], "normals": [[0, 0, 1], [0, 0, 3]], "triangles": []},')
+        #f.write('{"name": "Room1Hallway1Door", "material": {"diffuse": [1,1,1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 0.2},"type":"CustomDoor", "vertices": [[0, 0, 1], [0, 0, 3]], "normals": [[0, 0, 1], [0, 0, 3]], "triangles": []},')
 
 ############################################################# GENERATE HALLWAY 1
         vlist, nlist, flist, vInd = generateHallway1(-10, 5, -2, (0, 0, 3), vInd)
@@ -949,7 +949,7 @@ if __name__ == "__main__":
         #OBJECT TEXTURE INFO
         f.write('},')
 
-##############################################################GENERATE MAIN ROOM
+############################################################## GENERATE MAIN ROOM
         vlist, nlist, flist, uvlist, vInd = generateMainRoom(30, 24, 10, (-21, 0, -30), (10, 11, 3), (9, 11, 3), vInd)
 
         #OBJECT MATERIAL INFO
@@ -977,6 +977,10 @@ if __name__ == "__main__":
             f.write(f'{uvlist[i]}, ')
         f.write(f'{uvlist[-1]}]')
         f.write('},')
+
+
+############################################################ GENERATE DOOR FOR MAIN ROOM / PUZZLE ROOM
+        f.write('{"name": "MainRoomPuzzleRoomDoor", "material": {"diffuse": [1,1,1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 0},"type":"CustomDoor", "vertices": [[-21, 0, -19], [-21, 0, -20]], "normals": [[-21, 0, -19], [-21, 0, -20]], "triangles": []},')
 
 ########################################################### GENERATE GLASS PANEL
         vlist, nlist, flist, vInd = generateGlassPanel((-1, 0, -24), (9, -12), 1, vInd)
@@ -1182,7 +1186,7 @@ if __name__ == "__main__":
 
 ####################################### PLAYER, CHANDELIER, CAMERA, AND SETTINGS
         f.write('{"name":"Chandelier","material":{"diffuse":[0.5,0.25,0.0],"ambient":[0.3,0.3,0.3],"specular":[0.5,0.5,0.5],"n":10.000002,"shaderType":1,"alpha":1},"type":"mesh","position":[-3048,51.8,1393],"scale":[0.0390625,0.0390625,0.0390625],"diffuseTexture":"default.jpg","normalTexture":"defaultNorm.jpg","rotation":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent":null,"model":"chandelier.obj"},')
-        f.write('{"name": "Player","material": {"diffuse": [0.1,0.1,0.1],"ambient": [1,1,1],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type": "cube","position": [2.5,0,2.5],"scale": [1,2.5,1],"diffuseTexture": "playerBump.jpg","normalTexture": "playerNorm.jpg","rotation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent": null,"model": null},')
+        f.write('{"name": "Player","material": {"diffuse": [0.1,0.1,0.1],"ambient": [1,1,1],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type": "cube","position": [2.5,0,2.5],"scale": [1,5.5,1.5],"diffuseTexture": "playerBump.jpg","normalTexture": "playerNorm.jpg","rotation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent": null,"model": null},')
         f.write('{"name": "Zombie","material": {"diffuse": [0,0.6,0],"ambient": [1,1,1],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type": "cube","position": [-5,-50,5],"scale": [1,2.5,1],"diffuseTexture": "playerBump.jpg","normalTexture": "playerNorm.jpg","rotation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent": null,"model": null},')
         f.write('{"name": "RedCrate","material": {"diffuse": [1,0,0],"ambient": [0.3,0.3,0.3],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type": "cube","position": [-30,0,-8],"scale": [1,1,1],"diffuseTexture": "default.jpg","normalTexture": "defaultNorm.jpg","parent": null,"model": null},')
         f.write('{"name": "BlueCrate","material": {"diffuse": [0,0,1],"ambient": [0.3,0.3,0.3],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 1,"alpha": 1},"type": "cube","position": [-27,0,-24],"scale": [1,1,1],"diffuseTexture": "default.jpg","normalTexture": "defaultNorm.jpg","parent": null,"model": null},')
