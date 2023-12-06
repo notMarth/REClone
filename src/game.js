@@ -15,8 +15,8 @@ class Game {
         this.zombies = [];
 
         this.music = new Audio("mainMusic.mp3");
-        this.playerSpeed = 1;
-        this.playerTurnSpeed = 1;
+        this.playerSpeed = 2;
+        this.playerTurnSpeed = 2;
         this.pressedKeys = {
             w : false,
             a : false,
@@ -502,17 +502,6 @@ class Game {
                     }
 
                     checkPickup(this.state, this.player);
-
-
-
-                    if (this.checkInMap(this.player)) {
-                    //console.log(this.player.model.position);
-                        var newPlayerPos = this.player.model.position;
-                        checkCamera(this.state, oldPlayerPos, newPlayerPos);
-                    } else {
-                       this.player.movePlayerForward();
-                    }
-                    //console.log("in map: " + this.checkInMap(this.player) + ", pos: " + this.player.model.position);
                     break;
 
                 case "A":
