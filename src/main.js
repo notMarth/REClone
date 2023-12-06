@@ -315,7 +315,7 @@ async function main() {
             ],
             [
                 //CENTER OF MAIN ROOM
-                vec3.fromValues(-14, 3, -24), vec3.fromValues(0, 1, 0), vec3.fromValues(-2, 1, -24)
+                vec3.fromValues(-14, 3, -20), vec3.fromValues(0, 1, 0), vec3.fromValues(-2, 1, -20)
             ],
             [
                 //CHANDELIER
@@ -329,7 +329,7 @@ async function main() {
 
             [
                 //OVERLOOKING GLASS
-                vec3.fromValues(-6.5, 7, -19), vec3.fromValues(0, 1, 0), vec3.fromValues(4,-2, -24.5)
+                vec3.fromValues(-6.5, 7, -19), vec3.fromValues(0, 1, 0), vec3.fromValues(4,-2, -22)
             ],
             [
                 //ENTER THE END

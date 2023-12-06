@@ -360,6 +360,7 @@ class Game {
         document.addEventListener("keydown", (e) => {
             switch(e.key) {
                 case "w":
+                    this.music.play();
                     // Move forwards
                     if (this.pressedKeys.w || this.pressedKeys.s || this.pressedKeys.a || this.pressedKeys.d) {
                         break;
