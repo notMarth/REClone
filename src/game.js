@@ -346,6 +346,7 @@ class Game {
                         break;
                     case "MainRoomPuzzleRoomDoor":
                         extensionX = 4;
+                        extensionY = 3;
                         extensionZ = 0.1;
                         break;
                 }

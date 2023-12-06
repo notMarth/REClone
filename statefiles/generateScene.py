@@ -951,7 +951,7 @@ if __name__ == "__main__":
         f.write(',"wallTexture": "wall.jpg", "floorTexture":"carpet2.jpg"},')
 
 ############################################################ GENERATE DOOR FOR MAIN ROOM / PUZZLE ROOM
-        f.write('{"name": "MainRoomPuzzleRoomDoor", "material": {"diffuse": [1,1,1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 0},"type":"CustomDoor", "vertices": [[-21, 0, -19], [-21, 0, -20]], "normals": [[-21, 0, -19], [-21, 0, -20]], "triangles": []},')
+        f.write('{"name": "MainRoomPuzzleRoomDoor", "material": {"diffuse": [1,1,1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 0},"type":"CustomDoor", "vertices": [[-21, 0, -18], [-21, 0, -20]], "normals": [[-21, 0, -18], [-21, 0, -20]], "triangles": []},')
 
 ########################################################### GENERATE GLASS PANEL
         vlist, nlist, flist, uvlist, vInd = generateGlassPanel((-1, 0, -24), (9, -12), 1, vInd)
