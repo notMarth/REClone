@@ -716,6 +716,7 @@ def generateStaircase(origin, corner, vertInd):
     vlist = []
     nlist = []
     flist = []
+    uvlist = []
 
     vlist.append([origin[0], origin[1], origin[2]])
     vlist.append([origin[0], origin[1], corner[2]])
@@ -731,11 +732,16 @@ def generateStaircase(origin, corner, vertInd):
     flist.append([0,2,1])
     flist.append([0,3,2])
 
+    uvlist.append([0, 0])
+    uvlist.append([0, 1])
+    uvlist.append([1, 1])
+    uvlist.append([1, 0])
+
     for i in range(len(flist)):
             for j in flist[i]:
                 j+=vertInd
 
-    return vlist, nlist, flist, (vertInd + len(vlist))
+    return vlist, nlist, flist, uvlist, (vertInd + len(vlist))
 
 def generateRope(origin, endPoint, width, n, vertInd):
     vlist = []
@@ -947,7 +953,7 @@ if __name__ == "__main__":
         vlist, nlist, flist, uvlist, vInd = generateGlassPanel((-1, 0, -24), (9, -12), 1, vInd)
 
         #OBJECT MATERIAL INFO
-        f.write('{"name": "GlassPanel", "material": {"diffuse": [1,1,1],"ambient": [1,1,1], "specular": [1,1,1],"n": 300,"shaderType": 1,"alpha": 0.3},"type":"CustomPanel", "diffuseTexture": "default.jpg", ')
+        f.write('{"name": "GlassPanel", "material": {"diffuse": [1,1,1],"ambient": [0,0,0.01], "specular": [1,1,1],"n": 300,"shaderType": 1,"alpha": 0.3},"type":"CustomPanel", "diffuseTexture": "default.jpg", ')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -969,10 +975,10 @@ if __name__ == "__main__":
         f.write('},')
 
 ############################################################# GENERATE STAIRCASE
-        vlist, nlist, flist, vInd = generateStaircase((-1, 0, -24), (20, -5, -12), vInd)
+        vlist, nlist, flist, uvlist, vInd = generateStaircase((-1, 0, -24), (20, -5, -12), vInd)
 
         #OBJECT MATERIAL INFO
-        f.write('{"name": "StairCase", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1.0},"type":"CustomStair", "diffuseTexture": "default.jpg", ')
+        f.write('{"name": "StairCase", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1.0},"type":"CustomStair", "diffuseTexture": "plywood.jpg", ')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -990,6 +996,11 @@ if __name__ == "__main__":
             f.write(f'{flist[i]}, ')
         f.write(f'{flist[-1]}]')
 
+        #OBJECT TEXTURE INFO
+        f.write(', "uvs": [')
+        for i in range(len(uvlist)-1):
+            f.write(f'{uvlist[i]}, ')
+        f.write(f'{uvlist[-1]}]')
         
         f.write('},')
 
@@ -1141,7 +1152,7 @@ if __name__ == "__main__":
         vlist, nlist, flist, uvlist, vInd = generateHallway1(80, 8, 10, (0, -50, 0), vInd)
 
         #OBJECT MATERIAL INFO
-        f.write('{"name": "HallEnd", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 5,"alpha": 1},"type":"Room",')
+        f.write('{"name": "HallEnd", "material": {"diffuse": [1,1,1],"ambient": [0,0,0], "specular": [1,1,1],"n": 2000,"shaderType": 5,"alpha": 1},"type":"Room",')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -1163,19 +1174,24 @@ if __name__ == "__main__":
         f.write(',"wallTexture": "wall.jpg", "floorTexture":"cementFloor1.jpg"},')
 
 ####################################### PLAYER, CHANDELIER, CAMERA, AND SETTINGS
-        f.write('{"name":"Chandelier","material":{"diffuse":[0.1,0.1,0.1],"ambient":[0.03,0.03,0.03],"specular":[1,1,1],"n":10.000002,"shaderType":3,"alpha":1.0},"type":"mesh","position":[-3048,51.8,1393],"scale":[0.0390625,0.0390625,0.0390625],"diffuseTexture":"glass.jpg","normalTexture":"defaultNorm.jpg","rotation":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent":null,"model":"chandelier.obj"},')
+        f.write('{"name":"Chandelier","material":{"diffuse":[0.1,0.3,1],"ambient":[0.03,0.03,0.03],"specular":[1,1,1],"n":10.000002,"shaderType":3,"alpha":1.0},"type":"mesh","position":[-3048,51.8,1393],"scale":[0.0390625,0.0390625,0.0390625],"diffuseTexture":"glass.jpg","normalTexture":"defaultNorm.jpg","rotation":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent":null,"model":"chandelier.obj"},')
         f.write('{"name":"knife","material":{"diffuse":[0.5019607843137255,0.5019607843137255,0],"ambient":[0.3,0.3,0.3],"specular":[0.5,0.5,0.5],"n":"2000","shaderType":1,"alpha":1},"type":"mesh","position":[-23,20.1,-20],"scale":[0.3125,0.3125,0.3125],"diffuseTexture":"default.jpg","normalTexture":"defaultNorm.jpg","rotation":[0.000002313519416929921,0.9999999403953552,-1.5187907820291002e-8,0,-0.9659258723258972,0.0000022386193450074643,0.258818656206131,0,0.2588186264038086,-5.841115466864721e-7,0.965925931930542,0,0,0,0,1],"parent":null,"model":"KnifeOBJ.obj"},')
         f.write('{"name": "Player","material": {"diffuse": [0.1,0.1,0.1],"ambient": [1,1,1],"specular": [0.3,0.3,0.3],"n": 10.000002,"shaderType": 3,"alpha": 1},"type": "cube","position": [2.5,0,2.5],"scale": [1.5,4,1.5],"diffuseTexture": "playerBump.jpg","normalTexture": "playerNorm.jpg","rotation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent": null,"model": null},')
-        f.write('{"name": "Zombie","material": {"diffuse": [0,0.6,0],"ambient": [1,1,1],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type": "cube","position": [-5,-50,5],"scale": [1,2.5,1],"diffuseTexture": "playerBump.jpg","normalTexture": "playerNorm.jpg","rotation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent": null,"model": null},')
+        f.write('{"name": "Zombie1","material": {"diffuse": [1,1,1],"ambient": [0.1,1,0.1],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type": "cube","position": [-5,-50,5],"scale": [1,2.5,1],"diffuseTexture": "playerBump.jpg","normalTexture": "playerNorm.jpg","rotation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent": null,"model": null},')
+        f.write('{"name": "Zombie2","material": {"diffuse": [1,1,1],"ambient": [0.1,1,0.1],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type": "cube","position": [-3,-50,4],"scale": [1,2.5,1],"diffuseTexture": "playerBump.jpg","normalTexture": "playerNorm.jpg","rotation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent": null,"model": null},')
+        f.write('{"name": "Zombie3","material": {"diffuse": [1,1,1],"ambient": [0.1,1,0.1],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type": "cube","position": [-5,-50,5],"scale": [1,2.5,1],"diffuseTexture": "playerBump.jpg","normalTexture": "playerNorm.jpg","rotation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent": null,"model": null},')
+        f.write('{"name": "Zombie4","material": {"diffuse": [1,1,1],"ambient": [0.1,1,0.1],"specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1},"type": "cube","position": [-5,-50,4],"scale": [1,2.5,1],"diffuseTexture": "playerBump.jpg","normalTexture": "playerNorm.jpg","rotation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"parent": null,"model": null},')
         f.write('{"name": "RedCrate","material": {"diffuse": [1,0,0],"ambient": [1,0.01,0.01],"specular": [0,0,0],"n": 10.000002,"shaderType": 3,"alpha": 1},"type": "cube","position": [-30,0,-8],"scale": [1,1,1],"diffuseTexture": "plywood.jpg","normalTexture": "defaultNorm.jpg","parent": null,"model": null},')
         f.write('{"name": "BlueCrate","material": {"diffuse": [0,0,1],"ambient": [0.01,0.01,1],"specular": [0,0,0],"n": 10.000002,"shaderType": 3,"alpha": 1},"type": "cube","position": [-27,0,-24],"scale": [1,1,1],"diffuseTexture": "plywood.jpg","normalTexture": "defaultNorm.jpg","parent": null,"model": null},')
         f.write('{"name": "GreenCrate","material": {"diffuse": [0,1,0],"ambient": [0.01,1,0.01],"specular": [0,0,0],"n": 10.000002,"shaderType": 3,"alpha": 1},"type": "cube","position": [-25,0,-29],"scale": [1,1,1],"diffuseTexture": "plywood.jpg","normalTexture": "defaultNorm.jpg","parent": null,"model": null}')
         f.write('],')
         f.write('"pointLights": [{"name": "startingRoomLight","colour": [0.001,0.025,0.025],"position": [2.5,2,2.5],"strength": 2,"quadratic": 0.25,"linear": 0.025,"constant": 0,"nearPlane": 0.5,"farPlane": 100,"shadow": 0},')
-        f.write('{"name": "hallLight1", "colour": [0.001,0.025,0.01],"position": [-8,3,2],"strength": 10,"quadratic": 0.25,"linear": 4,"constant": 1,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}')
+        f.write('{"name": "hallLight1", "colour": [0.001,0.025,0.01],"position": [-8,3,2],"strength": 1,"quadratic": 0.25,"linear": 4,"constant": 0,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}')
         f.write(',{"name": "hallLight2", "colour": [0.1,0.025,0.01],"position": [-11,3,-1],"strength": 1,"quadratic": 0.0025,"linear": 0.1,"constant": 0,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}')
-        f.write(',{"name": "mainRoomLight", "colour": [0.3,0.050,0.01],"position": [-1,12,-24],"strength": 5,"quadratic": 0.035,"linear": 0.09,"constant": 0,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}')
-        f.write(',{"name": "puzzleRoomLight", "colour": [0.1,0.025,0.01],"position": [-28,3,-10],"strength": 5,"quadratic": 0.035,"linear": 0.09,"constant": 0,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}')
+        f.write(',{"name": "mainRoomLight", "colour": [0,0.05,0.1],"position": [4.48,9.8,-17],"strength": 2,"quadratic": 0.0035,"linear": 0.0625,"constant":0 ,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}')
+        f.write(',{"name": "puzzleRoomLight", "colour": [0.1,0.025,0.01],"position": [-28,3,-10],"strength": 1,"quadratic": 0.035,"linear": 0.09,"constant": 0,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}')
+        f.write(',{"name": "endLight", "colour": [0.1,0.1,0.1],"position": [80,-50,5],"strength": 20,"quadratic": 0.00390625,"linear": 0.0625,"constant": 1,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}')
+
         f.write('],')
         f.write('"settings": {"camera": {"name": "mainCamera","position": [4,4,4],"atPoint": [2.5,0,2.5],"up": [0,1,0]},"backgroundColor": [0,0,0]} ')
 

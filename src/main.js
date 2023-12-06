@@ -298,11 +298,55 @@ async function main() {
             ],
             [
                 //PUZZLE ROOM ENTRANCE
-                vec3.fromValues(-26, 4.5, -30), vec3.fromValues(0, 1, 0), vec3.fromValues(-26, 2, -9)
+                vec3.fromValues(-29, 3.5, -22), vec3.fromValues(0, 1, 0), vec3.fromValues(-26, 1.5, -20)
+            ],
+            [
+                //PUZZLE ROOM BACK
+                vec3.fromValues(-24, 3, -26), vec3.fromValues(0, 1, 0), vec3.fromValues(-24, 1, -30)
             ],
             [
                 //PUZZLE ROOM TILES
-                vec3.fromValues(-25, 4.9, -12), vec3.fromValues(0, 0, 1), vec3.fromValues(-25, 0, -12)
+                vec3.fromValues(-21.5, 3, -7), vec3.fromValues(0, 1, 0), vec3.fromValues(-26, 1, -9.5)
+            ],
+
+            [
+                //BACKSIDE OF MAIN ROOM
+                vec3.fromValues(-20.5, 4, -29), vec3.fromValues(0, 1, 0), vec3.fromValues(-12, 1, -29)
+            ],
+            [
+                //CENTER OF MAIN ROOM
+                vec3.fromValues(-14, 3, -24), vec3.fromValues(0, 1, 0), vec3.fromValues(-2, 1, -24)
+            ],
+            [
+                //CHANDELIER
+                vec3.fromValues(-2.7, 2.3, -6.1), vec3.fromValues(0, 1, 0), vec3.fromValues(4.3, 1, -26)
+            ],
+
+            [
+                //ROPE
+                vec3.fromValues(8, 7, -6.5), vec3.fromValues(0, 1, 0), vec3.fromValues(4, 3, -9)
+            ],
+
+            [
+                //OVERLOOKING GLASS
+                vec3.fromValues(-6.5, 7, -19), vec3.fromValues(0, 1, 0), vec3.fromValues(4,-2, -24.5)
+            ],
+            [
+                //ENTER THE END
+                vec3.fromValues(5,-49, 9), vec3.fromValues(0, 1, 0), vec3.fromValues(5.6,-48.5, 8)
+            ],
+
+            [
+                //MIDWAY THROUGH THE END
+                vec3.fromValues(20,-46, 0.1), vec3.fromValues(0, 1, 0), vec3.fromValues(20,-47, 1.5)
+            ],
+            [
+                //DONT STOP YET
+                vec3.fromValues(29,-42, 9.8), vec3.fromValues(0, 1, 0), vec3.fromValues(30,-43, 8.5)
+            ],
+            [
+                //FINAL STRETCH
+                vec3.fromValues(30,-45, 5), vec3.fromValues(0, 1, 0), vec3.fromValues(50,-45, 5)
             ],
 
         ],
@@ -329,7 +373,7 @@ async function main() {
             ],
             [
                 //MAIN ROOM ENTRANCE
-                vec3.fromValues(-14,0,-7), vec3.fromValues(-8, 24, -6)
+                vec3.fromValues(-14,0,-9), vec3.fromValues(-8, 24, -6)
             ],
             [
                 //MAIN ROOM TOWARDS PUZZLE ROOM
@@ -337,12 +381,55 @@ async function main() {
             ],
             [
                 //PUZZLE ROOM ENTRANCE
-                vec3.fromValues(-31,0,-30), vec3.fromValues(-21, 5, -18)
+                vec3.fromValues(-31,0,-28), vec3.fromValues(-21, 5, -18)
+            ],
+            [
+                //PUZZLE ROOM BACK
+                vec3.fromValues(-31,0,-30), vec3.fromValues(-21, 5, -28)
             ],
             [
                 //PUZZLE ROOM TILES
                 vec3.fromValues(-31,0,-18), vec3.fromValues(-21, 5, -6)
             ],
+            [
+                //BACKSIDE OF MAIN ROOM
+                vec3.fromValues(-21,0,-30), vec3.fromValues(3, 5, -20)
+            ],
+            [
+                //CENTER OF MAIN ROOM
+                vec3.fromValues(-14,0,-28), vec3.fromValues(-8, 5, -10)
+            ],
+            [
+                //CHANDELIER
+                vec3.fromValues(-3,0,-10), vec3.fromValues(3, 5, -6)
+            ],
+
+            [
+                //ROPE
+                vec3.fromValues(-8,0,-10), vec3.fromValues(-3, 5, -6)
+            ],
+            [
+                //OVERLOOKING GLASS
+                vec3.fromValues(-8,0,-28), vec3.fromValues(0, 24, -10)
+            ],
+            [
+                //ENTER THE END
+                vec3.fromValues(0,-50,0), vec3.fromValues(12, -25, 9)
+            ],
+            [
+                //MIDWAY THROUGH THE END
+                vec3.fromValues(12,-50,0), vec3.fromValues(21, -25, 9)
+            ],
+            [
+                //DONT STOP YET
+                vec3.fromValues(21,-50,0), vec3.fromValues(31, -25, 9)
+            ],
+            [
+                //FINAL STRETCH!
+                vec3.fromValues(31,-50,0), vec3.fromValues(200, -25, 9)
+            ],
+
+            
         ],
 
         currentCameraBound: 0,
