@@ -158,6 +158,95 @@ async function main() {
 
         }`;
 
+        const fragShaderRooms =
+        `#version 300 es
+        #define MAX_LIGHTS 20
+        precision highp float;
+
+        struct PointLight {
+            vec3 position;
+            vec3 colour;
+            float strength;
+            float linear;
+            float quadratic;
+            float n_all;
+        };
+
+        in vec2 oUV;
+        in vec3 oFragPosition;
+        in vec3 oNormal;
+
+        uniform PointLight[MAX_LIGHTS] pointLights;
+        uniform int numLights;
+        uniform vec3 cameraPos;
+
+
+        uniform vec3 diffuseVal;
+        uniform vec3 ambientVal;
+        uniform vec3 specularVal;
+        uniform float n;
+        uniform float alpha;
+
+        uniform int samplerExists;
+        uniform sampler2D uTextureWall;
+        uniform sampler2D uTextureFloor;
+
+        out vec4 fragColor;
+
+
+        vec3 calculateColour(PointLight light, vec3 normal) {
+            vec3 N = normalize(normal);
+            vec3 L = normalize(light.position - oFragPosition);
+            vec3 V = normalize(cameraPos - oFragPosition);
+            vec3 H = normalize(V+L);
+
+
+            float dist = length(light.position - oFragPosition);
+            float attenuation = light.strength / (1.0 + light.linear * dist + light.quadratic * (dist*dist));
+
+            vec3 amb = ambientVal*light.colour;
+            vec3 diff;
+            if (samplerExists == 1) {
+                vec3 textureColour;
+                if(oUV[0] < 0.0 || oUV[1] < 0.0) {
+                    textureColour = texture(uTextureFloor, oUV).rgb;
+                    diff = diffuseVal*light.colour*max(0.0, dot(N, L));
+                    diff = mix(diff, textureColour, 0.1);
+                }
+                else {
+                    textureColour = texture(uTextureWall, oUV).rgb;
+                    diff = diffuseVal*light.colour*max(0.0, dot(N, L));
+                    diff = mix(diff, textureColour, 0.1);
+                }
+            }
+            else {
+                diff = diffuseVal*light.colour*max(0.0, dot(N, L));
+            }
+
+            vec3 spec = specularVal*light.colour*pow(max(0.0, dot(N, H)), n*light.n_all);
+
+            diff = diff * attenuation;
+            spec = spec * attenuation;
+
+            return diff+spec+amb;
+
+        }
+
+        void main() {
+
+            //final colour
+            vec3 total = vec3(0.0, 0.0, 0.0);
+
+            //iterate over light sources and sum contribution from each light source
+            for (int i =0; i < numLights; i++){
+                total += calculateColour(pointLights[i], oNormal);
+            }
+            
+            //return fragment colour
+            fragColor = vec4(total, alpha);
+
+        }`;
+
     /**
      * Initialize state with new values (some of these you can replace/change)
      */
@@ -166,6 +255,7 @@ async function main() {
         gl,
         vertShaderSample,
         fragShaderSample,
+        fragShaderRooms,
         canvas: canvas,
         objectCount: 0,
         lightIndices: [],
@@ -463,7 +553,19 @@ function drawScene(gl, deltaTime, state) {
                     gl.uniform1i(object.programInfo.uniformLocations.samplerExists, state.samplerExists);
                     gl.uniform1i(object.programInfo.uniformLocations.sampler, 0);
                     gl.bindTexture(gl.TEXTURE_2D, object.model.texture);
-                } else {
+                } 
+                else if(object.material.shaderType === 5) {
+                    state.samplerExists = 1;
+                    gl.activeTexture(gl.TEXTURE0);
+                    gl.uniform1i(object.programInfo.uniformLocations.samplerExists, state.samplerExists);
+                    gl.uniform1i(object.programInfo.uniformLocations.samplerWall, 0);
+                    gl.bindTexture(gl.TEXTURE_2D, object.model.floorTexture);
+                    gl.activeTexture(gl.TEXTURE1);
+                    gl.uniform1i(object.programInfo.uniformLocations.samplerFloor, 1);
+                    gl.bindTexture(gl.TEXTURE_2D, object.model.wallTexture);
+
+                }
+                else {
                     gl.activeTexture(gl.TEXTURE0);
                     state.samplerExists = 0;
                     gl.uniform1i(object.programInfo.uniformLocations.samplerExists, state.samplerExists);

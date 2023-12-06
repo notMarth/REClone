@@ -139,10 +139,10 @@ def generateRoom1(x, z, y, origin, door, vertInd):
     flist.append([24, 26, 25])
     flist.append([24, 27, 26])
 
-    uvlist.append([0, 0])
-    uvlist.append([0, 1])
-    uvlist.append([1, 1])
-    uvlist.append([1, 0])
+    uvlist.append([-1, -1])
+    uvlist.append([-1, -2])
+    uvlist.append([-2, -2])
+    uvlist.append([-2, -1])
 
     vlist.append([origin[0], origin[1]+y, origin[2]])
     vlist.append([origin[0], origin[1]+y, origin[2] + z])
@@ -860,7 +860,7 @@ if __name__ == "__main__":
         f.write(f'{uvlist[-1]}]')
 
         #OBJECT TEXTURE INFO
-        f.write(', "diffuseTexture": "wall.jpg","normalTexture": "defaultNorm.jpg"},')
+        f.write(', "diffuseTexture": "wall.jpg", "floorTexture": "cementFloor1.jpg","normalTexture": "defaultNorm.jpg"},')
         
 ############################################################# GENERATE HALLWAY 1
         vlist, nlist, flist, vInd = generateHallway1(-10, 5, -2, (0, 0, 3), vInd)
