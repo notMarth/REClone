@@ -472,11 +472,26 @@ async function main() {
     const now = Date.now();
     const loadingTime = (now - then) / 1000;
     console.log(`Scene file loaded in ${loadingTime} seconds.`);
+    this.titleSound = new Audio("./assets/audio/SplashAudio.mp3");
 
     game = new Game(state);
     await game.onStart();
-    loadingPage.remove();
-    startRendering(gl, state); // now that scene is setup, start rendering it
+
+    document.addEventListener("keydown", (e) => {
+        loadingPage.animate({opacity: 0}, 4100);
+        this.titleSound.play();
+
+        window.setTimeout(() => {
+            loadingPage2.animate({opacity: 0}, 400);
+            window.setTimeout(() => {
+                loadingPage2.remove();
+            }, 410);
+            game.gameStarted = true;
+            loadingPage.remove();
+            game.music.play();
+            startRendering(gl, state); // now that scene is setup, start rendering it
+        }, 4000)
+    });
 }
 
 /**

@@ -3,11 +3,11 @@
 
 <head>
     <meta charset="utf-8">
-    <title>WebGL Engine</title>
-    <link rel="shortcut icon" href="favicon.ico" />
+    <title>RESIDENT TOFU</title>
+    <link rel="shortcut icon" href="./assets/images/Umbrella-Corporation-Logo-Resident-Evil-Vector.ico" />
 </head>
 
-<body style="width: 100%; height: 100%; margin: 0; padding: 0">
+<body style="width: 100%; height: 100%; margin: 0; padding: 0; background-color: black">
     <!-- This is the navigation bar at the top of the page -->
     <!-- This is populated by loading the common functions script -->
     <div id="myNavBar"></div>
@@ -16,13 +16,22 @@
     <!-- This will only be populated when an error on the JavaScript side occurs -->
     <div id="webglError"></div>
 
+
+    <div id="loadingPage2" style="
+    width: 100%;
+    height: 100%;
+    position: absolute; 
+    background-color: black;">
+    </div>
+
     <!-- Loading bar using a simple gif -->
     <div id="loadingPage" style="
     width: 100%;
     height: 100%;
     position: absolute; 
     background-color: black; 
-    background-image: url(./loading.gif); 
+    background-image: url(./assets/ResidentTofuSplashScreen.jpg);
+    background-size: cover;
     background-repeat: no-repeat; 
     background-position: center; ">
     </div>

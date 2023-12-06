@@ -8,15 +8,15 @@ class Game {
             objects: []
         };
         this.check = true;
-        this.DEBUG = false;
+        this.DEBUG = true;
         this.KNIFE = false;
         this.CHANDELIER = false;
         this.ZOMBIE;
         this.zombies = [];
 
         this.music = new Audio("mainMusic.mp3");
-        this.playerSpeed = 2;
-        this.playerTurnSpeed = 2;
+        this.playerSpeed = 1;
+        this.playerTurnSpeed = 1;
         this.pressedKeys = {
             w : false,
             a : false,
@@ -24,6 +24,7 @@ class Game {
             d : false,
         }
         this.intervalID = null;
+        this.gameStarted = false;
     }
 
     createSphereCollider(object, radius, onCollide = null) {
@@ -356,13 +357,12 @@ class Game {
         }
 
         // Make the player collidable
-        this.createSphereCollider(this.player, 0.3);
+        this.createSphereCollider(this.player, 0.45);
 
         // example - setting up a key press event to move an object in the scene
         document.addEventListener("keydown", (e) => {
             switch(e.key) {
                 case "w":
-                    this.music.play();
                     // Move forwards
                     if (this.pressedKeys.w || this.pressedKeys.s || this.pressedKeys.a || this.pressedKeys.d) {
                         break;
@@ -431,9 +431,13 @@ class Game {
 
         document.addEventListener("keypress", (e) => {
             e.preventDefault();
+            if (!this.gameStarted) {
+                return;
+            }
 
             switch (e.key) {
                 case " ":
+
                     if (vec3.dist(this.player.model.position, vec3.fromValues(0.0, 0, -6)) <= 2.0 && this.state.holdItem.name == "knife") {
                         this.rope.translate(vec3.fromValues(0.0, -50.0, 0.0));
                         this.CHANDELIER = true;
