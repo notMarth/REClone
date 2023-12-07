@@ -181,7 +181,7 @@ def generateRoom1(x, z, y, origin, door, floorCoords, vertInd):
 #suggestion: add number of triangles per rectangle subsection? Not sure if
 #large rectangles will be nice on textures
 #Just generates rectangles to bound the room
-def generateMainRoom(x, z, y, origin, door1, door2, vertInd):
+def generateMainRoom(x, z, y, origin, door1, door2, floorCoords, vertInd):
     vlist = []
     nlist = []
     flist = []
@@ -363,10 +363,11 @@ def generateMainRoom(x, z, y, origin, door1, door2, vertInd):
     nlist.append([origin[0]+x - 10, origin[1], origin[2] + z])
     nlist.append([origin[0]+x - 10, origin[1], origin[2]])
 
-    uvlist.append([-1, -1])
-    uvlist.append([-2, -1])
-    uvlist.append([-2, -2])
-    uvlist.append([-1, -2])
+
+    uvlist.append([floorCoords[0], floorCoords[0]])
+    uvlist.append([floorCoords[1], floorCoords[0]])
+    uvlist.append([floorCoords[1], floorCoords[1]])
+    uvlist.append([floorCoords[0], floorCoords[1]])
 
     flist.append([36, 37, 38])
     flist.append([36, 38, 39])
@@ -381,10 +382,11 @@ def generateMainRoom(x, z, y, origin, door1, door2, vertInd):
     nlist.append([origin[0]+x, origin[1], origin[2] + z-6])
     nlist.append([origin[0]+x - 10, origin[1], origin[2]+z-6])
 
-    uvlist.append([-1, -1])
-    uvlist.append([-2, -1])
-    uvlist.append([-2, -2])
-    uvlist.append([-1, -2])
+    uvlist.append([floorCoords[0], floorCoords[0]])
+    uvlist.append([floorCoords[1], floorCoords[0]])
+    uvlist.append([floorCoords[1], floorCoords[1]])
+    uvlist.append([floorCoords[0], floorCoords[1]])
+
 
     flist.append([40, 41, 42])
     flist.append([40, 42, 43])
@@ -399,10 +401,11 @@ def generateMainRoom(x, z, y, origin, door1, door2, vertInd):
     nlist.append([origin[0]+x, origin[1], origin[2] + 6])
     nlist.append([origin[0]+x - 10, origin[1], origin[2]+6])
 
-    uvlist.append([-1, -1])
-    uvlist.append([-2, -1])
-    uvlist.append([-2, -2])
-    uvlist.append([-1, -2])
+    uvlist.append([floorCoords[0], floorCoords[0]])
+    uvlist.append([floorCoords[1], floorCoords[0]])
+    uvlist.append([floorCoords[1], floorCoords[1]])
+    uvlist.append([floorCoords[0], floorCoords[1]])
+
 
     flist.append([44, 46, 45])
     flist.append([44, 47, 46])
@@ -921,7 +924,7 @@ if __name__ == "__main__":
         
         f.write(',"wallTexture": "wall.jpg", "floorTexture":"carpet.jpg"},')
 ##############################################################GENERATE MAIN ROOM
-        vlist, nlist, flist, uvlist, vInd = generateMainRoom(30, 24, 10, (-21, 0, -30), (10, 12, 3), (9, 11, 3), vInd)
+        vlist, nlist, flist, uvlist, vInd = generateMainRoom(30, 24, 10, (-21, 0, -30), (10, 12, 3), (9, 11, 3), (-1, -20), vInd)
 
         #OBJECT MATERIAL INFO
         f.write('{"name": "MainRoom", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 5,"alpha": 1},"type":"Room", ')
@@ -957,7 +960,7 @@ if __name__ == "__main__":
         vlist, nlist, flist, uvlist, vInd = generateGlassPanel((-1, 0, -24), (9, -12), 1, vInd)
 
         #OBJECT MATERIAL INFO
-        f.write('{"name": "GlassPanel", "material": {"diffuse": [1,1,1],"ambient": [0,0,0.01], "specular": [1,1,1],"n": 300,"shaderType": 1,"alpha": 0.3},"type":"CustomPanel", "diffuseTexture": "default.jpg", ')
+        f.write('{"name": "GlassPanel", "material": {"diffuse": [1,1,1],"ambient": [0.1,0.1,0.1], "specular": [1,1,1],"n": 50,"shaderType": 1,"alpha": 0.5},"type":"CustomGlass", "diffuseTexture": "glass.jpg", ')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -1010,10 +1013,10 @@ if __name__ == "__main__":
 
 
 ################################################################## GENERATE ROPE
-        vlist, nlist, flist, vInd = generateRope((0, 0, -6), (4, 10, -18), 0.1, 1000, vInd)
+        vlist, nlist, flist, vInd = generateRope((0, 0, -6), (4, 10, -18), 0.1, 36, vInd)
 
         #OBJECT MATERIAL INFO
-        f.write('{"name": "Rope", "material": {"diffuse": [0.1,0.1,0.1],"ambient": [0.3,0.3,0.3], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1.0},"type":"CustomRope", "diffuseTexture": "default.jpg", ')
+        f.write('{"name": "Rope", "material": {"diffuse": [0.58,0.29,0],"ambient": [0.58,0.29,0], "specular": [0.5,0.5,0.5],"n": 10.000002,"shaderType": 3,"alpha": 1.0},"type":"CustomRope", "diffuseTexture": "default.jpg", ')
         
         #START VERTICES
         f.write('"vertices": [')
@@ -1195,6 +1198,7 @@ if __name__ == "__main__":
         f.write(',{"name": "mainRoomLight", "colour": [0,0.05,0.1],"position": [4.48,9.8,-17],"strength": 2,"quadratic": 0.0035,"linear": 0.0625,"constant":0 ,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}')
         f.write(',{"name": "puzzleRoomLight", "colour": [0.01,0.05,0.01],"position": [-28,3,-10],"strength": 1,"quadratic": 0.035,"linear": 0.1,"constant": 0,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}')
         f.write(',{"name": "endLight", "colour": [0.1,0.1,0.1],"position": [80,-50,5],"strength": 20,"quadratic": 0.00390625,"linear": 0.0625,"constant": 1,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}')
+        f.write(',{"name": "puzzleRoomLight2", "colour": [0.001,0.001,0.001],"position": [-22,4.5,-7],"strength": 0.5,"quadratic": 0.00390625,"linear": 0.0625,"constant": 1,"nearPlane": 0.5,"farPlane": 100,"shadow": 0}')
 
         f.write('],')
         f.write('"settings": {"camera": {"name": "mainCamera","position": [4,4,4],"atPoint": [2.5,0,2.5],"up": [0,1,0]},"backgroundColor": [0,0,0]} ')

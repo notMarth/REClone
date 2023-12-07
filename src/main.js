@@ -159,6 +159,86 @@ async function main() {
 
         }`;
 
+        const fragShaderGlass =
+        `#version 300 es
+        #define MAX_LIGHTS 20
+        precision highp float;
+
+        struct PointLight {
+            vec3 position;
+            vec3 colour;
+            float strength;
+            float linear;
+            float quadratic;
+            float constant;
+        };
+
+        in vec2 oUV;
+        in vec3 oFragPosition;
+        in vec3 oNormal;
+
+        uniform PointLight[MAX_LIGHTS] pointLights;
+        uniform int numLights;
+        uniform vec3 cameraPos;
+
+
+        uniform vec3 diffuseVal;
+        uniform vec3 ambientVal;
+        uniform vec3 specularVal;
+        uniform float n;
+        uniform float alpha;
+
+        uniform int samplerExists;
+        uniform sampler2D uTexture;
+
+        out vec4 fragColor;
+
+
+        vec3 calculateColour(PointLight light, vec3 normal) {
+            vec3 N = normalize(normal);
+            vec3 L = normalize(light.position - oFragPosition);
+            vec3 V = normalize(cameraPos - oFragPosition);
+            vec3 H = normalize(V+L);
+
+
+            float dist = length(light.position - oFragPosition);
+            float attenuation = light.strength / (light.constant + light.linear * dist + light.quadratic * (dist*dist));
+
+            vec3 amb = ambientVal*light.colour*light.strength;
+            vec3 diff;
+            if (samplerExists == 1) {
+                vec3 textureColour = texture(uTexture, oUV).rgb;
+                diff = diffuseVal*light.colour*max(0.0, dot(N, L));
+                diff = mix(diff, textureColour, 0.1);
+            }
+            else {
+                diff = diffuseVal*light.colour*max(0.0, dot(N, L));
+            }
+
+            vec3 spec = specularVal*light.colour*pow(max(0.0, dot(N, H)), n);
+
+            diff = diff * attenuation;
+            spec = spec * attenuation;
+
+            return diff+spec+amb;
+
+        }
+
+        void main() {
+
+            //final colour
+            vec3 total = vec3(0.0, 0.0, 0.0);
+
+            //iterate over light sources and sum contribution from each light source
+            for (int i =0; i < numLights; i++){
+                total += calculateColour(pointLights[i], oNormal);
+            }
+            
+            //return fragment colour
+            fragColor = vec4(total, alpha);
+
+        }`;
+
         const fragShaderRooms =
         `#version 300 es
         #define MAX_LIGHTS 20
@@ -257,6 +337,7 @@ async function main() {
         vertShaderSample,
         fragShaderSample,
         fragShaderRooms,
+        fragShaderGlass,
         canvas: canvas,
         objectCount: 0,
         lightIndices: [],
@@ -677,13 +758,21 @@ function drawScene(gl, deltaTime, state) {
                 } 
                 else if(object.material.shaderType === 5) {
                     state.samplerExists = 1;
+
+
                     gl.activeTexture(gl.TEXTURE0 + 0);
                     gl.uniform1i(object.programInfo.uniformLocations.samplerExists, state.samplerExists);
                     gl.uniform1i(object.programInfo.uniformLocations.samplerWall, 0);
                     gl.uniform1i(object.programInfo.uniformLocations.samplerFloor, 1);
                     gl.bindTexture(gl.TEXTURE_2D, object.model.textureW);
+                    gl.generateMipmap(gl.TEXTURE_2D);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+
                     gl.activeTexture(gl.TEXTURE0 + 1);
                     gl.bindTexture(gl.TEXTURE_2D, object.model.textureF);
+                    gl.generateMipmap(gl.TEXTURE_2D);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+
 
                 }
                 

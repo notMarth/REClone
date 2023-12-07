@@ -548,8 +548,20 @@ class Game {
                         console.log(this.state.camera.up);
                     }
                     break;
+
+                case "`":
+                    if (this.DEBUG) {
+                        this.state.camera.position = this.state.cameras[+e.key][0];
+                        this.state.camera.up = this.state.cameras[+e.key][1];
+                        this.state.camera.atPoint = this.state.cameras[+e.key][2];
+                    }
                 default:
-                    break;
+                    if (!isNaN(+e.key)) {
+                        this.state.camera.position = this.state.cameras[+e.key][0];
+                        this.state.camera.up = this.state.cameras[+e.key][1];
+                        this.state.camera.atPoint = this.state.cameras[+e.key][2];
+                        break;
+                    }
             }
         });
     }
@@ -591,8 +603,8 @@ class Game {
         if(this.player.model.position[0] <= 8 && this.player.model.position[0] >= -1 &&
             this.player.model.position[2] <=-12 && this.player.model.position[2] >=-24) {
 
-            this.player.model.position = vec3.fromValues(0, -50, 5);
-            this.player.atPoint = vec3.fromValues(1, -50, 5)
+            this.player.model.position = vec3.fromValues(1, -50, 5);
+            this.player.atPoint = vec3.fromValues(2, -50, 5)
             this.player.at = vec3.fromValues(1, 0, 0);
             this.state.camera.position = vec3.fromValues(20, -45, 5);
             this.state.camera.atPoint = vec3.fromValues(0, -50, 5);

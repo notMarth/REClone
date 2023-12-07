@@ -436,14 +436,14 @@ function addPlane(object, state, vertShader = null, fragShader = null) {
 
 function addCustom(object, state, vertShader = null, fragShader = null) {
     let tempObject = new CustomObject(state.gl, object);
-    tempObject.fragShader = fragShader ? fragShader : state.fragShaderSample;
+    //tempObject.fragShader = fragShader ? fragShader : state.fragShaderSample;
 
-    // if (tempObject.name.includes("Room") || tempObject.name.includes("Hallway")) {
-    //     tempObject.fragShader = state.fragShaderRooms;
-    // }
-    // else {
-    //     tempObject.fragShader = fragShader ? fragShader : state.fragShaderSample;
-    // }
+    if (tempObject.name.includes("Glass")) {
+        tempObject.fragShader = state.fragShaderGlass;
+    }
+    else {
+        tempObject.fragShader = fragShader ? fragShader : state.fragShaderSample;
+    }
     tempObject.vertShader = vertShader ? vertShader : state.vertShaderSample;
     tempObject.setup();
     addObjectToScene(state, tempObject);
