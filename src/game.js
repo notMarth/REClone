@@ -11,7 +11,8 @@ class Game {
         this.DEBUG = true;
         this.KNIFE = false;
         this.CHANDELIER = false;
-        this.ZOMBIE;
+        this.ZOMBIE = false;
+        this.END = false;
         this.zombies = [];
 
         this.music = new Audio("./assets/audio/mainMusic.mp3");
@@ -465,10 +466,13 @@ class Game {
                 case " ":
 
                 //if we are close enough to the rope, cut it
-                    if (vec3.dist(this.player.model.position, vec3.fromValues(0.0, 0, -6)) <= 2.0 && this.state.holdItem.name == "knife") {
-                        this.rope.translate(vec3.fromValues(0.0, -50.0, 0.0));
-                        this.CHANDELIER = true;
-                        break;
+                    if (vec3.dist(this.player.model.position, vec3.fromValues(0.0, 0, -6)) <= 2.0 && this.state.holdItem) {
+                        if(this.state.holdItem.name == "knife") {
+                            this.rope.translate(vec3.fromValues(0.0, -50.0, 0.0));
+                            this.CHANDELIER = true;
+                            break;
+                        }
+                        
                     }
 
                     //can we pickup an item?
@@ -623,6 +627,7 @@ class Game {
             if(temp[1] > 4) {
                 
                 this.chandelier.translate(vec3.fromValues(0.0, -6*deltaTime, 0.0));
+                vec3.add(this.state.pointLights[3].position, this.state.pointLights[3].position, vec3.fromValues(0.0, -6*deltaTime, 0.0));
             }
             else {
                 let glassAudio = new Audio("./assets/audio/glass.mp3");
@@ -631,12 +636,13 @@ class Game {
                 this.state.pointLights[3].position = vec3.fromValues(0.0, 100, 0.0);
                 this.glass.translate(vec3.fromValues(0.0, -50, 0.0));
                 this.CHANDELIER = false;
+                this.END = true;
             }
         }
 
         //warp character if we enter the abyss
         if(this.player.model.position[0] <= 8 && this.player.model.position[0] >= -1 &&
-            this.player.model.position[2] <=-12 && this.player.model.position[2] >=-24) {
+            this.player.model.position[2] <=-12 && this.player.model.position[2] >=-24 && this.END) {
 
             this.player.model.position = vec3.fromValues(1, -50, 5);
             this.player.atPoint = vec3.fromValues(2, -50, 5)
