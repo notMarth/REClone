@@ -9,7 +9,7 @@ class Game {
         };
         this.check = true;
         this.DEBUG = true;
-        this.KNIFE = true;
+        this.KNIFE = false;
         this.CHANDELIER = false;
         this.ZOMBIE = false;
         this.END = false;
