@@ -287,6 +287,25 @@ class Game {
     // runs once on startup after the scene loads the objects
     async onStart() {
 
+        //create correct up vector for cameras
+        for(let i=0; i < this.state.cameras.length; i++) {
+            //grab camera
+            let camera = this.state.cameras[i];
+            let at = vec3.fromValues();
+            let right = vec3.fromValues();
+
+            //find at vector and normalize
+            vec3.subtract(at, camera[2], camera[0]);
+            vec3.normalize(at, at);
+            //generate right vector, orthogonal to both the at and current up vector
+            vec3.cross(right, at, camera[1]);
+            vec3.normalize(right, right);
+
+            //find real up vector and store in camera
+            vec3.cross(camera[1], right, at);
+        }
+
+        //loop music forever
         this.music.loop = true;
 
         console.log("On start");
@@ -297,8 +316,8 @@ class Game {
             e.preventDefault();
         }, false);
 
-
-        // example - set an object in onStart before starting our render loop!
+        //generate all the interactable objects we need, including player and
+        //enemies
         this.player = getObject(this.state, "Player");
         this.crateR = getObject(this.state, "RedCrate");
         this.crateB = getObject(this.state, "BlueCrate");
@@ -321,13 +340,12 @@ class Game {
         const zombie3 = getObject(this.state, 'Zombie3');
         const zombie4 = getObject(this.state, 'Zombie4');
 
+        //add zombies to list of zombies
         this.zombies.push(zombie1);
         this.zombies.push(zombie2);
         this.zombies.push(zombie3);
         this.zombies.push(zombie4);
 
-
-        console.log(this.player)
 
         // Add all the rooms to the list of rooms
         for (const obj of this.state.objects) {
@@ -436,17 +454,21 @@ class Game {
             }
 
             switch (e.key) {
+                //interact with environment and check for specific circumstances
                 case " ":
 
+                //if we are close enough to the rope, cut it
                     if (vec3.dist(this.player.model.position, vec3.fromValues(0.0, 0, -6)) <= 2.0 && this.state.holdItem.name == "knife") {
                         this.rope.translate(vec3.fromValues(0.0, -50.0, 0.0));
                         this.CHANDELIER = true;
                         break;
                     }
 
+                    //can we pickup an item?
                     checkPickup(this.state, this.player);
                     break;
 
+                    //DEBUG for camera movement
                 case "A":
                     if (this.DEBUG) {
                         var right = vec3.clone(state.camera.right);
@@ -549,6 +571,7 @@ class Game {
                     }
                     break;
 
+                    //DEBUG cycle through cameras
                 case "`":
                     if (this.DEBUG) {
                         this.state.camera.position = this.state.cameras[+e.key][0];
@@ -569,12 +592,14 @@ class Game {
     // Runs once every frame non stop after the scene loads
     onUpdate(deltaTime) {
 
+        //GAME END
         if(this.player.model.position[0] > 78) {
             this.state.settings.backgroundColor = vec3.fromValues(0, 0, 0);
             this.state.pointLights = [];
             this.state.numLights = 0;
         }
 
+        //check if puzzle completed
         if(vec3.dist(this.crateR.model.position, this.panelR.centroid) <= 0.75 && vec3.dist(this.crateB.model.position, this.panelB.centroid) <= 0.75 && vec3.dist(this.crateG.model.position, this.panelG.centroid) <=0.75 && !this.KNIFE) {
             let knifeAudio = new Audio("knife.mp3");
             knifeAudio.play();
@@ -583,6 +608,8 @@ class Game {
             this.KNIFE = true;
         }
 
+        //chandelier event: every frame drop the chandelier a little bit more
+        //until we hit the glass
         if(this.CHANDELIER) {
             var temp = vec3.fromValues();
             vec3.transformMat4(temp,this.chandelier.model.position, this.chandelier.model.modelMatrix);
@@ -600,6 +627,7 @@ class Game {
             }
         }
 
+        //warp character if we enter the abyss
         if(this.player.model.position[0] <= 8 && this.player.model.position[0] >= -1 &&
             this.player.model.position[2] <=-12 && this.player.model.position[2] >=-24) {
 
@@ -612,6 +640,7 @@ class Game {
             this.ZOMBIE = true;
         }
 
+        //move zombies
         if(this.ZOMBIE) {
             
             for(let i=0; i < this.zombies.length; i++) {
