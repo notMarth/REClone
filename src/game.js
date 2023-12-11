@@ -14,8 +14,8 @@ class Game {
         this.ZOMBIE;
         this.zombies = [];
 
-        this.music = new Audio("mainMusic.mp3");
-        this.playerSpeed = 1;
+        this.music = new Audio("./assets/audio/mainMusic.mp3");
+        this.playerSpeed = 4;
         this.playerTurnSpeed = 1;
         this.pressedKeys = {
             w : false,
@@ -338,9 +338,13 @@ class Game {
 
         
         const zombie1 = getObject(this.state, 'Zombie1');
+        zombie1.speed = 1.0;
         const zombie2 = getObject(this.state, 'Zombie2');
+        zombie2.speed = 0.75;
         const zombie3 = getObject(this.state, 'Zombie3');
+        zombie3.speed = 0.6;
         const zombie4 = getObject(this.state, 'Zombie4');
+        zombie4.speed = 0.41;
 
         //add zombies to list of zombies
         this.zombies.push(zombie1);
@@ -604,7 +608,7 @@ class Game {
 
         //check if puzzle completed
         if(vec3.dist(this.crateR.model.position, this.panelR.centroid) <= 0.75 && vec3.dist(this.crateB.model.position, this.panelB.centroid) <= 0.75 && vec3.dist(this.crateG.model.position, this.panelG.centroid) <=0.75 && !this.KNIFE) {
-            let knifeAudio = new Audio("knife.mp3");
+            let knifeAudio = new Audio("./assets/audio/knife.mp3");
             knifeAudio.play();
             this.knife.translate(vec3.fromValues(0.0, -20, 0.0));
             this.state.pickupItems.push(this.knife)
@@ -621,7 +625,7 @@ class Game {
                 this.chandelier.translate(vec3.fromValues(0.0, -6*deltaTime, 0.0));
             }
             else {
-                let glassAudio = new Audio("glass.mp3");
+                let glassAudio = new Audio("./assets/audio/glass.mp3");
                 glassAudio.play();
                 this.chandelier.translate(vec3.fromValues(0.0, -50, 0.0));
                 this.state.pointLights[3].position = vec3.fromValues(0.0, 100, 0.0);
@@ -649,7 +653,7 @@ class Game {
             for(let i=0; i < this.zombies.length; i++) {
                 var temp = vec3.fromValues();
                 vec3.subtract(temp, this.player.model.position, this.zombies[i].model.position);
-                vec3.scale(temp, temp, deltaTime*0.5);
+                vec3.scale(temp, temp, deltaTime*0.5*this.zombies[i].speed);
                 this.zombies[i].translate(temp);
             }
 

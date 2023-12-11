@@ -35,7 +35,7 @@ function inside(playerPos, currentCameraBound) {
 function checkPickup(state, player) {
     if(state.holdItem != null) {
         putDown(state, player, state.holdItem);
-        let put = new Audio("putdown.mp3");
+        let put = new Audio("./assets/audio/putdown.mp3");
         put.play();
     }
     else {
@@ -43,13 +43,13 @@ function checkPickup(state, player) {
             console.log(vec3.distance(player.model.position, state.pickupItems[i].model.position));
             if(vec3.distance(player.model.position, state.pickupItems[i].model.position) <= 1.0) {
                 pickUp(state, player, state.pickupItems[i]);
-                let pick = new Audio("pickup.mp3");
+                let pick = new Audio("./assets/audio/pickup.mp3");
                 pick.play();
                 return;
             }
         }
         console.log("Couldn't find anything!");
-        let nope = new Audio("nope.mp3");
+        let nope = new Audio("./assets/audio/nope.mp3");
         nope.play();
     }
 }
