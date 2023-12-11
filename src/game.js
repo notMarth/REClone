@@ -16,7 +16,7 @@ class Game {
         this.zombies = [];
 
         this.music = new Audio("./assets/audio/mainMusic.mp3");
-        this.playerSpeed = 4;
+        this.playerSpeed = 1;
         this.playerTurnSpeed = 1;
         this.pressedKeys = {
             w : false,
