@@ -1,0 +1,204 @@
+class Glass {
+    constructor(glContext, object) {
+        this.state = {};
+        this.gl = glContext;
+        this.name = object.name;
+        this.parent = object.parent;
+        this.type = object.type;
+        this.loaded = false;
+        this.material = { ...object.material };
+        this.model = {
+            vertices: object.vertices.flat(),
+            triangles: object.triangles.flat(),
+            uvs: object.uvs ? object.uvs.flat() : [],
+            normals: object.normals,
+            bitangents: [],
+            diffuseTexture: object.diffuseTexture ? object.diffuseTexture : "default.png",
+            normalTexture: object.normalTexture ? object.normalTexture : "defaultNorm.png",
+            texture: object.diffuseTexture ? getTextures(glContext, object.diffuseTexture) : null,
+            textureNorm: object.normalTexture ? getTextures(glContext, object.normalTexture) : null,
+            buffers: null,
+            modelMatrix: mat4.create(),
+            position: vec3.fromValues(0.0, 0.0, 0.0),
+            rotation: mat4.create(),
+            scale: vec3.fromValues(1.0, 1.0, 1.0),
+            programInfo: null,
+            fragShader: "",
+            vertShader: ""
+        };
+        this.initialTransform = { position: this.model.position, scale: this.model.scale, rotation: this.model.rotation };
+        this.modelMatrix = this.model.modelMatrix;
+    }
+
+    rotate(axis, angle) {
+        if (axis === 'x') {
+            mat4.rotateX(this.model.rotation, this.model.rotation, angle)
+        } else if (axis == 'y') {
+            mat4.rotateY(this.model.rotation, this.model.rotation, angle)
+        } else if (axis == 'z') {
+            mat4.rotateZ(this.model.rotation, this.model.rotation, angle)
+        }
+    }
+
+    scale(scaleVec) {
+        //model scale
+        let xVal = this.model.scale[0];
+        let yVal = this.model.scale[1];
+        let zVal = this.model.scale[2];
+
+
+        xVal *= scaleVec[0];
+        yVal *= scaleVec[1];
+        zVal *= scaleVec[2];
+
+        //need to scale bounding box
+        this.model.scale = vec3.fromValues(xVal, yVal, zVal);
+    }
+
+    translate(translateVec) {
+        vec3.add(this.model.position, this.model.position, vec3.fromValues(translateVec[0], translateVec[1], translateVec[2]));
+    }
+
+    lightingShader() {
+        const shaderProgram = initShaderProgram(this.gl, this.vertShader, this.fragShader);
+        // Collect all the info needed to use the shader program.
+        const programInfo = {
+            // The actual shader program
+            program: shaderProgram,
+            // The attribute locations. WebGL will use there to hook up the buffers to the shader program.
+            // NOTE: it may be wise to check if these calls fail by seeing that the returned location is not -1.
+            attribLocations: {
+                vertexPosition: this.gl.getAttribLocation(shaderProgram, 'aPosition'),
+                vertexNormal: this.gl.getAttribLocation(shaderProgram, 'aNormal'),
+                vertexUV: this.gl.getAttribLocation(shaderProgram, 'aUV'),
+                // vertexBitangent: this.gl.getAttribLocation(shaderProgram, 'aVertBitang')
+            },
+            uniformLocations: {
+                projection: this.gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
+                view: this.gl.getUniformLocation(shaderProgram, 'uViewMatrix'),
+                model: this.gl.getUniformLocation(shaderProgram, 'uModelMatrix'),
+                // normalMatrix: this.gl.getUniformLocation(shaderProgram, 'normalMatrix'),
+                diffuseVal: this.gl.getUniformLocation(shaderProgram, 'diffuseVal'),
+                ambientVal: this.gl.getUniformLocation(shaderProgram, 'ambientVal'),
+                specularVal: this.gl.getUniformLocation(shaderProgram, 'specularVal'),
+                n: this.gl.getUniformLocation(shaderProgram, 'n'),
+                cameraPosition: this.gl.getUniformLocation(shaderProgram, 'cameraPos'),
+                numLights: this.gl.getUniformLocation(shaderProgram, 'numLights'),
+                //lightPosition: this.gl.getUniformLocation(shaderProgram, 'lightPos'),
+                //lightColour: this.gl.getUniformLocation(shaderProgram, 'lightColour'),
+                //lightStrength: this.gl.getUniformLocation(shaderProgram, 'lightStrength'),
+                sampler: this.gl.getUniformLocation(shaderProgram, 'uTexture'),
+                samplerExists: this.gl.getUniformLocation(shaderProgram, "samplerExists"),
+                alpha: this.gl.getUniformLocation(shaderProgram, 'alpha'),
+                // normalSamplerExists: this.gl.getUniformLocation(shaderProgram, 'uTextureNormExists'),
+                // normalSampler: this.gl.getUniformLocation(shaderProgram, 'uTextureNorm')
+            },
+        };
+
+        shaderValuesErrorCheck(programInfo);
+        this.programInfo = programInfo;
+    }
+
+    initBuffers() {
+        //create vertices, normal and indicies arrays
+        const positions = new Float32Array(this.model.vertices.flat());
+        const normals = new Float32Array(this.model.normals.flat());
+        const indices = this.model.triangles ? new Uint16Array(this.model.triangles) : null;
+        const textureCoords = new Float32Array(this.model.uvs);
+        // const bitangents = new Float32Array(this.model.bitangents);
+
+        var vertexArrayObject = this.gl.createVertexArray();
+
+        this.gl.bindVertexArray(vertexArrayObject);
+
+        this.buffers = {
+            vao: vertexArrayObject,
+            attributes: {
+                position: initPositionAttribute(this.gl, this.programInfo, positions),
+                normal: initNormalAttribute(this.gl, this.programInfo, normals),
+                uv: initTextureCoords(this.gl, this.programInfo, textureCoords),
+                frame: initFrameBuffer(this.gl)
+                // bitangents: initBitangentBuffer(this.gl, this.programInfo, bitangents)
+            },
+            indicies: indices ? initIndexBuffer(this.gl, indices) : null,
+            numVertices:  indices ? indices.length : this.model.vertices.length
+        }
+
+        this.loaded = true;
+    }
+
+    drawCube(aspect, camera) {
+        // Tell it to use our program (pair of shaders)
+        gl.useProgram(program);
+       
+        // Turn on the position attribute
+        gl.enableVertexAttribArray(positionLocation);
+       
+        // Bind the position buffer.
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+       
+        // Tell the position attribute how to get data out of positionBuffer (ARRAY_BUFFER)
+        var size = 3;          // 3 components per iteration
+        var type = gl.FLOAT;   // the data is 32bit floats
+        var normalize = false; // don't normalize the data
+        var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
+        var offset = 0;        // start at the beginning of the buffer
+        gl.vertexAttribPointer(
+            positionLocation, size, type, normalize, stride, offset)
+       
+        // Turn on the texcoord attribute
+        gl.enableVertexAttribArray(texcoordLocation);
+       
+        // bind the texcoord buffer.
+        gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
+       
+        // Tell the texcoord attribute how to get data out of texcoordBuffer (ARRAY_BUFFER)
+        var size = 2;          // 2 components per iteration
+        var type = gl.FLOAT;   // the data is 32bit floats
+        var normalize = false; // don't normalize the data
+        var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
+        var offset = 0;        // start at the beginning of the buffer
+        gl.vertexAttribPointer(
+            texcoordLocation, size, type, normalize, stride, offset)
+       
+        // Compute the projection matrix
+       
+        var aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+        var projectionMatrix =
+            m4.perspective(fieldOfViewRadians, aspect, 1, 2000);
+       
+        var cameraPosition = camera.position;
+        var up = camera.up;
+        var target = camera.atPoint;
+       
+        // Compute the camera's matrix using look at.
+        var cameraMatrix = m4.lookAt(cameraPosition, target, up);
+       
+        // Make a view matrix from the camera matrix.
+        var viewMatrix = m4.inverse(cameraMatrix);
+       
+        var viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix);
+       
+        var matrix = m4.xRotate(viewProjectionMatrix, modelXRotationRadians);
+        matrix = m4.yRotate(matrix, modelYRotationRadians);
+       
+        // Set the matrix.
+        gl.uniformMatrix4fv(matrixLocation, false, matrix);
+       
+        // Tell the shader to use texture unit 0 for u_texture
+        gl.uniform1i(textureLocation, 0);
+       
+        // Draw the geometry.
+        gl.drawArrays(gl.TRIANGLES, 0, 6 * 6);
+      }
+
+
+    setup() {
+        this.centroid = calculateCentroid(this.model.vertices.flat());
+        this.lightingShader();
+        this.scale(this.initialTransform.scale);
+        this.translate(this.initialTransform.position);
+        this.model.rotation = this.initialTransform.rotation;
+        this.initBuffers();
+    }
+}
