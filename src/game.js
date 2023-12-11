@@ -24,7 +24,8 @@ class Game {
             s : false,
             d : false,
         }
-        this.intervalID = null;
+        this.movementIntervalID = null;
+        this.rotationIntervalID = null;
         this.gameStarted = false;
     }
 
@@ -96,7 +97,7 @@ class Game {
     }
 
     // example - function to check if an object is colliding with collidable objects
-    checkCollision(object) {
+    /*checkCollision(object) {
 
         // keep track of any collisions, and the minimum distance between two objects when colliding
         let minDistance = null;
@@ -147,7 +148,7 @@ class Game {
             // use the modeling transformation for object and otherObject to transform position into current location
         };
         return inMap;
-    }
+    }*/
 
     // Check if a point is inside bounds
     // Adapted from https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_collision_detection#point_vs._aabb
@@ -182,6 +183,7 @@ class Game {
             if (object.collider.type === "SPHERE") {
                 if (this.isPointInsideBounds(position1, otherObject.collider.bounds, object.collider.radius)) {
                     inMap = true;
+                    break;
                 }
             }
         };
@@ -371,7 +373,7 @@ class Game {
                         break;
                 }
                 this.createRoom(obj, extensionX, extensionY, extensionZ);
-                console.log(obj);
+                //console.log(obj);
             }
         }
 
@@ -380,42 +382,43 @@ class Game {
 
         // example - setting up a key press event to move an object in the scene
         document.addEventListener("keydown", (e) => {
+            //console.log(e.key);
             switch(e.key) {
                 case "w":
                     // Move forwards
-                    if (this.pressedKeys.w || this.pressedKeys.s || this.pressedKeys.a || this.pressedKeys.d) {
+                    if (this.pressedKeys.w || this.pressedKeys.s) {
                         break;
                     }
                     this.pressedKeys.w = true;
                     // console.log(e.key);
-                    this.intervalID = window.setInterval(() => this.pressedW(this.player), 50);
+                    this.movementIntervalID = window.setInterval(() => this.pressedW(this.player), 50);
                     break;
 
                 case "s":
                     // Move backwards
-                    if (this.pressedKeys.w || this.pressedKeys.s || this.pressedKeys.a || this.pressedKeys.d) {
+                    if (this.pressedKeys.w || this.pressedKeys.s) {
                         break;
                     }
                     this.pressedKeys.s = true;
-                    this.intervalID = window.setInterval(() => this.pressedS(this.player), 50);
+                    this.movementIntervalID = window.setInterval(() => this.pressedS(this.player), 50);
                     break;
                     
                 case "a":
                     // Turn left
-                    if (this.pressedKeys.w || this.pressedKeys.s || this.pressedKeys.a || this.pressedKeys.d) {
+                    if (this.pressedKeys.a || this.pressedKeys.d) {
                         break;
                     }
                     this.pressedKeys.a = true;
-                    this.intervalID = window.setInterval(() => this.pressedA(this.player), 50);
+                    this.rotationIntervalID = window.setInterval(() => this.pressedA(this.player), 50);
                     break;
                     
                 case "d":
                     // Turn right
-                    if (this.pressedKeys.w || this.pressedKeys.s || this.pressedKeys.a || this.pressedKeys.d) {
+                    if (this.pressedKeys.a || this.pressedKeys.d) {
                         break;
                     }
                     this.pressedKeys.d = true;
-                    this.intervalID = window.setInterval(() => this.pressedD(this.player), 50);
+                    this.rotationIntervalID = window.setInterval(() => this.pressedD(this.player), 50);
                     break;
             }
         });
@@ -424,25 +427,25 @@ class Game {
             switch(e.key) {
                 case "w":
                     // Stopped moving forward
-                    window.clearInterval(this.intervalID);
+                    window.clearInterval(this.movementIntervalID);
                     this.pressedKeys.w = false;
                     break;
 
                 case "s":
                     // Stopped moving backward
-                    window.clearInterval(this.intervalID);
+                    window.clearInterval(this.movementIntervalID);
                     this.pressedKeys.s = false;
                     break;
                     
                 case "a":
                     // Stopped turning left
-                    window.clearInterval(this.intervalID);
+                    window.clearInterval(this.rotationIntervalID);
                     this.pressedKeys.a = false;
                     break;
                     
                 case "d":
                     // Stopped turning right
-                    window.clearInterval(this.intervalID);
+                    window.clearInterval(this.rotationIntervalID);
                     this.pressedKeys.d = false;
                     break;
             }
