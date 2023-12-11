@@ -40,7 +40,7 @@ function checkPickup(state, player) {
     }
     else {
         for(let i = 0; i < state.pickupItems.length; i++) {
-            console.log(vec3.distance(player.model.position, state.pickupItems[i].model.position));
+            //console.log(vec3.distance(player.model.position, state.pickupItems[i].model.position));
             if(vec3.distance(player.model.position, state.pickupItems[i].model.position) <= 1.0) {
                 pickUp(state, player, state.pickupItems[i]);
                 let pick = new Audio("./assets/audio/pickup.mp3");
